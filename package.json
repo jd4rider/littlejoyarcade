@@ -18,6 +18,7 @@
     "lint": "oxlint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "create:game": "node tools/create-game.mjs",
     "deploy:vercel": "npx vercel --prod"
   },
   "dependencies": {
