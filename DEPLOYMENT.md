@@ -1,9 +1,13 @@
 # Deployment
 
-## Current hosting (GitHub Pages, everywhere)
+## GitHub Pages is the only deployment
 
-The portal and all eleven games are GitHub Pages sites. Nothing about the frontends is on Firebase, Netlify,
-Cloudflare or Vercel — those were evaluated and are kept only as unused spares.
+Nothing else deploys this project. There is one workflow that publishes
+(`.github/workflows/pages.yml`), one host (`jd4rider.github.io`), and one custom
+domain (`littlejoyarcade.site`). Firebase, Netlify, Cloudflare Pages and Vercel
+were evaluated during setup and are no longer configured — their workflows and
+config files have been removed, so a push can never publish a second copy that
+drifts from the live site.
 
 | Piece | Where it runs |
 | --- | --- |
@@ -11,242 +15,120 @@ Cloudflare or Vercel — those were evaluated and are kept only as unused spares
 | Games | One GitHub Pages project site per game repo, playable build published to `/play/` |
 | Game URLs | `https://jd4rider.github.io/<game>/play/` — no custom domain on the game repos |
 | Database + login | Supabase project `fqovramltegcfiyebyrt` |
-| Builds | GitHub Actions in this repo and in each game repo |
-
-A game lives at `https://jd4rider.github.io/<game>/play/`. GitHub gives every Pages site one canonical hostname: if
-a game repo sets a custom domain (or ships a `public/CNAME`), `github.io` 301s to it instead of serving the game,
-which is exactly what broke the embedded player. So the catalogue links `github.io` and the game repos carry no
-`public/CNAME`. The subdomain records and the certificate caveat are covered in `DNS_CONFIGURATION.md`.
-
-## Hosting options considered
-
-| Option | Commercial use | Cost | Verdict |
-| --- | --- | --- | --- |
-| **GitHub Pages** | Discouraged for commercial sites | $0 | **Chosen for launch.** Zero-config, domain works via A records, no nameserver change |
-| Netlify — Free | Allowed | $0; 100 GB bandwidth, 300 build min/month | Site created but unused; adding the custom domain requires the dashboard |
-| Cloudflare Pages | Allowed on free tier | $0 — 500 builds/month, 20k files, unmetered static requests | Deployed as an alternative; apex needs Cloudflare DNS |
-| Vercel — Hobby | Personal, non-commercial only | $0 | Preview mirror; not for a monetized arcade |
-| Vercel — Pro | Permitted | ~$20/user/month | Only if Vercel-specific features are needed |
-| Firebase Hosting — Spark | Allowed | $0; 10 GB storage, 360 MB/day transfer | Works, but the transfer cap is tighter |
-| Azure Static Web Apps — Free | Allowed | $0; 100 GB/month | Workable, more setup friction |
-| GitHub Pages | Discouraged for business sites | $0 | Preview only |
-
-**GitHub Pages is the launch host.** It needs no account setup beyond what already exists, works with GoDaddy's
-nameservers, and the portal was already deploying there. `public/CNAME` carries `littlejoyarcade.site`, and the
-Pages custom domain is set through the API. The trade-off is that GitHub's acceptable-use policy discourages
-using Pages as a business's primary host, so the site must move to Cloudflare Pages (or Netlify) before ads and
-purchases go live. The build is host-agnostic, so that move is a DNS + project change, not a rewrite.
-
-Netlify's site was created and deployed but its custom domain could only be added through the dashboard, so it
-stays as an unused spare. Cloudflare Pages and Vercel remain deployed alternatives.
-
-### Netlify (free, chosen)
-
-`netlify.toml` contains the build (`npm run build`), publish directory (`dist`), security headers, immutable
-asset caching and an SPA fallback. Netlify project creation is pending a one-time browser login on this machine
-(`npx netlify-cli login`); once authorised:
+| Builds | GitHub Actions: `pages.yml` deploys, `ci.yml` checks, `check-play-routes.yml` probes the live URLs |
 
 ```bash
-npx netlify-cli sites:create --name littlejoyarcade
-npx netlify-cli deploy --prod --dir=dist
+git push origin main        # CI runs typecheck/lint/tests/build, then Pages deploys
+gh run list --repo jd4rider/littlejoyarcade --limit 5
 ```
 
-DNS: Netlify's external-DNS mode needs one apex `A` record (`75.2.60.5`). `scripts/godaddy-apply-dns.sh` applies
-it with the GoDaddy token from the environment, backs up the zone first, and preserves the existing `_dmarc` TXT
-and `_domainconnect` records. `scripts/godaddy-restore-dns.sh` rolls it back.
+`public/CNAME` holds `littlejoyarcade.site`, the HashRouter keeps deep links
+working on the project path, and `base: './'` keeps the assets portable.
 
-```bash
-export GODADDY_PAT='gd_pat_...'
-scripts/godaddy-apply-dns.sh              # dry run
-CONFIRM=yes scripts/godaddy-apply-dns.sh  # apply + poll public DNS
-```
+## The one-canonical-hostname rule
 
-CI: `.github/workflows/netlify.yml` builds and tests on every push and deploys once `NETLIFY_AUTH_TOKEN` and
-`NETLIFY_SITE_ID` exist as repository secrets; otherwise it logs a notice and skips.
-
-### Cloudflare Pages (free, chosen)
-
-Project `littlejoyarcade` is created and deployed: <https://littlejoyarcade.pages.dev>. `wrangler.toml` holds the
-project config; the build is pure static assets, so no Functions are needed and requests are unmetered.
-
-```bash
-npm run build
-npx wrangler pages deploy dist --project-name=littlejoyarcade --branch=main
-```
-
-CI: `.github/workflows/cloudflare.yml` builds and tests on every push, then deploys when
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` exist as repository secrets. Without them it logs a notice and
-skips, so CI stays green.
-
-- Account ID: `47edcbac4d4a89c5a63567c612a423c1`
-- Token: Cloudflare → My Profile → API Tokens → **Cloudflare Pages: Edit**
-
-```bash
-gh secret set CLOUDFLARE_API_TOKEN --body '<token>'
-gh secret set CLOUDFLARE_ACCOUNT_ID --body '47edcbac4d4a89c5a63567c612a423c1'
-```
-
-Custom domain: Workers & Pages → `littlejoyarcade` → Custom domains. The apex needs the zone on Cloudflare
-(CNAME flattening), which means moving nameservers — see `DNS_CONFIGURATION.md` for both paths.
-
-**Important:** Vercel does **not** host a database. "Login and a database on the backend" means Vercel hosts the
-app while **Supabase** provides Postgres, auth and row level security. The schema in `supabase/migrations/` is
-written for exactly that split.
-
-Current state (2 November 2026): the portal is live on both Cloudflare Pages
-(<https://littlejoyarcade.pages.dev>) and Vercel (<https://littlejoyarcade.vercel.app>), verified with a real
-browser render. The production domain is attached in Vercel but DNS still points at GoDaddy's parking page, so
-neither custom domain serves the site yet. The GitHub Pages preview at
-<https://jd4rider.github.io/littlejoyarcade/> stays up until the cutover.
-
-Auto-deploy on push is **not** connected yet: `vercel git connect` failed because the Vercel GitHub App does not
-have access to this new repository. Fix by installing/authorising the app for it at
-<https://github.com/apps/vercel/installations/new>, then run `npx vercel git connect` once. Until then, deploys
-are made from this machine with `npm run deploy:vercel` (`npx vercel --prod`), which is already authenticated as
-`jd4rider`.
-
-## One-time Vercel setup (owner, ~3 minutes)
-
-1. Go to <https://vercel.com/new>, sign in with GitHub, and **Import** `jd4rider/littlejoyarcade`.
-   Vercel reads `vercel.json`: build `npm run build`, output `dist`, install `npm ci`. No dashboard tweaks needed.
-2. Add environment variables (Project → Settings → Environment Variables), for **Production and Preview**:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   Both come from the Supabase project (below). Without them the deploy still works, guest-only.
-3. Deploy. You get `https://<project>.vercel.app`.
-4. Project → Settings → Domains → add `littlejoyarcade.site` and `www.littlejoyarcade.site`. Vercel shows the exact
-   DNS records to create — see `DNS_CONFIGURATION.md`. Do not add records from memory; use the values Vercel shows,
-   because they can differ per project (`_vercel` TXT verification especially).
-5. Optional: keep the GitHub Pages workflow until Vercel serves the domain successfully, then disable it so two
-   copies cannot drift.
-
-After step 1, every push to `main` deploys automatically, and every pull request gets a preview URL. No GitHub
-Actions secrets are required for Vercel.
-
-### If you want me to run the deploy instead
-
-Either:
-
-- run `npx vercel login` in a terminal and tell me it is done (the CLI stores credentials locally), or
-- create a token at <https://vercel.com/account/tokens> and paste it, or add it as a GitHub Actions secret
-  `VERCEL_TOKEN` plus `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` from `npx vercel link`.
-
-With a token I can create the project, set env vars, deploy, attach the domain and verify the certificate.
-
-## Backend: Supabase (database + login)
-
-**Status (2 November 2026):** project `littlejoyarcade` (`fqovramltegcfiyebyrt`, West US / North California)
-created; migrations `0001–0003` applied; the eight-game seed and achievement definitions are in place; RLS is
-active; `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set as repository variables. The generated database
-password is in the gitignored `.secrets/supabase.env` on this machine. Remaining: set the auth Site URL and
-redirect allow-list, then grant the first player `admin`.
-
-Recommended path, because it keeps billing and setup in one place:
-
-**A. Via Vercel Marketplace (fastest)** — Project → Storage/Marketplace → Supabase → create the integration.
-It provisions a project and adds the two `VITE_*` variables (plus server-side keys) to the Vercel project
-automatically. If your account does not show the Supabase integration, use path B.
-
-**B. Directly at supabase.com** — create a free project, then copy Project URL and the `anon` key into Vercel's
-environment variables. Never copy the service-role key into a `VITE_*` variable.
-
-Then apply the schema:
-
-```bash
-npx supabase login
-npx supabase link --project-ref <ref>
-npx supabase db push          # applies 0001_schema, 0002_rls, 0003_seed
-```
-
-In Supabase → Authentication → URL configuration:
-
-- Site URL: `https://littlejoyarcade.site`
-- Redirect URLs: `https://littlejoyarcade.site/**`, `https://www.littlejoyarcade.site/**`,
-  `https://<project>.vercel.app/**`, `http://localhost:5173/**`
-
-Magic-link sign-in will not work until the redirect URL matches the domain the player is on. Preview deployments
-get new hostnames per branch; add `https://*-<team>.vercel.app/**` if you want previews to support login too.
-
-Make the owner an admin after the first sign-in:
-
-```sql
-update public.profiles set role = 'admin' where id = '<auth uid>';
-```
-
-Redeploy after adding env vars: Vite inlines `VITE_*` at build time, so changing a variable without a rebuild does
-nothing.
-
-## Domain cutover
-
-1. Deploy Vercel and confirm `https://<project>.vercel.app` renders.
-2. Add both hostnames in Vercel → Domains.
-3. Replace the GoDaddy parking records with the records Vercel shows (usually `A @ → 76.76.21.21` and
-   `CNAME www → cname.vercel-dns.com`, plus any `_vercel` TXT). Details and verification commands:
-   `DNS_CONFIGURATION.md`.
-4. Wait for Vercel to verify the domain and issue the certificate (usually minutes, up to 24 h).
-5. Verify `https://littlejoyarcade.site` and `https://www.littlejoyarcade.site` (301 to apex) both return 200 with
-   a valid certificate.
-6. Disable the GitHub Pages workflow once Vercel is confirmed.
-
-## Keeping the catalogue current
-
-Game versions, dates and download links are **not edited by hand**. `.github/workflows/sync-releases.yml` runs
-`scripts/sync-releases.mjs` every six hours (and on `workflow_dispatch` or a `game-release` repository dispatch).
-It reads the latest published GitHub release for every repository referenced by `repoUrl` in
-`src/data/games.ts` and regenerates `src/data/releases.json` (version, date and download links). The catalogue
-merges that file at load time, so hand-written copy is never touched. A change is committed as
-`chore: sync game releases`, which triggers CI and the Pages deploy on its own.
-
-```bash
-GITHUB_TOKEN=$(gh auth token) npm run sync:releases   # local check, idempotent
-```
-
-A game only needs a published, non-draft release with the standard asset names
-(`-mac-arm64.dmg`, `-mac-x64.dmg`, `-win-setup.exe`, `-linux-x86_64.AppImage`) to appear automatically.
-
-## Per-game deployment
-
-Each game keeps its own repository and pipeline:
-
-- Web: existing `pages.yml` in the game repo, served from `/play/`.
-- Desktop: existing `release.yml` on `v*` tags (dmg/NSIS/AppImage).
-- A game can later move to its own Vercel or Cloudflare project on a subdomain; only `playUrl` in
-  `src/data/games.ts` (and the `games` table row) needs updating.
+GitHub gives each Pages site exactly one canonical hostname. If a game repo sets
+a custom domain (or ships a `public/CNAME`), `jd4rider.github.io/<game>/` 301s to
+that hostname instead of serving the game. That is what broke the embedded
+player: the redirect landed on a subdomain whose certificate had never been
+issued, so the iframe failed and showed a black screen. The game repos therefore
+carry no `public/CNAME` and no Pages custom domain, and the catalogue links the
+`github.io` build. See `DNS_CONFIGURATION.md` for the subdomain state.
 
 ## Play route resolution and health checks
 
-A game entry carries two URLs: `playUrl` (the canonical GitHub Pages build, `https://jd4rider.github.io/<game>/play/`)
-and an optional `preferredPlayUrl` (`https://<game>.littlejoyarcade.site/play/`). At play time
-`src/lib/playUrl.ts` probes the preferred host with a 2.5 s `no-cors` fetch — which only resolves when DNS and TLS
-both work — and falls back to `playUrl` when the probe fails. The verdict is cached in `sessionStorage` for ten
-minutes, so a recovered or newly broken host is picked up without a redeploy.
+A catalogue entry carries two URLs: `playUrl` (the canonical Pages build) and an
+optional `preferredPlayUrl` (`https://<game>.littlejoyarcade.site/play/`). At
+play time `src/lib/playUrl.ts` probes the preferred host with a 2.5 s `no-cors`
+fetch — which only resolves when DNS and TLS both work — and falls back to
+`playUrl` when the probe fails. The verdict is cached in `sessionStorage` for ten
+minutes, so a host that recovers or breaks is picked up without a redeploy.
 
 ```bash
 node scripts/check-play-routes.mjs          # table; exits 1 only if a canonical URL is down
 node scripts/check-play-routes.mjs --strict # also fails while any subdomain is unreachable
 ```
 
-`.github/workflows/check-play-routes.yml` runs that probe nightly, on catalogue changes and on demand, and opens (or
-comments on) a single GitHub issue titled *Play route health: a game is unreachable* instead of failing silently.
+`.github/workflows/check-play-routes.yml` runs that probe nightly, on catalogue
+changes and on demand, and opens (or comments on) a single GitHub issue titled
+*Play route health: a game is unreachable*.
+
+## Environment variables
+
+The backend is optional. These are repository **variables**, injected into the
+build by `pages.yml`; without them the site is guest-only and still works:
+
+```bash
+gh variable set VITE_SUPABASE_URL --body 'https://<project>.supabase.co'
+gh variable set VITE_SUPABASE_ANON_KEY --body '<anon key>'
+```
+
+Vite inlines `VITE_*` at build time, so changing a variable only takes effect
+after the next deploy. Never put a service-role key in a `VITE_*` variable.
+
+## Supabase
+
+Migrations live in `supabase/migrations/` and are applied with the Supabase CLI:
+
+```bash
+npx supabase link --project-ref fqovramltegcfiyebyrt
+npx supabase db push
+npx supabase secrets set GODADDY_PAT=gd_pat_...   # only for register-subdomain
+npx supabase functions deploy register-subdomain
+```
+
+Auth redirect URLs must include `https://littlejoyarcade.site/**`,
+`https://www.littlejoyarcade.site/**`, `https://jd4rider.github.io/littlejoyarcade/**`
+and `http://localhost:5173/**`. Grant the owner role with:
+
+```sql
+update public.profiles set role = 'admin' where id = '<auth uid>';
+```
+
+## Keeping the catalogue current
+
+`.github/workflows/sync-releases.yml` runs `scripts/sync-releases.mjs` every six
+hours (also on `workflow_dispatch` or a `game-release` repository dispatch). It
+reads each repository's latest published release and regenerates
+`src/data/releases.json`; the catalogue merges that file at load time, so
+hand-written copy is never touched. The commit triggers CI and the Pages deploy.
+
+```bash
+GITHUB_TOKEN=$(gh auth token) npm run sync:releases   # idempotent, safe locally
+```
+
+A game only needs a published, non-draft release with the standard asset names
+(`-mac-arm64.dmg`, `-mac-x64.dmg`, `-win-setup.exe`, `-linux-x86_64.AppImage`)
+to appear automatically.
+
+## Per-game deployment
+
+Each game keeps its own repository and pipeline:
+
+- Web: the game repo's `pages.yml` publishes the build to `/play/` on its project site.
+- Desktop: its `release.yml` on `v*` tags (dmg/NSIS/AppImage).
+- The portal never builds a game; it links the game's origin. A new version
+  ships from the game repo without touching this one.
+
+When a game's URL changes, update both `playUrl` in `src/data/games.ts` and the
+row in `public.games` (`npm run publish:game` or the admin page).
 
 ## Local builds
 
 ```bash
 npm install
-npm run dev
+npm run dev        # http://localhost:5173
 npm run build      # typecheck + production bundle
 npm run preview
-npx vercel dev     # optional: run with Vercel's routing/headers locally
+npm test
 ```
 
 ## Checklist
 
-- [x] Vercel config committed (`vercel.json`), build verified locally
+- [x] Pages workflow is the only deploy path
 - [x] Guest-only build works with no backend
-- [x] Schema, RLS and seed migrations ready
-- [ ] Vercel project imported (owner)
-- [ ] Supabase project created + migrations applied (owner)
-- [ ] `VITE_*` variables set in Vercel, then redeployed
-- [ ] Custom domain added in Vercel and DNS switched at GoDaddy
-- [ ] HTTPS verified on apex and `www`
-- [ ] Vercel plan upgraded to Pro before ads/purchases (Hobby forbids commercial use)
+- [x] Schema, RLS and seed migrations applied
+- [x] Custom domain served over HTTPS with a valid certificate
+- [x] Play-route health check scheduled
+- [ ] Owner role granted after the first signed-in account
+- [ ] Desktop installers rebuilt with the arcade client

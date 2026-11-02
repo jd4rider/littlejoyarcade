@@ -1,9 +1,0 @@
-name = "littlejoyarcade"
-pages_build_output_dir = "./dist"
-compatibility_date = "2026-11-01"
-
-# Cloudflare Pages settings for the portal. The build is a plain static Vite
-# bundle, so no Functions are required and static requests are unmetered.
-#
-# Deploy locally:  npx wrangler pages deploy dist --project-name=littlejoyarcade
-# CI:              .github/workflows/cloudflare.yml (skips until a token exists)

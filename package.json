@@ -2,7 +2,7 @@
   "name": "littlejoyarcade",
   "private": true,
   "version": "0.1.0",
-  "description": "Little Joy Arcade — a small, polished home for casual browser and desktop games.",
+  "description": "Little Joy Arcade \u2014 a small, polished home for casual browser and desktop games.",
   "type": "module",
   "engines": {
     "node": ">=20.19"
@@ -22,8 +22,7 @@
     "sync:releases": "node scripts/sync-releases.mjs",
     "seed:catalog": "node scripts/seed-catalog.mjs",
     "publish:game": "node scripts/publish-game.mjs",
-    "subdomain:register": "node scripts/register-subdomain.mjs",
-    "deploy:vercel": "npx vercel --prod"
+    "subdomain:register": "node scripts/register-subdomain.mjs"
   },
   "dependencies": {
     "@littlejoyarcade/sdk": "*",

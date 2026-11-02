@@ -20,9 +20,7 @@ tooling that lets the collection grow without rebuilding the platform each time.
 | `packages/sdk/` | `@littlejoyarcade/sdk` — auth, progress, achievements, entitlements, analytics, adapters |
 | `supabase/migrations/` | PostgreSQL schema, row level security and seed data |
 | `*.md` at the root | Architecture, inventory, database, deployment, DNS, SDK, monetization, security, roadmap |
-| `.github/workflows/` | CI (typecheck, lint, tests, build) and Pages preview deployment |
-| `vercel.json` | Vercel build settings, caching and security headers |
-| `wrangler.toml` | Cloudflare Pages project configuration |
+| `.github/workflows/` | CI (typecheck, lint, tests, build), the Pages deploy and the nightly play-route probe |
 
 Game repositories stay independent. The portal links to each game's existing deployment, so a new game
 version ships from its own repo without touching this one.
@@ -42,9 +40,9 @@ Node 20.19+ or 22+ is required by Vite 8 in the game repos; this repo pins Vite 
 
 ## Backend (optional)
 
-Vercel hosts the app; the database and login live in Supabase. Guest play and local saves work with no backend.
-Accounts, cloud saves, achievements, entitlements and the admin area activate when these public build variables
-exist (Vercel → Settings → Environment Variables, then redeploy):
+GitHub Pages hosts the app; the database and login live in Supabase. Guest play and local saves work with no
+backend. Accounts, cloud saves, achievements, entitlements and the admin area activate when these public build
+variables exist as repository variables (`gh variable set`), which the Pages workflow passes to the build:
 
 ```bash
 VITE_SUPABASE_URL=https://<project>.supabase.co
@@ -53,32 +51,31 @@ VITE_SUPABASE_ANON_KEY=<anon key>
 
 Never put a service-role key in this project. See `DEPLOYMENT.md` and `SECURITY.md`.
 
-## Make it a full app (Vercel + Supabase)
+## Make it a full app (Pages + Supabase)
 
-Vercel hosts the app; Supabase provides the database and login. `vercel.json` already configures the build, so
-importing the repository is enough:
+GitHub Pages hosts the app; Supabase provides the database and login. `pages.yml` is the only deploy path:
 
-1. **Import** the repo at <https://vercel.com/new> (framework and output are detected).
-2. **Create the database:** add Supabase from Vercel's Marketplace, or create a free project at supabase.com.
-3. **Apply the schema:** `npx supabase link --project-ref <ref> && npx supabase db push`.
-4. **Set env vars** in Vercel → Settings → Environment Variables for Production and Preview:
-   `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — then redeploy.
-5. **Connect the domain:** already attached in Vercel; replace the GoDaddy parking records with the two A
-   records in `DNS_CONFIGURATION.md` and Vercel issues the certificate.
+1. **Apply the schema:** `npx supabase link --project-ref <ref> && npx supabase db push`.
+2. **Set the build variables:** `gh variable set VITE_SUPABASE_URL --body '<url>'` and
+   `gh variable set VITE_SUPABASE_ANON_KEY --body '<anon key>'`.
+3. **Deploy:** push to `main`; the Pages workflow builds with those variables and publishes.
+4. **Grant yourself admin:** `update public.profiles set role = 'admin' where id = '<auth uid>';`.
 
 Full runbook: `DEPLOYMENT.md`. DNS records and verification: `DNS_CONFIGURATION.md`.
 
 ## Where a game lives
 
-Every game is its own GitHub Pages project site. Its repo publishes the playable build to `/play/`, its
-subdomain CNAMEs to `jd4rider.github.io`, and the repo's Pages custom domain is set to that subdomain. So
-`https://jewel-match.littlejoyarcade.site/play/` and `jd4rider.github.io/jewel-match/play/` are the same files,
-with GitHub redirecting the second form to the first. `docs/SDK.md` has the full publishing contract.
+Every game is its own GitHub Pages project site. Its repo publishes the playable build to `/play/`, which is
+public at `https://jd4rider.github.io/<game>/play/`. A Pages site has one canonical hostname, so a game repo must
+not set a custom domain or ship `public/CNAME` — that would 301 the `github.io` URL to a hostname whose
+certificate GitHub has not issued, and the embedded player would fail. The play page still prefers
+`https://<game>.littlejoyarcade.site/play/` and silently falls back to `github.io` when that host is unreachable.
+`docs/SDK.md` has the full publishing contract.
 
 ## Routing
 
-The portal uses hash routes (`/#/game/pipe-dreams`) so it works identically on GitHub Pages, Cloudflare Pages
-and inside Electron without rewrite rules. Game pages themselves are served from each game's own origin.
+The portal uses hash routes (`/#/game/pipe-dreams`) so it works identically on the Pages project path, the
+custom domain and inside Electron without rewrite rules. Game pages themselves are served from each game's own origin.
 
 ## Status
 

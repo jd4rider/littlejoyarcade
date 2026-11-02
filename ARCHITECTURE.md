@@ -30,9 +30,8 @@ one monorepo build.
 ## Front end
 
 - React 19, TypeScript (strict), Vite 6, Tailwind CSS 4 via `@tailwindcss/vite`.
-- Hash routing (`HashRouter`) so deep links survive on GitHub Pages, Cloudflare Pages and Electron without
-  server rewrites. If the project later moves to a host with SPA fallback, switching to `BrowserRouter` is a
-  one-line change plus a `_redirects` file.
+- Hash routing (`HashRouter`) so deep links survive on the GitHub Pages project path and inside Electron without
+  server rewrites.
 - `base: './'` keeps asset URLs portable across a project path (`/littlejoyarcade/`), a custom domain root,
   and `file://` inside a future Electron shell.
 - No global state library. Auth lives in a context, activity in local storage, everything else is derived.
@@ -89,26 +88,25 @@ offline are queued under `lja:<game>:pending` and flushed by `progress.sync()`.
 
 ## Hosting architecture
 
-Production target chosen by the owner: **Vercel** for the frontend, with **Supabase** for Postgres, auth and row
-level security. Vercel serves the static Vite bundle and gives production plus preview deployments from Git;
-Supabase is the actual backend, since Vercel does not host databases.
+**GitHub Pages for every frontend, Supabase for the backend.** The portal is a Pages project site on
+`littlejoyarcade.site`; each game is its own Pages project site at `jd4rider.github.io/<game>/play/`. One workflow
+(`pages.yml`) publishes the portal, and each game repo publishes itself, so there is a single deployment path and
+no second copy can drift. Firebase, Netlify, Cloudflare Pages and Vercel are no longer configured.
 
-Vercel's Hobby plan is for personal, non-commercial projects only. That is fine while accounts are being built
-out, but an ad-supported or paid arcade needs Vercel Pro (~$20/user/month) before monetization. Cloudflare Pages
-(free, commercial use allowed) is the fallback if Pro is not wanted; the build is host-agnostic either way.
-
-Current deployment: GitHub Pages project site, because it is the only hosting credential available in this
-environment. It remains the working preview while the Vercel project is created. Details: `DEPLOYMENT.md`;
-DNS: `DNS_CONFIGURATION.md`.
+A Pages site exposes exactly one canonical hostname. Setting a custom domain on a game repo redirects `github.io`
+to that host, which is why the game repos carry no `public/CNAME`: the subdomain certificates were never issued
+and the redirect broke the embedded player. The play page still probes
+`https://<game>.littlejoyarcade.site/play/` first and falls back to the `github.io` build. Details:
+`DEPLOYMENT.md`; DNS: `DNS_CONFIGURATION.md`.
 
 ## Dependency map
 
 | Component | Depends on | Blocks |
 | --- | --- | --- |
 | Portal | nothing at runtime | — |
-| Vercel project | GitHub repo import | production URL, domain cutover |
+| Pages deploy | repository, `public/CNAME`, GoDaddy A records | production URL |
 | Accounts | Supabase project + build-time env vars | cloud saves, entitlements, admin |
 | Cloud saves | SDK wired into each game | cross-device progress |
 | Storefront | Stripe (or similar) + webhook endpoint | purchases |
 | Ads | AdSense approval + ad unit IDs + consent | ad revenue |
-| Subdomains | DNS access at GoDaddy or a nameserver move to Cloudflare | branded game URLs |
+| Subdomains | GitHub-issued TLS certificate per host | branded game URLs |
