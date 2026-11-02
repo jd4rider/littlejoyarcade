@@ -1,6 +1,8 @@
 // The catalogue is data, not markup: one entry per real, deployed game.
 // Every URL here was checked against the live site or GitHub release.
 
+import releaseData from './releases.json'
+
 export type Category =
   | 'Puzzle'
   | 'Relaxing'
@@ -502,6 +504,25 @@ export const GAMES: Game[] = [
     saveKey: 'blocked-in-save-v1',
   },
 ]
+
+// Versions, dates and download links are generated from each repository's
+// latest GitHub release by scripts/sync-releases.mjs. Descriptions, categories
+// and copy above stay hand-written.
+interface ReleaseInfo {
+  version: string
+  updated: string
+  downloads: DownloadLink[]
+}
+
+const RELEASES = releaseData as Record<string, ReleaseInfo | undefined>
+
+for (const game of GAMES) {
+  const release = RELEASES[game.id]
+  if (!release) continue
+  game.version = release.version
+  game.updated = release.updated
+  game.downloads = release.downloads
+}
 
 export const CATEGORIES: Category[] = [
   'Puzzle',

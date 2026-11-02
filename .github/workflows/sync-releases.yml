@@ -1,0 +1,43 @@
+name: Sync game releases
+
+# Keeps the catalogue's versions, dates and download links in step with the
+# latest GitHub release of every game. The resulting commit triggers CI and the
+# Pages deploy, so a published release reaches littlejoyarcade.site on its own.
+
+on:
+  schedule:
+    - cron: '15 */6 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [game-release]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-releases
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Refresh catalogue from GitHub releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/sync-releases.mjs
+      - name: Commit and push when something changed
+        run: |
+          if git diff --quiet -- src/data/releases.json; then
+            echo "Catalogue already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/releases.json
+          git commit -m "chore: sync game releases"
+          git push

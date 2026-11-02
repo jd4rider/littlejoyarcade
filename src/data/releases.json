@@ -1,0 +1,233 @@
+{
+  "bubblewrap": {
+    "version": "0.2.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/bubble-wrap/releases/download/v0.2.1/Bubble-Wrap-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/bubble-wrap/releases/download/v0.2.1/Bubble-Wrap-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/bubble-wrap/releases/download/v0.2.1/Bubble-Wrap-win-setup.exe"
+      }
+    ]
+  },
+  "pipe-dreams": {
+    "version": "0.2.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/pipe-dreams/releases/download/v0.2.1/Pipe-Dreams-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/pipe-dreams/releases/download/v0.2.1/Pipe-Dreams-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/pipe-dreams/releases/download/v0.2.1/Pipe-Dreams-win-setup.exe"
+      }
+    ]
+  },
+  "jewel-match": {
+    "version": "0.3.2",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/jewel-match/releases/download/v0.3.2/Jewel-Match-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/jewel-match/releases/download/v0.3.2/Jewel-Match-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/jewel-match/releases/download/v0.3.2/Jewel-Match-win-setup.exe"
+      }
+    ]
+  },
+  "pixel-stitch": {
+    "version": "0.1.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/pixel-stitch/releases/download/v0.1.1/Pixel-Stitch-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/pixel-stitch/releases/download/v0.1.1/Pixel-Stitch-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/pixel-stitch/releases/download/v0.1.1/Pixel-Stitch-win-setup.exe"
+      }
+    ]
+  },
+  "sand-sort-studio": {
+    "version": "0.1.2",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/sand-sort-studio/releases/download/v0.1.2/Sand-Sort-Studio-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/sand-sort-studio/releases/download/v0.1.2/Sand-Sort-Studio-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/sand-sort-studio/releases/download/v0.1.2/Sand-Sort-Studio-win-setup.exe"
+      }
+    ]
+  },
+  "lighthouse-keeper": {
+    "version": "0.1.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/lighthouse-keeper/releases/download/v0.1.1/Lighthouse-Keeper-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/lighthouse-keeper/releases/download/v0.1.1/Lighthouse-Keeper-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/lighthouse-keeper/releases/download/v0.1.1/Lighthouse-Keeper-win-setup.exe"
+      }
+    ]
+  },
+  "laser-logic": {
+    "version": "0.1.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/laser-logic/releases/download/v0.1.1/Laser-Logic-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/laser-logic/releases/download/v0.1.1/Laser-Logic-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/laser-logic/releases/download/v0.1.1/Laser-Logic-win-setup.exe"
+      }
+    ]
+  },
+  "circuit-crafter": {
+    "version": "0.1.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/circuit-crafter/releases/download/v0.1.1/Circuit-Crafter-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/circuit-crafter/releases/download/v0.1.1/Circuit-Crafter-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/circuit-crafter/releases/download/v0.1.1/Circuit-Crafter-win-setup.exe"
+      }
+    ]
+  },
+  "rumble-rally": {
+    "version": "0.1.3",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/rumble-rally/releases/download/v0.1.3/Rumble-Rally-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/rumble-rally/releases/download/v0.1.3/Rumble-Rally-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/rumble-rally/releases/download/v0.1.3/Rumble-Rally-win-setup.exe"
+      }
+    ]
+  },
+  "whisker-grid": {
+    "version": "0.2.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/whisker-grid/releases/download/v0.2.1/Whisker-Grid-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/whisker-grid/releases/download/v0.2.1/Whisker-Grid-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/whisker-grid/releases/download/v0.2.1/Whisker-Grid-win-setup.exe"
+      }
+    ]
+  },
+  "blocked-in": {
+    "version": "0.1.0",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/blocked-in/releases/download/v0.1.0/Blocked-In-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/blocked-in/releases/download/v0.1.0/Blocked-In-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/blocked-in/releases/download/v0.1.0/Blocked-In-win-setup.exe"
+      }
+    ]
+  }
+}

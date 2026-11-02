@@ -19,6 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "create:game": "node tools/create-game.mjs",
+    "sync:releases": "node scripts/sync-releases.mjs",
     "deploy:vercel": "npx vercel --prod"
   },
   "dependencies": {

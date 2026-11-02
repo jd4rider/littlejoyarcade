@@ -170,6 +170,22 @@ nothing.
    a valid certificate.
 6. Disable the GitHub Pages workflow once Vercel is confirmed.
 
+## Keeping the catalogue current
+
+Game versions, dates and download links are **not edited by hand**. `.github/workflows/sync-releases.yml` runs
+`scripts/sync-releases.mjs` every six hours (and on `workflow_dispatch` or a `game-release` repository dispatch).
+It reads the latest published GitHub release for every repository referenced by `repoUrl` in
+`src/data/games.ts` and regenerates `src/data/releases.json` (version, date and download links). The catalogue
+merges that file at load time, so hand-written copy is never touched. A change is committed as
+`chore: sync game releases`, which triggers CI and the Pages deploy on its own.
+
+```bash
+GITHUB_TOKEN=$(gh auth token) npm run sync:releases   # local check, idempotent
+```
+
+A game only needs a published, non-draft release with the standard asset names
+(`-mac-arm64.dmg`, `-mac-x64.dmg`, `-win-setup.exe`, `-linux-x86_64.AppImage`) to appear automatically.
+
 ## Per-game deployment
 
 Each game keeps its own repository and pipeline:
