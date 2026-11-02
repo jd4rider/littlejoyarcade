@@ -110,7 +110,12 @@ export const GAMES: Game[] = [
     siteUrl: 'https://jd4rider.github.io/pipe-dreams/',
     repoUrl: repo('pipe-dreams'),
     releasesUrl: `${repo('pipe-dreams')}/releases`,
-    downloads: [],
+    downloads: [
+      { label: 'macOS (Apple Silicon)', platform: 'macOS', url: 'https://github.com/jd4rider/pipe-dreams/releases/download/v0.2.1/Pipe-Dreams-mac-arm64.dmg' },
+      { label: 'macOS (Intel)', platform: 'macOS', url: 'https://github.com/jd4rider/pipe-dreams/releases/download/v0.2.1/Pipe-Dreams-mac-x64.dmg' },
+      { label: 'Windows installer', platform: 'Windows', url: 'https://github.com/jd4rider/pipe-dreams/releases/download/v0.2.1/Pipe-Dreams-win-setup.exe' },
+      { label: 'Linux AppImage', platform: 'Linux', url: 'https://github.com/jd4rider/pipe-dreams/releases/download/v0.2.1/Pipe-Dreams-linux-x86_64.AppImage' },
+    ],
     cover: { from: '#0ea5e9', to: '#0c4a6e', emoji: '🔧' },
     highlights: [
       '60 levels across five worlds, plus a 90-second Rush mode',
@@ -142,7 +147,12 @@ export const GAMES: Game[] = [
     siteUrl: 'https://jd4rider.github.io/jewel-match/',
     repoUrl: repo('jewel-match'),
     releasesUrl: `${repo('jewel-match')}/releases`,
-    downloads: [],
+    downloads: [
+      { label: 'macOS (Apple Silicon)', platform: 'macOS', url: 'https://github.com/jd4rider/jewel-match/releases/download/v0.3.2/Jewel-Match-mac-arm64.dmg' },
+      { label: 'macOS (Intel)', platform: 'macOS', url: 'https://github.com/jd4rider/jewel-match/releases/download/v0.3.2/Jewel-Match-mac-x64.dmg' },
+      { label: 'Windows installer', platform: 'Windows', url: 'https://github.com/jd4rider/jewel-match/releases/download/v0.3.2/Jewel-Match-win-setup.exe' },
+      { label: 'Linux AppImage', platform: 'Linux', url: 'https://github.com/jd4rider/jewel-match/releases/download/v0.3.2/Jewel-Match-linux-x86_64.AppImage' },
+    ],
     cover: { from: '#a855f7', to: '#4c1d95', emoji: '💎' },
     highlights: [
       'Four modes: Journey, Classic, Timed Blitz and Zen',
@@ -225,7 +235,12 @@ export const GAMES: Game[] = [
     siteUrl: 'https://jd4rider.github.io/sand-sort-studio/',
     repoUrl: repo('sand-sort-studio'),
     releasesUrl: `${repo('sand-sort-studio')}/releases`,
-    downloads: [],
+    downloads: [
+      { label: 'macOS (Apple Silicon)', platform: 'macOS', url: 'https://github.com/jd4rider/sand-sort-studio/releases/download/v0.1.2/Sand-Sort-Studio-mac-arm64.dmg' },
+      { label: 'macOS (Intel)', platform: 'macOS', url: 'https://github.com/jd4rider/sand-sort-studio/releases/download/v0.1.2/Sand-Sort-Studio-mac-x64.dmg' },
+      { label: 'Windows installer', platform: 'Windows', url: 'https://github.com/jd4rider/sand-sort-studio/releases/download/v0.1.2/Sand-Sort-Studio-win-setup.exe' },
+      { label: 'Linux AppImage', platform: 'Linux', url: 'https://github.com/jd4rider/sand-sort-studio/releases/download/v0.1.2/Sand-Sort-Studio-linux-x86_64.AppImage' },
+    ],
     cover: { from: '#fbbf24', to: '#b45309', emoji: '🏖️' },
     highlights: [
       '60 levels across five worlds, plus a 120-second Rush mode',
@@ -308,7 +323,12 @@ export const GAMES: Game[] = [
     siteUrl: 'https://jd4rider.github.io/laser-logic/',
     repoUrl: repo('laser-logic'),
     releasesUrl: `${repo('laser-logic')}/releases`,
-    downloads: [],
+    downloads: [
+      { label: 'macOS (Apple Silicon)', platform: 'macOS', url: 'https://github.com/jd4rider/laser-logic/releases/download/v0.1.1/Laser-Logic-mac-arm64.dmg' },
+      { label: 'macOS (Intel)', platform: 'macOS', url: 'https://github.com/jd4rider/laser-logic/releases/download/v0.1.1/Laser-Logic-mac-x64.dmg' },
+      { label: 'Windows installer', platform: 'Windows', url: 'https://github.com/jd4rider/laser-logic/releases/download/v0.1.1/Laser-Logic-win-setup.exe' },
+      { label: 'Linux AppImage', platform: 'Linux', url: 'https://github.com/jd4rider/laser-logic/releases/download/v0.1.1/Laser-Logic-linux-x86_64.AppImage' },
+    ],
     cover: { from: '#f43f5e', to: '#7f1d1d', emoji: '🔴' },
     highlights: [
       'Splitters send a beam two ways; prisms break white light into red, green and blue',
@@ -391,7 +411,12 @@ export const GAMES: Game[] = [
     siteUrl: 'https://jd4rider.github.io/rumble-rally/',
     repoUrl: repo('rumble-rally'),
     releasesUrl: `${repo('rumble-rally')}/releases`,
-    downloads: [],
+    downloads: [
+      { label: 'macOS (Apple Silicon)', platform: 'macOS', url: 'https://github.com/jd4rider/rumble-rally/releases/download/v0.1.3/Rumble-Rally-mac-arm64.dmg' },
+      { label: 'macOS (Intel)', platform: 'macOS', url: 'https://github.com/jd4rider/rumble-rally/releases/download/v0.1.3/Rumble-Rally-mac-x64.dmg' },
+      { label: 'Windows installer', platform: 'Windows', url: 'https://github.com/jd4rider/rumble-rally/releases/download/v0.1.3/Rumble-Rally-win-setup.exe' },
+      { label: 'Linux AppImage', platform: 'Linux', url: 'https://github.com/jd4rider/rumble-rally/releases/download/v0.1.3/Rumble-Rally-linux-x86_64.AppImage' },
+    ],
     cover: { from: '#fb923c', to: '#7c2d12', emoji: '🚗' },
     highlights: [
       '200 procedurally generated courses across five worlds',
@@ -423,7 +448,12 @@ export const GAMES: Game[] = [
     siteUrl: 'https://jd4rider.github.io/whisker-grid/',
     repoUrl: repo('whisker-grid'),
     releasesUrl: `${repo('whisker-grid')}/releases`,
-    downloads: [],
+    downloads: [
+      { label: 'macOS (Apple Silicon)', platform: 'macOS', url: 'https://github.com/jd4rider/whisker-grid/releases/download/v0.2.1/Whisker-Grid-mac-arm64.dmg' },
+      { label: 'macOS (Intel)', platform: 'macOS', url: 'https://github.com/jd4rider/whisker-grid/releases/download/v0.2.1/Whisker-Grid-mac-x64.dmg' },
+      { label: 'Windows installer', platform: 'Windows', url: 'https://github.com/jd4rider/whisker-grid/releases/download/v0.2.1/Whisker-Grid-win-setup.exe' },
+      { label: 'Linux AppImage', platform: 'Linux', url: 'https://github.com/jd4rider/whisker-grid/releases/download/v0.2.1/Whisker-Grid-linux-x86_64.AppImage' },
+    ],
     cover: { from: '#f9a8d4', to: '#9d174d', emoji: '🐱' },
     highlights: [
       '1000 seeded Journey levels, from 4 colours to 9',
