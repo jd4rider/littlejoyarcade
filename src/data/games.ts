@@ -720,6 +720,39 @@ export const GAMES: Game[] = [
     levels: '200 puzzles \u00b7 5 worlds + daily, zen and free play',
     saveKey: 'prism-party-save-v1',
   },
+  {
+    id: 'bus-jam-bonanza',
+    name: 'Bus Jam Bonanza',
+    tagline: 'Thread the traffic. Fill the buses. Clear the queue.',
+    description:
+      'A 2.5D bus-dispatch puzzle. Tap a parked bus, steer it through the traffic to one of a few boarding bays, and let colour-matched passengers board from a strictly ordered queue. Full buses leave automatically; the wrong dispatch order can fill every bay with the wrong colours, so reading the queue is the puzzle. All 300 Journey levels across ten worlds were built from a working dispatch order and re-solved by a BFS solver before shipping, so every level has a fair solution. One-way lanes, traffic gates, limited bays and deliberately parked decoys keep later worlds honest.',
+    categories: ['Puzzle', 'Logic', 'Strategy', 'Casual'],
+    runtime: 'Phaser 3',
+    version: '1.0.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/bus-jam-bonanza/play/',
+    siteUrl: 'https://jd4rider.github.io/bus-jam-bonanza/',
+    repoUrl: repo('bus-jam-bonanza'),
+    releasesUrl: `${repo('bus-jam-bonanza')}/releases`,
+    downloads: [],
+    cover: { from: '#fbbf24', to: '#b45309', emoji: '\u{1F68C}' },
+    highlights: [
+      '300 Journey levels across ten themed worlds, every one re-solved by the shipped engine',
+      'Swept-footprint routing, one-way lanes, traffic gates and limited boarding bays',
+      'Strict front-of-queue boarding with colour and symbol coding on every bus and passenger',
+      'Solver-backed three-stage hints, undo, redo, restart and par-based star ratings',
+      'Journey, Zen, Daily, Expert, Endless and Free Play with offline-first saves',
+    ],
+    howToPlay: [
+      'Tap a bus to dispatch it to a free boarding bay.',
+      'Passengers board only a matching-colour bus, and only from the front of the queue.',
+      'Fill a bus to capacity and it leaves, freeing the bay for the next dispatch.',
+      'Clear every passenger. If the lot jams, undo or restart and try a different order.',
+    ],
+    levels: '300 levels \u00b7 10 worlds + daily, zen, expert and endless',
+    saveKey: 'bus-jam-bonanza-save-v1',
+  },
 ]
 
 // Versions, dates and download links are generated from each repository's
