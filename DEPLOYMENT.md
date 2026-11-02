@@ -4,21 +4,50 @@
 
 | Option | Commercial use | Cost | Verdict |
 | --- | --- | --- | --- |
-| **Vercel — Hobby** | Personal, non-commercial projects only | $0 | Fine to get login + database working now; **not** for an ad-supported or paid arcade |
-| **Vercel — Pro** | Permitted | ~$20/user/month | Required before ads or purchases go live |
-| Cloudflare Pages | Allowed on free tier | $0 | Good fallback if Vercel Pro is not wanted |
-| GitHub Pages | Discouraged for business sites | $0 | Current preview only |
+| **Cloudflare Pages** | Allowed on free tier | $0 — 500 builds/month, 20k files, unmetered static requests | **Chosen.** Best free tier for this project |
+| Vercel — Hobby | Personal, non-commercial only | $0 | Keep as a preview mirror; not for a monetized arcade |
+| Vercel — Pro | Permitted | ~$20/user/month | Only if Vercel-specific features are needed |
+| Netlify — Free | Allowed | $0; 100 GB bandwidth, 300 build min/month | Best fallback if DNS stays at GoDaddy (apex A record) |
+| Firebase Hosting — Spark | Allowed | $0; 10 GB storage, 360 MB/day transfer | Works, but the transfer cap is tighter |
+| Azure Static Web Apps — Free | Allowed | $0; 100 GB/month | Workable, more setup friction |
+| GitHub Pages | Discouraged for business sites | $0 | Preview only |
 
-The owner chose Vercel. The portal is a static Vite build, so Vercel is a drop-in host, and its Git integration
-gives automatic production and preview deployments from this repository.
+Both Cloudflare Pages and Vercel are deployed. **Cloudflare is the intended production host** because its free
+tier explicitly allows commercial use with unmetered static requests. Vercel Hobby stays as a preview mirror.
+
+### Cloudflare Pages (free, chosen)
+
+Project `littlejoyarcade` is created and deployed: <https://littlejoyarcade.pages.dev>. `wrangler.toml` holds the
+project config; the build is pure static assets, so no Functions are needed and requests are unmetered.
+
+```bash
+npm run build
+npx wrangler pages deploy dist --project-name=littlejoyarcade --branch=main
+```
+
+CI: `.github/workflows/cloudflare.yml` builds and tests on every push, then deploys when
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` exist as repository secrets. Without them it logs a notice and
+skips, so CI stays green.
+
+- Account ID: `47edcbac4d4a89c5a63567c612a423c1`
+- Token: Cloudflare → My Profile → API Tokens → **Cloudflare Pages: Edit**
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN --body '<token>'
+gh secret set CLOUDFLARE_ACCOUNT_ID --body '47edcbac4d4a89c5a63567c612a423c1'
+```
+
+Custom domain: Workers & Pages → `littlejoyarcade` → Custom domains. The apex needs the zone on Cloudflare
+(CNAME flattening), which means moving nameservers — see `DNS_CONFIGURATION.md` for both paths.
 
 **Important:** Vercel does **not** host a database. "Login and a database on the backend" means Vercel hosts the
 app while **Supabase** provides Postgres, auth and row level security. The schema in `supabase/migrations/` is
 written for exactly that split.
 
-Current state (2 November 2026): deployed to Vercel at <https://littlejoyarcade.vercel.app> and verified. The
-production domain `littlejoyarcade.site` (and `www`) is attached to the project `littlejoyarcade`, but DNS still
-points at GoDaddy's parking page, so the custom domain does not serve the site yet. The GitHub Pages preview at
+Current state (2 November 2026): the portal is live on both Cloudflare Pages
+(<https://littlejoyarcade.pages.dev>) and Vercel (<https://littlejoyarcade.vercel.app>), verified with a real
+browser render. The production domain is attached in Vercel but DNS still points at GoDaddy's parking page, so
+neither custom domain serves the site yet. The GitHub Pages preview at
 <https://jd4rider.github.io/littlejoyarcade/> stays up until the cutover.
 
 Auto-deploy on push is **not** connected yet: `vercel git connect` failed because the Vercel GitHub App does not

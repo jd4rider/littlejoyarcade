@@ -89,12 +89,26 @@ the apex, and a valid certificate on both. `vercel domains verify littlejoyarcad
 "not configured properly" to verified. DNS caches can hold the old parking IPs for up to the previous TTL; test with
 `dig @1.1.1.1` before assuming a propagation problem.
 
+## Option C — Cloudflare Pages (chosen host)
+
+Cloudflare Pages can serve the custom domain in two ways:
+
+**1. Zone on Cloudflare (recommended).** Move the domain's nameservers to Cloudflare (free plan), then add
+`littlejoyarcade.site` and `www.littlejoyarcade.site` under Workers & Pages → `littlejoyarcade` → Custom domains.
+Cloudflare creates the proxied records and the certificate itself. This also gives API access to DNS, so all
+game subdomains can be managed in one place.
+
+**2. DNS stays at GoDaddy.** Add `CNAME www → littlejoyarcade.pages.dev`. The apex cannot use a CNAME at GoDaddy,
+so the apex would need GoDaddy forwarding to `www` (works, but weaker for SEO and certificates). If keeping
+GoDaddy DNS matters more than using Cloudflare, Netlify is the smoother free host because it provides an apex A
+record — the app itself is host-agnostic.
+
 ## Optional: moving nameservers to Cloudflare
 
-Not required for Vercel. Only worth it if you also want Cloudflare's CDN/WAF. It is a disruptive, approval-required
-change: add the zone, review the imported records (especially MX/TXT), then replace `ns19/ns20.domaincontrol.com`
-at GoDaddy with the Cloudflare pair. With Cloudflare DNS, keep Vercel's records DNS-only (grey cloud) or use
-Cloudflare's Vercel integration; proxying without it can break certificate validation.
+This is what makes a free, commercial-use Cloudflare Pages deployment on the apex possible, and it also gives
+the project programmatic DNS access. It is a disruptive, approval-required change: add the zone, review the
+imported records (especially MX/TXT), then replace `ns19/ns20.domaincontrol.com` at GoDaddy with the Cloudflare
+pair. Existing MX/TXT records must be recreated exactly in Cloudflare before the switch.
 
 ## Rollback
 

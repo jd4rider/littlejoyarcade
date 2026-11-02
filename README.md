@@ -3,9 +3,9 @@
 A small, polished home for hand-made casual games — plus the shared SDK, database schema and deployment
 tooling that lets the collection grow without rebuilding the platform each time.
 
-- **Vercel deployment (live now):** <https://littlejoyarcade.vercel.app>
-- **Production domain:** <https://littlejoyarcade.site> — attached in Vercel, DNS cutover pending (see `DNS_CONFIGURATION.md`)
-- **Preview mirror:** <https://jd4rider.github.io/littlejoyarcade/>
+- **Production host (free, commercial-use):** <https://littlejoyarcade.pages.dev> — Cloudflare Pages project `littlejoyarcade`
+- **Production domain:** <https://littlejoyarcade.site> — DNS cutover pending (see `DNS_CONFIGURATION.md`)
+- **Mirrors:** <https://littlejoyarcade.vercel.app> and <https://jd4rider.github.io/littlejoyarcade/>
 - **Games in the catalogue:** 8 (Bubble Wrap, Pipe Dreams, Jewel Match, Pixel Stitch, Sand Sort Studio,
   Lighthouse Keeper, Laser Logic, Circuit Crafter)
 
@@ -19,6 +19,7 @@ tooling that lets the collection grow without rebuilding the platform each time.
 | `*.md` at the root | Architecture, inventory, database, deployment, DNS, SDK, monetization, security, roadmap |
 | `.github/workflows/` | CI (typecheck, lint, tests, build) and Pages preview deployment |
 | `vercel.json` | Vercel build settings, caching and security headers |
+| `wrangler.toml` | Cloudflare Pages project configuration |
 
 Game repositories stay independent. The portal links to each game's existing deployment, so a new game
 version ships from its own repo without touching this one.
