@@ -51,11 +51,10 @@ export function useArcadeProgress<T extends Json>(initial: T, delay = 250) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    setStatus(arcade.progress.status())
     return () => {
       if (timer.current) clearTimeout(timer.current)
     }
-  }, [arcade])
+  }, [])
 
   const persist = useCallback(
     (next: T) => {

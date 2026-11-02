@@ -20,18 +20,7 @@ function relative(ts: number): string {
 export default function Dashboard() {
   const { user, displayName, configured, signOut, saveDisplayName, loading } = useAuth()
   const [activity, setActivity] = useState(readActivity)
-  const [name, setName] = useState(displayName)
   const [message, setMessage] = useState<string | null>(null)
-  const [unlocked, setUnlocked] = useState<string[]>(() => arcade.achievements.list())
-
-  useEffect(() => {
-    setActivity(readActivity())
-    setUnlocked(arcade.achievements.list())
-  }, [user])
-
-  useEffect(() => {
-    setName(displayName)
-  }, [displayName])
 
   const stats = useMemo(() => {
     const launches = activity.length
@@ -40,15 +29,14 @@ export default function Dashboard() {
     return { launches, distinctGames, distinctDays, gamesCompleted: 0 }
   }, [activity])
 
+  // Unlocking is a side effect on external storage; the badges themselves are
+  // derived from the same stats, so no extra state is needed.
   useEffect(() => {
-    let changed = false
     for (const rule of ARCADE_ACHIEVEMENTS) {
       if (rule.progress(stats) >= rule.target && !arcade.achievements.has(rule.id)) {
         void arcade.achievements.unlock(rule.id)
-        changed = true
       }
     }
-    if (changed) setUnlocked(arcade.achievements.list())
   }, [stats])
 
   const recent = useMemo(() => {
@@ -61,7 +49,7 @@ export default function Dashboard() {
   }, [activity])
 
   const exportData = () => {
-    const dump: Record<string, unknown> = { exportedAt: new Date().toISOString(), guestName: name }
+    const dump: Record<string, unknown> = { exportedAt: new Date().toISOString(), displayName }
     try {
       for (const game of GAMES) {
         const raw = localStorage.getItem(game.saveKey)
@@ -109,13 +97,13 @@ export default function Dashboard() {
     }
     clearActivity()
     setActivity([])
-    setUnlocked([])
     setMessage('Local progress cleared. Cloud saves (if any) were not touched.')
   }
 
-  const onSaveName = async (event: React.FormEvent) => {
+  const onSaveName = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const { error } = await saveDisplayName(name)
+    const value = String(new FormData(event.currentTarget).get('displayName') ?? '')
+    const { error } = await saveDisplayName(value)
     setMessage(error ? `Could not save: ${error}` : 'Name saved.')
   }
 
@@ -198,14 +186,14 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-cream">Arcade achievements</h2>
               <span className="pill">
-                {ARCADE_ACHIEVEMENTS.filter((rule) => unlocked.includes(`arcade.${rule.id}`)).length}/
+                {ARCADE_ACHIEVEMENTS.filter((rule) => rule.progress(stats) >= rule.target).length}/
                 {ARCADE_ACHIEVEMENTS.length}
               </span>
             </div>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
               {ARCADE_ACHIEVEMENTS.map((rule) => {
                 const done = rule.progress(stats)
-                const earned = unlocked.includes(`arcade.${rule.id}`) || done >= rule.target
+                const earned = done >= rule.target
                 const percent = Math.min(100, Math.round((done / rule.target) * 100))
                 return (
                   <li
@@ -250,9 +238,10 @@ export default function Dashboard() {
                 Display name
               </label>
               <input
+                key={displayName}
                 id="display-name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
+                name="displayName"
+                defaultValue={displayName}
                 maxLength={32}
                 placeholder="Guest"
                 className="w-full rounded-xl border border-white/15 bg-ink-900/60 px-3 py-2 text-sm text-cream placeholder:text-white/30 focus:border-joy-amber/60 focus:outline-none"

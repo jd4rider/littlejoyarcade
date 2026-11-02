@@ -20,6 +20,8 @@ function Logo() {
   )
 }
 
+const YEAR = new Date().getFullYear()
+
 const navLink = ({ isActive }: { isActive: boolean }) =>
   `rounded-full px-3 py-1.5 text-sm font-medium transition ${
     isActive ? 'bg-white/12 text-cream' : 'text-white/60 hover:bg-white/5 hover:text-cream'
@@ -138,7 +140,7 @@ export default function Layout() {
           </div>
         </div>
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 border-t border-white/10 px-4 py-5 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>© {new Date().getFullYear()} Little Joy Arcade. Games made by hand, no dark patterns.</p>
+          <p>© {YEAR} Little Joy Arcade. Games made by hand, no dark patterns.</p>
           <p>
             Built with{' '}
             <a
