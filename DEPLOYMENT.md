@@ -4,17 +4,23 @@
 
 | Option | Commercial use | Cost | Verdict |
 | --- | --- | --- | --- |
-| **Netlify — Free** | Allowed | $0; 100 GB bandwidth, 300 build min/month | **Chosen.** Its apex A record works with GoDaddy DNS, so no nameserver change |
-| Cloudflare Pages | Allowed on free tier | $0 — 500 builds/month, 20k files, unmetered static requests | Deployed and kept as an alternative; apex needs Cloudflare DNS |
+| **GitHub Pages** | Discouraged for commercial sites | $0 | **Chosen for launch.** Zero-config, domain works via A records, no nameserver change |
+| Netlify — Free | Allowed | $0; 100 GB bandwidth, 300 build min/month | Site created but unused; adding the custom domain requires the dashboard |
+| Cloudflare Pages | Allowed on free tier | $0 — 500 builds/month, 20k files, unmetered static requests | Deployed as an alternative; apex needs Cloudflare DNS |
 | Vercel — Hobby | Personal, non-commercial only | $0 | Preview mirror; not for a monetized arcade |
 | Vercel — Pro | Permitted | ~$20/user/month | Only if Vercel-specific features are needed |
 | Firebase Hosting — Spark | Allowed | $0; 10 GB storage, 360 MB/day transfer | Works, but the transfer cap is tighter |
 | Azure Static Web Apps — Free | Allowed | $0; 100 GB/month | Workable, more setup friction |
 | GitHub Pages | Discouraged for business sites | $0 | Preview only |
 
-**Netlify is the intended production host**, chosen because it supports an apex `A` record: the domain can stay on
-GoDaddy's nameservers, which avoids a disruptive DNS migration. Cloudflare Pages stays deployed as an
-alternative, and Vercel as a preview mirror. All three free tiers permit commercial use except Vercel Hobby.
+**GitHub Pages is the launch host.** It needs no account setup beyond what already exists, works with GoDaddy's
+nameservers, and the portal was already deploying there. `public/CNAME` carries `littlejoyarcade.site`, and the
+Pages custom domain is set through the API. The trade-off is that GitHub's acceptable-use policy discourages
+using Pages as a business's primary host, so the site must move to Cloudflare Pages (or Netlify) before ads and
+purchases go live. The build is host-agnostic, so that move is a DNS + project change, not a rewrite.
+
+Netlify's site was created and deployed but its custom domain could only be added through the dashboard, so it
+stays as an unused spare. Cloudflare Pages and Vercel remain deployed alternatives.
 
 ### Netlify (free, chosen)
 

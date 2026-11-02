@@ -5,14 +5,26 @@
 | Record | Value |
 | --- | --- |
 | Nameservers | `ns19.domaincontrol.com`, `ns20.domaincontrol.com` (GoDaddy) |
-| `littlejoyarcade.site` A | `3.33.130.190`, `15.197.148.33` — GoDaddy parking page (HTTP 200, not our site) |
-| `www.littlejoyarcade.site` | parking IPs |
+| `littlejoyarcade.site` A | **GitHub Pages:** `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` |
+| `www.littlejoyarcade.site` | CNAME → `jd4rider.github.io` |
+| `_dmarc` TXT | preserved untouched |
+| `_domainconnect` CNAME | preserved untouched |
 | `bubblewrapgame.online` | GitHub Pages, custom domain + HTTPS working |
 
-The domain has been added to the Vercel project `littlejoyarcade` for both `littlejoyarcade.site` and
-`www.littlejoyarcade.site`, and Vercel reports project ownership as verified. No DNS records have been changed
-yet: GoDaddy API credentials were not available. The parking A records must be **replaced**, not added to, or
-the apex will keep resolving to GoDaddy's parked page.
+Nameservers stayed at GoDaddy. The parking records were replaced with GitHub Pages' four apex A records and a
+`www` CNAME, using the GoDaddy API with a bearer token; the parking A record was removed, not merely added to.
+A previous experiment pointed the apex at Netlify (`75.2.60.5`) but Netlify's API would not attach the custom
+domain without the dashboard, so it was reverted to GitHub Pages. `littlejoyarcade.site` is also attached to the
+Vercel project as a spare route.
+
+The portal ships `public/CNAME` containing `littlejoyarcade.site`, and the Pages custom domain is set with:
+
+```bash
+gh api -X PUT repos/jd4rider/littlejoyarcade/pages -f cname=littlejoyarcade.site
+```
+
+HTTPS is issued by GitHub after DNS resolves; `gh api repos/jd4rider/littlejoyarcade/pages` reports
+`https_certificate.state` as it provisions.
 
 Before editing, export the full record list from GoDaddy → DNS → Manage Zones (or the API) and confirm no MX,
 SPF, DKIM, DMARC or verification TXT records exist that must be preserved.
