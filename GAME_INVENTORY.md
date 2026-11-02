@@ -1,7 +1,7 @@
 # Game inventory
 
 Discovered by scanning the local development folder and the GitHub account, cross-checked against each
-game's `package.json`, README and live deployment. All eight games are Phaser except Bubble Wrap (React).
+game's `package.json`, README and live deployment. Ten games: nine Phaser, one React (Bubble Wrap).
 
 Inventory date: 2 November 2026.
 
@@ -17,6 +17,11 @@ Inventory date: 2 November 2026.
 | 6 | Lighthouse Keeper | `lighthouse-keeper/` | `jd4rider/lighthouse-keeper` | Phaser 4 | `jd4rider.github.io/lighthouse-keeper/play/` | macOS, Windows, Linux | 200 OK |
 | 7 | Laser Logic | `laser-logic/` | `jd4rider/laser-logic` | Phaser 4 | `jd4rider.github.io/laser-logic/play/` | buildable, no release | 200 OK |
 | 8 | Circuit Crafter | `circuit-crafter/` | `jd4rider/circuit-crafter` | Phaser 4 | `jd4rider.github.io/circuit-crafter/play/` | macOS, Windows, Linux | 200 OK |
+| 9 | Rumble Rally | `rumble-rally/` | `jd4rider/rumble-rally` | Phaser 4 | `jd4rider.github.io/rumble-rally/play/` | buildable, no release | 200 OK |
+| 10 | Whisker Grid | `whisker-grid/` | `jd4rider/whisker-grid` | Phaser 4 | `jd4rider.github.io/whisker-grid/play/` | buildable, no release | 200 OK |
+
+Every GitHub-Pages game also has a custom subdomain (`<repo>.littlejoyarcade.site`) configured through GoDaddy
+CNAMEs and GitHub Pages custom domains. See the certificate note at the end of this file.
 
 Not in the catalogue: `Bible/`, `Unreal_Udemy/`, `learning-godot/`, `godot-multiplayer/`, `3d-rpg/`,
 `iron-outpost-*`, `GamedevTV/`, `test/`, `TEST output/` — course projects, Godot/Unreal work and backups,
@@ -97,6 +102,31 @@ not casual browser games. They were left untouched.
 - **Working:** yes; levels are re-simulated in the test suite. **Monetization:** none.
 - **Desktop:** macOS/Windows/Linux builds attached to v0.1.0.
 - **Subdomain:** `circuitcrafter.littlejoyarcade.site`.
+
+### 9. Rumble Rally
+
+- **Description:** a physics driving puzzle. Roll over ramps, gaps and crates to the flag; the same controls
+drive on the ground and tilt in the air.
+- **Framework:** Phaser 4 + Vite + Electron. **Progress:** `localStorage` key `rumblerally-save-v1`.
+- **Content:** 200 seeded courses across five worlds, three stars each, keyboard and touch controls.
+- **Working:** yes. **Monetization:** none. **Downloads:** none published yet.
+- **Subdomain:** `rumble-rally.littlejoyarcade.site`.
+
+### 10. Whisker Grid
+
+- **Description:** a cat logic puzzle — exactly one cat per colour region, row and column, and no two cats may
+touch (diagonals count).
+- **Framework:** Phaser 4 + Vite + Electron. **Progress:** `localStorage` key `whiskergrid-save-v1`.
+- **Content:** 1000 seeded Journey levels (4–9 colours), Rush mode, Hint/Reveal/Mouse power-ups, drag marking.
+- **Working:** yes. **Monetization:** none. **Downloads:** none published yet.
+- **Subdomain:** `whisker-grid.littlejoyarcade.site`.
+
+## Subdomain status
+
+DNS CNAMEs and GitHub Pages custom domains are configured for all nine Pages-hosted games. GitHub serves the
+`*.github.io` certificate until it finishes issuing per-domain certificates, so HTTP works immediately and HTTPS
+works once GitHub completes provisioning (`https_enforced` is still false). Bubble Wrap keeps
+`bubblewrapgame.online`; GitHub Pages allows only one custom domain per site.
 
 ## What was preserved
 

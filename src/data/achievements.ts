@@ -1,4 +1,5 @@
-import type { Game } from '../data/games'
+import type { Game } from './games'
+import { GAMES } from './games'
 
 export interface AchievementRule {
   id: string
@@ -38,7 +39,7 @@ export const ARCADE_ACHIEVEMENTS: AchievementRule[] = [
     name: 'Full Shelf',
     description: 'Try every game in the arcade.',
     emoji: '📚',
-    target: 8,
+    target: GAMES.length,
     progress: (stats) => stats.distinctGames,
   },
   {
