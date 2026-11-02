@@ -177,6 +177,24 @@ For Firebase Hosting, also attach the domain in the Firebase console once
 (Hosting → Custom domains), which issues the certificate; the script cannot do
 that step with a CLI session.
 
+**In the app** — the admin page (`/#/admin`, owner role only) has the same two
+operations:
+
+- *Publish a game* upserts the manifest straight into `games`; RLS only permits
+  `profiles.role = 'admin'`.
+- *Register a game subdomain* calls the deployed `register-subdomain` Supabase
+  function. The GoDaddy PAT lives in function secrets and is never exposed to the
+  browser.
+
+```bash
+supabase secrets set GODADDY_PAT=gd_pat_...
+supabase functions deploy register-subdomain
+```
+
+The function verifies the caller's JWT, checks their profile row, then writes
+only the requested CNAME through the GoDaddy API. A non-admin gets `403` even if
+they call it directly with the anon key.
+
 ## 7. Release sync
 
 `npm run sync:releases` regenerates `src/data/releases.json` from each repo's
