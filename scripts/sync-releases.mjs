@@ -4,6 +4,11 @@
  *
  *   GITHUB_TOKEN=$(gh auth token) npm run sync:releases
  *
+ * The displayed version is the newer of the repository's package.json version
+ * and its latest release tag, because a game is often bumped and pushed before
+ * anyone cuts a release. Download links only come from a release whose tag
+ * matches the displayed version, so a button can never point at a missing file.
+ *
  * Writes src/data/releases.json, which src/data/games.ts merges over the
  * hand-written catalogue at load time. This script never edits source code, so
  * a new release cannot damage descriptions, categories or layout.
@@ -40,6 +45,26 @@ async function latestRelease(repository) {
   if (response.status === 404) return null
   if (!response.ok) throw new Error(`${repository}: HTTP ${response.status} ${response.statusText}`)
   return response.json()
+}
+
+async function packageVersion(repository) {
+  const response = await fetch(`https://raw.githubusercontent.com/${OWNER}/${repository}/HEAD/package.json`, {
+    headers: { 'User-Agent': 'littlejoyarcade-release-sync' },
+  })
+  if (!response.ok) return null
+  const version = (await response.json())?.version
+  return typeof version === 'string' && /^\d+\.\d+\.\d+/.test(version) ? version : null
+}
+
+/** Numeric comparison of `x.y.z` strings; positive when `a` is newer. */
+function compareVersions(a, b) {
+  const left = a.split('.').map(Number)
+  const right = b.split('.').map(Number)
+  for (let index = 0; index < 3; index += 1) {
+    const difference = (left[index] || 0) - (right[index] || 0)
+    if (difference !== 0) return difference
+  }
+  return 0
 }
 
 function downloadsFor(release) {
@@ -83,19 +108,31 @@ const failures = []
 for (const game of catalogued) {
   try {
     const release = await latestRelease(game.repository)
+    const published = String(release?.tag_name ?? '').replace(/^v/, '')
+    const packaged = await packageVersion(game.repository)
     if (process.env.SYNC_DEBUG) {
-      console.log(`${game.id}: ${game.repository} -> ${release ? release.tag_name : 'no published release'}`)
+      console.log(`${game.id}: ${game.repository} -> release ${published || 'none'}, package ${packaged || 'none'}`)
     }
-    if (!release) continue
-    const version = String(release.tag_name ?? '').replace(/^v/, '')
-    if (!/^\d+\.\d+\.\d+/.test(version)) {
+
+    if (!published && !packaged) continue
+    if (published && !/^\d+\.\d+\.\d+/.test(published)) {
       failures.push(`${game.id}: unexpected tag ${release.tag_name}`)
       continue
     }
+
+    // A newer package.json than the last release is the normal case mid-cycle:
+    // show that version, but do not offer installers that were never uploaded.
+    const version = packaged && published ? (compareVersions(packaged, published) > 0 ? packaged : published) : packaged || published
+    const matchesRelease = Boolean(release) && published === version
     releases[game.id] = {
       version,
-      updated: String(release.published_at ?? '').slice(0, 10),
-      downloads: downloadsFor(release),
+      updated: matchesRelease
+        ? String(release.published_at ?? '').slice(0, 10)
+        : (existing[game.id]?.updated ?? new Date().toISOString().slice(0, 10)),
+      downloads: matchesRelease ? downloadsFor(release) : [],
+    }
+    if (!matchesRelease && release) {
+      failures.push(`${game.id}: package.json is ${packaged}, latest release is ${published} — download links withheld`)
     }
   } catch (error) {
     failures.push(error.message)

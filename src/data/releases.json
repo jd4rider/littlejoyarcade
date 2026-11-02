@@ -210,24 +210,8 @@
     ]
   },
   "blocked-in": {
-    "version": "0.1.0",
+    "version": "0.1.4",
     "updated": "2026-11-02",
-    "downloads": [
-      {
-        "label": "macOS (Apple Silicon)",
-        "platform": "macOS",
-        "url": "https://github.com/jd4rider/blocked-in/releases/download/v0.1.0/Blocked-In-mac-arm64.dmg"
-      },
-      {
-        "label": "macOS (Intel)",
-        "platform": "macOS",
-        "url": "https://github.com/jd4rider/blocked-in/releases/download/v0.1.0/Blocked-In-mac-x64.dmg"
-      },
-      {
-        "label": "Windows installer",
-        "platform": "Windows",
-        "url": "https://github.com/jd4rider/blocked-in/releases/download/v0.1.0/Blocked-In-win-setup.exe"
-      }
-    ]
+    "downloads": []
   }
 }

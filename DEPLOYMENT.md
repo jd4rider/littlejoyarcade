@@ -97,9 +97,11 @@ hand-written copy is never touched. The commit triggers CI and the Pages deploy.
 GITHUB_TOKEN=$(gh auth token) npm run sync:releases   # idempotent, safe locally
 ```
 
-A game only needs a published, non-draft release with the standard asset names
-(`-mac-arm64.dmg`, `-mac-x64.dmg`, `-win-setup.exe`, `-linux-x86_64.AppImage`)
-to appear automatically.
+The displayed version is the newer of the repo's `package.json` version and its latest release tag, so bumping and
+pushing a game updates the catalogue even before anyone cuts a release. Download buttons only appear when a release
+tagged with the displayed version exists, so a link can never point at a file that was never uploaded. A game needs
+the standard asset names (`-mac-arm64.dmg`, `-mac-x64.dmg`, `-win-setup.exe`, `-linux-x86_64.AppImage`) for the
+buttons to fill in.
 
 ## Per-game deployment
 
