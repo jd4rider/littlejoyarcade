@@ -159,9 +159,17 @@ export default function GameDetail() {
             >
               {game.repoUrl.replace('https://github.com/', 'github.com/')} ↗
             </a>
-            <p className="mt-2 text-xs leading-relaxed text-white/40">
-              Save format: <code className="rounded bg-white/10 px-1 py-0.5">{game.saveKey}</code>
-            </p>
+            {game.saveKey ? (
+              <p className="mt-2 text-xs leading-relaxed text-white/40">
+                Save format: <code className="rounded bg-white/10 px-1 py-0.5">{game.saveKey}</code>
+              </p>
+            ) : (
+              <p className="mt-2 text-xs leading-relaxed text-white/40">
+                {game.runtime === 'Unity WebGL'
+                  ? 'Progress is stored by the Unity player in browser storage.'
+                  : 'No local save format is published for this game.'}
+              </p>
+            )}
           </section>
         </aside>
       </div>

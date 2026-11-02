@@ -13,7 +13,7 @@ export type Category =
   | 'Brain Training'
   | 'Casual'
 
-export type Runtime = 'Phaser 4' | 'Phaser 3' | 'React 19'
+export type Runtime = 'Phaser 4' | 'Phaser 3' | 'React 19' | 'Unity WebGL'
 
 export interface DownloadLink {
   label: string
@@ -754,6 +754,38 @@ export const GAMES: Game[] = [
     ],
     levels: '300 levels \u00b7 10 worlds + daily, zen, expert and endless',
     saveKey: 'bus-jam-bonanza-save-v1',
+  },
+  {
+    id: 'wrecking-yard',
+    name: 'Wrecking Yard',
+    tagline: 'Straight out of the yard.',
+    description:
+      'A portrait Unity WebGL build, published straight from the Unity player: a real 3D scene rather than a 2D approximation, a 9:16 play area that scales to fit any screen, and mouse and touch input. Nothing to install - the payload streams in behind a progress bar and the game runs entirely in the browser.',
+    categories: ['Arcade'],
+    runtime: 'Unity WebGL',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/wrecking-yard-web/play/',
+    siteUrl: 'https://jd4rider.github.io/wrecking-yard-web/',
+    repoUrl: repo('wrecking-yard-web'),
+    releasesUrl: `${repo('wrecking-yard-web')}/releases`,
+    downloads: [],
+    cover: { from: '#f59e0b', to: '#3f1d0b', emoji: '\u{1F6A7}' },
+    highlights: [
+      'Native Unity WebGL build - a real 3D scene, not a 2D stand-in',
+      'Portrait 9:16 play area, scaled to fit phones, tablets and desktops',
+      'Mouse and touch input, no install and no download',
+      'Served from GitHub Pages, with the Unity payload decompressed at deploy time',
+    ],
+    howToPlay: [
+      'Open the game and wait for the Unity progress bar - the first load streams about 56 MB',
+      'Use the fullscreen button in the footer for the whole 9:16 view',
+      'On a phone the game fills the screen automatically',
+      'Progress is held by the Unity player in your browser storage',
+    ],
+    levels: 'Unity WebGL build \u00b7 0.1.0',
+    saveKey: '',
   },
 ]
 
