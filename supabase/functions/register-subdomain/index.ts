@@ -8,7 +8,7 @@
 //   supabase functions deploy register-subdomain
 //
 //   await supabase.functions.invoke('register-subdomain', {
-//     body: { game: 'star-trail', target: 'star-trail-lja.web.app' },
+//     body: { game: 'star-trail', target: 'jd4rider.github.io' },
 //   })
 //
 // Authorisation: the caller's JWT is verified with the anon client, then their

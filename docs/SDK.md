@@ -161,7 +161,7 @@ GoDaddy API, optionally claims it on GitHub Pages, then verifies DNS:
 
 ```bash
 GODADDY_PAT=gd_pat_... node scripts/register-subdomain.mjs star-trail \
-  --target star-trail-lja.web.app \
+  --target jd4rider.github.io \
   --repo jd4rider/star-trail
 ```
 

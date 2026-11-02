@@ -6,7 +6,7 @@
  *     --target jd4rider.github.io
  *
  *   GODADDY_PAT=gd_pat_... node scripts/register-subdomain.mjs star-trail \
- *     --target star-trail-lja.web.app --repo jd4rider/star-trail
+ *     --target jd4rider.github.io --repo jd4rider/star-trail
  *
  * What it does, idempotently:
  *   1. Writes a CNAME `<game>.littlejoyarcade.site` at GoDaddy, preserving every

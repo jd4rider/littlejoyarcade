@@ -193,7 +193,7 @@ export default function Admin() {
           onChange={(event) => setManifestJson(event.target.value)}
           rows={6}
           spellCheck={false}
-          placeholder={'{\n  "id": "star-trail",\n  "name": "Star Trail",\n  "playUrl": "https://star-trail-lja.web.app/"\n}'}
+          placeholder={'{\n  "id": "star-trail",\n  "name": "Star Trail",\n  "playUrl": "https://jd4rider.github.io/star-trail/play/"\n}'}
           aria-label="Game manifest JSON"
           className="mt-3 w-full rounded-xl border border-white/15 bg-ink-900/70 p-3 font-mono text-xs text-cream placeholder:text-white/25 focus:border-joy-amber/60 focus:outline-none"
         />
@@ -223,7 +223,7 @@ export default function Admin() {
           <input
             value={subTarget}
             onChange={(event) => setSubTarget(event.target.value)}
-            placeholder="star-trail-lja.web.app"
+            placeholder="jd4rider.github.io"
             aria-label="Hosting target"
             className="rounded-xl border border-white/15 bg-ink-900/70 px-3 py-2 text-sm text-cream placeholder:text-white/30 focus:border-joy-amber/60 focus:outline-none"
           />
