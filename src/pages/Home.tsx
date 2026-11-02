@@ -88,7 +88,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-br from-joy-amber/20 via-joy-coral/10 to-joy-sky/20 blur-2xl" />
+          <div className="pointer-events-none absolute -inset-2 -z-10 sm:-inset-6 rounded-[2.5rem] bg-gradient-to-br from-joy-amber/20 via-joy-coral/10 to-joy-sky/20 blur-2xl" />
         </div>
       </section>
 
