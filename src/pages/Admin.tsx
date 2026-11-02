@@ -25,7 +25,11 @@ export default function Admin() {
   const [products, setProducts] = useState<AdminProduct[]>([])
   const [counts, setCounts] = useState<{ players: number; entitlements: number; sessions: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [manifestJson, setManifestJson] = useState('')
+  const [subGame, setSubGame] = useState('')
+  const [subTarget, setSubTarget] = useState('jd4rider.github.io')
 
   const load = useCallback(async () => {
     if (!supabase) return
@@ -58,6 +62,61 @@ export default function Admin() {
     if (updateError) setError(updateError.message)
     else setGames((current) => current.map((game) => (game.id === id ? { ...game, ...patch } : game)))
     setBusy(false)
+  }
+
+  const publishManifest = async () => {
+    if (!supabase) return
+    setError(null)
+    setNotice(null)
+    try {
+      const game = JSON.parse(manifestJson) as Record<string, unknown>
+      const row = {
+        id: game.id,
+        name: game.name,
+        description: game.description ?? null,
+        status: game.status === 'coming-soon' ? 'coming_soon' : (game.status ?? 'live'),
+        featured: Boolean(game.featured),
+        version: game.version ?? '0.0.0',
+        play_url: game.playUrl,
+        site_url: game.siteUrl ?? null,
+        repo_url: game.repoUrl ?? null,
+        categories: game.categories ?? [],
+        tagline: game.tagline ?? null,
+        runtime: game.runtime ?? 'Phaser 4',
+        cover: game.cover ?? null,
+        highlights: game.highlights ?? [],
+        how_to_play: game.howToPlay ?? [],
+        levels: game.levels ?? null,
+        save_key: game.saveKey ?? null,
+        downloads: game.downloads ?? [],
+        updated_on: game.updated ?? null,
+        manifest: game,
+      }
+      const { error: upsertError } = await supabase.from('games').upsert(row)
+      if (upsertError) {
+        setError(upsertError.message)
+        return
+      }
+      setNotice(`Published ${String(game.name ?? game.id)}. The catalogue picks it up on next load.`)
+      setManifestJson('')
+      await load()
+    } catch (parseError) {
+      setError(parseError instanceof Error ? parseError.message : 'Invalid manifest JSON')
+    }
+  }
+
+  const registerSubdomain = async () => {
+    if (!supabase) return
+    setError(null)
+    setNotice(null)
+    setBusy(true)
+    const { data, error: invokeError } = await supabase.functions.invoke('register-subdomain', {
+      body: { game: subGame.trim(), target: subTarget.trim() },
+    })
+    setBusy(false)
+    if (invokeError) setError(invokeError.message)
+    else if (data?.error) setError(String(data.error))
+    else setNotice(`${data.host} → ${data.target}. DNS can take a few minutes.`)
   }
 
   if (!isBackendConfigured) {
@@ -116,6 +175,63 @@ export default function Admin() {
           {error}
         </p>
       ) : null}
+
+      {notice ? (
+        <p className="card mb-5 border-joy-mint/40 bg-joy-mint/10 px-4 py-3 text-sm text-joy-mint" role="status">
+          {notice}
+        </p>
+      ) : null}
+
+      <section className="card mb-6 p-5">
+        <h2 className="text-lg font-bold text-cream">Publish a game</h2>
+        <p className="mt-1 text-xs text-white/45">
+          Paste a manifest (same shape as <code>Game</code> in <code>src/data/games.ts</code>). Postgres enforces the
+          admin role, so this form cannot publish without it.
+        </p>
+        <textarea
+          value={manifestJson}
+          onChange={(event) => setManifestJson(event.target.value)}
+          rows={6}
+          spellCheck={false}
+          placeholder={'{\n  "id": "star-trail",\n  "name": "Star Trail",\n  "playUrl": "https://star-trail-lja.web.app/"\n}'}
+          aria-label="Game manifest JSON"
+          className="mt-3 w-full rounded-xl border border-white/15 bg-ink-900/70 p-3 font-mono text-xs text-cream placeholder:text-white/25 focus:border-joy-amber/60 focus:outline-none"
+        />
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button type="button" onClick={() => void publishManifest()} disabled={busy || !manifestJson.trim()} className="btn btn-primary px-4 py-2 text-sm disabled:opacity-40">
+            Publish manifest
+          </button>
+          <button type="button" onClick={() => void load()} disabled={busy} className="btn btn-ghost px-4 py-2 text-sm">
+            Reload catalogue
+          </button>
+        </div>
+      </section>
+
+      <section className="card mb-6 p-5">
+        <h2 className="text-lg font-bold text-cream">Register a game subdomain</h2>
+        <p className="mt-1 text-xs text-white/45">
+          Creates the GoDaddy CNAME through a server-side function — the token never reaches this browser.
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_1.4fr_auto]">
+          <input
+            value={subGame}
+            onChange={(event) => setSubGame(event.target.value)}
+            placeholder="star-trail"
+            aria-label="Game id"
+            className="rounded-xl border border-white/15 bg-ink-900/70 px-3 py-2 text-sm text-cream placeholder:text-white/30 focus:border-joy-amber/60 focus:outline-none"
+          />
+          <input
+            value={subTarget}
+            onChange={(event) => setSubTarget(event.target.value)}
+            placeholder="star-trail-lja.web.app"
+            aria-label="Hosting target"
+            className="rounded-xl border border-white/15 bg-ink-900/70 px-3 py-2 text-sm text-cream placeholder:text-white/30 focus:border-joy-amber/60 focus:outline-none"
+          />
+          <button type="button" onClick={() => void registerSubdomain()} disabled={busy || !subGame.trim()} className="btn btn-primary px-4 py-2 text-sm disabled:opacity-40">
+            Point subdomain
+          </button>
+        </div>
+      </section>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {[
