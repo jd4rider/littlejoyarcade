@@ -13,7 +13,7 @@ export type Category =
   | 'Brain Training'
   | 'Casual'
 
-export type Runtime = 'Phaser 4' | 'React 19'
+export type Runtime = 'Phaser 4' | 'Phaser 3' | 'React 19'
 
 export interface DownloadLink {
   label: string
@@ -642,6 +642,39 @@ export const GAMES: Game[] = [
     ],
     levels: '100 Journey challenges · 5 lakes + daily, zen, endless, precision and trick shot',
     saveKey: 'skipping-stones-save-v1',
+  },
+  {
+    id: 'mini-golf-garden',
+    name: 'Mini Golf Garden',
+    tagline: 'Seventy-two little putts through eight whimsical gardens.',
+    description:
+      'A cosy physics miniature-golf game. Drag back from the ball to aim, release to putt, then read the slopes, ponds, windmills and conveyor belts between you and the cup. Eight hand-built gardens hold nine holes each — 72 in total — with par, birdies and three-star ratings, plus daily, time-attack, trick-shot and zen modes.',
+    categories: ['Physics', 'Relaxing', 'Casual'],
+    runtime: 'Phaser 3',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    featured: true,
+    playUrl: 'https://jd4rider.github.io/mini-golf-garden/play/',
+    siteUrl: 'https://jd4rider.github.io/mini-golf-garden/',
+    repoUrl: repo('mini-golf-garden'),
+    releasesUrl: `${repo('mini-golf-garden')}/releases`,
+    downloads: [],
+    cover: { from: '#8ed36b', to: '#2f5d3a', emoji: '⛳' },
+    highlights: [
+      '72 hand-designed holes across eight themed gardens',
+      'Deterministic 120 Hz ball physics with slopes, ice, sand, mud and water',
+      'Windmills, timed gates, rafts, lily pads, mushrooms, teleporters and bees',
+      'Journey, Free Play, Daily Challenge, Time Attack, Trick Shots and Zen',
+      'Keyboard and touch controls, fully offline, cloud saves when signed in',
+    ],
+    howToPlay: [
+      'Press near the ball, drag away from your target and release to putt.',
+      'Stone and ice let the ball run; sand and mud grab it; water costs a stroke.',
+      'Par or better earns three stars. Stars open the next garden.',
+    ],
+    levels: '72 holes in 8 gardens',
+    saveKey: 'mini-golf-garden-save-v1',
   },
 ]
 
