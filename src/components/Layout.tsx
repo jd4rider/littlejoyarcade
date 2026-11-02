@@ -28,7 +28,7 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
   }`
 
 export default function Layout() {
-  const { user, loading } = useAuth()
+  const { user, loading, profile } = useAuth()
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -61,10 +61,18 @@ export default function Layout() {
             {loading ? (
               <span className="h-8 w-24 animate-pulse rounded-full bg-white/10" />
             ) : user ? (
-              <NavLink to="/dashboard" className="btn btn-ghost px-3 py-2 text-xs">
-                <span aria-hidden="true">👤</span>
-                <span className="hidden sm:inline">Account</span>
-              </NavLink>
+              <>
+                {profile?.role === 'admin' ? (
+                  <NavLink to="/admin" className="btn btn-ghost px-3 py-2 text-xs">
+                    <span aria-hidden="true">🛠️</span>
+                    <span className="hidden sm:inline">Admin</span>
+                  </NavLink>
+                ) : null}
+                <NavLink to="/dashboard" className="btn btn-ghost px-3 py-2 text-xs">
+                  <span aria-hidden="true">👤</span>
+                  <span className="hidden sm:inline">Account</span>
+                </NavLink>
+              </>
             ) : (
               <NavLink to="/login" className="btn btn-primary px-4 py-2 text-xs sm:text-sm">
                 Sign in

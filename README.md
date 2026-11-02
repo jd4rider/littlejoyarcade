@@ -3,12 +3,14 @@
 A small, polished home for hand-made casual games — plus the shared SDK, database schema and deployment
 tooling that lets the collection grow without rebuilding the platform each time.
 
-- **Production host:** GitHub Pages, served at <https://littlejoyarcade.site> (`public/CNAME` + custom domain)
-- **Deployed alternatives:** <https://littlejoyarcade.pages.dev>, <https://littlejoyarcade.vercel.app>, and the Netlify site (created, unused)
-- **Backend:** Supabase project `fqovramltegcfiyebyrt` — schema, RLS and the eight-game seed are applied; the two public keys are set as repository variables
-- **DNS:** GoDaddy nameservers unchanged; apex A records point at GitHub Pages and `www` CNAMEs to `jd4rider.github.io`
-- **Games in the catalogue:** 8 (Bubble Wrap, Pipe Dreams, Jewel Match, Pixel Stitch, Sand Sort Studio,
-  Lighthouse Keeper, Laser Logic, Circuit Crafter)
+- **Hosting:** GitHub Pages for everything — the portal at <https://littlejoyarcade.site> and every game at
+  `https://<game>.littlejoyarcade.site/play/` (`public/CNAME` + per-repo Pages custom domains)
+- **Backend:** Supabase project `fqovramltegcfiyebyrt` — schema, RLS and the catalogue seed are applied; the two
+  public keys are set as repository variables. Firebase is not used for the site or the games
+- **DNS:** GoDaddy nameservers unchanged; apex A records point at GitHub Pages, `www` CNAMEs to the apex, and each
+  game hostname CNAMEs to `jd4rider.github.io`
+- **Games in the catalogue:** 11 (Bubble Wrap, Pipe Dreams, Jewel Match, Pixel Stitch, Sand Sort Studio,
+  Lighthouse Keeper, Laser Logic, Circuit Crafter, Rumble Rally, Whisker Grid, Blocked In)
 
 ## What is here
 
@@ -65,6 +67,13 @@ importing the repository is enough:
    records in `DNS_CONFIGURATION.md` and Vercel issues the certificate.
 
 Full runbook: `DEPLOYMENT.md`. DNS records and verification: `DNS_CONFIGURATION.md`.
+
+## Where a game lives
+
+Every game is its own GitHub Pages project site. Its repo publishes the playable build to `/play/`, its
+subdomain CNAMEs to `jd4rider.github.io`, and the repo's Pages custom domain is set to that subdomain. So
+`https://jewel-match.littlejoyarcade.site/play/` and `jd4rider.github.io/jewel-match/play/` are the same files,
+with GitHub redirecting the second form to the first. `docs/SDK.md` has the full publishing contract.
 
 ## Routing
 

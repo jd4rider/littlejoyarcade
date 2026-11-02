@@ -134,8 +134,8 @@ Manifest shape (the same as `Game` in `src/data/games.ts`):
   "updated": "2026-11-02",
   "status": "live",
   "featured": false,
-  "playUrl": "https://star-trail-lja.web.app/",
-  "siteUrl": "https://star-trail-lja.web.app/",
+  "playUrl": "https://star-trail.littlejoyarcade.site/play/",
+  "siteUrl": "https://star-trail.littlejoyarcade.site/",
   "repoUrl": "https://github.com/jd4rider/star-trail",
   "downloads": [],
   "cover": { "from": "#38bdf8", "to": "#0c4a6e", "emoji": "✨" },
@@ -165,17 +165,19 @@ GODADDY_PAT=gd_pat_... node scripts/register-subdomain.mjs star-trail \
   --repo jd4rider/star-trail
 ```
 
-- `--target` is where traffic should go: `jd4rider.github.io` for Pages,
-  `<site>.web.app` for Firebase Hosting, `littlejoyarcade-xxx.netlify.app` for
-  Netlify.
+- `--target` is where traffic should go: **`jd4rider.github.io`**. Every game
+  is a GitHub Pages project site, so its subdomain CNAMEs to Pages and the
+  playable build lives at `https://<game>.littlejoyarcade.site/play/`.
 - `--repo` is optional; when present the script sets the repo's Pages custom
   domain too.
 - It edits only the CNAME for that subdomain and leaves MX/TXT/www untouched.
 - Dry run by default; pass `CONFIRM=yes` to apply.
 
-For Firebase Hosting, also attach the domain in the Firebase console once
-(Hosting → Custom domains), which issues the certificate; the script cannot do
-that step with a CLI session.
+After the record exists, set the same hostname as the repo's Pages custom domain
+(`gh api -X PUT repos/jd4rider/<game>/pages -f cname=<game>.littlejoyarcade.site`).
+GitHub then issues the certificate; until it does, the host only serves the
+wildcard `*.github.io` certificate and HTTPS fails, so allow time and re-check
+with `openssl s_client` before advertising the URL.
 
 **In the app** — the admin page (`/#/admin`, owner role only) has the same two
 operations:

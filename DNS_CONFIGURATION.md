@@ -1,128 +1,112 @@
 # DNS configuration
 
-## Verified current state (2 November 2026)
+Everything for Little Joy Arcade lives on **GitHub Pages**, with the domain's
+nameservers left at GoDaddy. Firebase Hosting is not used for the live site; its
+sites remain as spare mirrors only.
 
-| Record | Value |
-| --- | --- |
-| Nameservers | `ns19.domaincontrol.com`, `ns20.domaincontrol.com` (GoDaddy) |
-| `littlejoyarcade.site` A | **GitHub Pages:** `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` |
-| `www.littlejoyarcade.site` | CNAME → `jd4rider.github.io` |
-| `_dmarc` TXT | preserved untouched |
-| `_domainconnect` CNAME | preserved untouched |
-| `bubblewrapgame.online` | GitHub Pages, custom domain + HTTPS working |
+## Current records (verified against the GoDaddy API and public resolvers)
 
-Nameservers stayed at GoDaddy. The parking records were replaced with GitHub Pages' four apex A records and a
-`www` CNAME, using the GoDaddy API with a bearer token; the parking A record was removed, not merely added to.
-A previous experiment pointed the apex at Netlify (`75.2.60.5`) but Netlify's API would not attach the custom
-domain without the dashboard, so it was reverted to GitHub Pages. `littlejoyarcade.site` is also attached to the
-Vercel project as a spare route.
-
-The portal ships `public/CNAME` containing `littlejoyarcade.site`, and the Pages custom domain is set with:
-
-```bash
-gh api -X PUT repos/jd4rider/littlejoyarcade/pages -f cname=littlejoyarcade.site
-```
-
-HTTPS is issued by GitHub after DNS resolves; `gh api repos/jd4rider/littlejoyarcade/pages` reports
-`https_certificate.state` as it provisions.
-
-Before editing, export the full record list from GoDaddy → DNS → Manage Zones (or the API) and confirm no MX,
-SPF, DKIM, DMARC or verification TXT records exist that must be preserved.
-
-## Target layout
-
-| Hostname | Purpose | Points at |
+| Type | Name | Value |
 | --- | --- | --- |
-| `littlejoyarcade.site` | Main portal | Vercel project |
-| `www.littlejoyarcade.site` | Redirect to apex | Vercel project |
-| `bubblewrap.littlejoyarcade.site` | Bubble Wrap (optional, later) | Bubble Wrap's deployment |
-| `pipes`, `jewels`, `pixelstitch`, `sandsort`, `lighthouse`, `lasers`, `circuitcrafter` | Other games (optional, later) | GitHub Pages per game |
+| NS | `@` | `ns19.domaincontrol.com`, `ns20.domaincontrol.com` (GoDaddy) |
+| A | `@` | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` (GitHub Pages) |
+| CNAME | `www` | `littlejoyarcade.site` |
+| CNAME | each game host | `jd4rider.github.io` |
+| CNAME | `_domainconnect` | `_domainconnect.gd.domaincontrol.com` (GoDaddy, untouched) |
+| TXT | `_dmarc` | `v=DMARC1; p=quarantine; …` (untouched) |
 
-`auth.` and `api.` are not needed: Supabase hosts auth, and the portal is static.
+Game hostnames currently published this way:
 
-## Vercel cutover (recommended)
+`jewel-match`, `pipe-dreams`, `pixel-stitch`, `sand-sort-studio`,
+`lighthouse-keeper`, `laser-logic`, `circuit-crafter`, `rumble-rally`,
+`whisker-grid`, `blocked-in`, `bubblewrap` — all
+`<name>.littlejoyarcade.site` → `jd4rider.github.io`.
 
-These are the records Vercel's verifier returned for this exact project (2 November 2026):
+`bubblewrapgame.online` is a separate GitHub Pages site owned by Bubble Wrap.
 
-| Type | Name | Value | Notes |
-| --- | --- | --- | --- |
-| A | `@` | `216.198.79.1` | Replaces **both** GoDaddy parking A records |
-| A | `@` | `64.29.17.1` | Second required apex record |
+There are no MX, SPF or DKIM records on this domain; nothing else needed
+preserving. No CAA record exists, so GitHub is free to issue certificates.
 
-`www` already CNAMEs to `littlejoyarcade.site`, so it follows the apex automatically once the two A records
-change. If you prefer an explicit `www` record, use `CNAME www → cname.vercel-dns.com`. No `_vercel` TXT record
-is needed for this domain — Vercel already verified project ownership.
+## How the portal and the games are wired
 
-Alternative: switching nameservers to `ns1.vercel-dns.com` / `ns2.vercel-dns.com` also works, but that is a
-broader change than two A records.
+- `littlejoyarcade.site` → GitHub Pages project site `jd4rider/littlejoyarcade`
+  (`public/CNAME` holds the apex, hash routing means no rewrite rules).
+- Each game is a GitHub Pages project site `jd4rider/<game>` publishing the
+  playable build to `/play/`. The catalogue links
+  `https://jd4rider.github.io/<game>/play/`.
 
-### Order of operations (this order matters)
+**A Pages site has exactly one canonical hostname.** Once a game repo sets a
+Pages custom domain (or ships a `public/CNAME`), GitHub 301s
+`jd4rider.github.io/<game>/` to that hostname, and the `github.io` URL stops
+serving the game directly. That redirect is why the subdomains must not be
+configured on the game repos while the catalogue links `github.io`.
 
-1. Deploy to Vercel and confirm the `*.vercel.app` URL renders.
-2. In Vercel → Domains, add `littlejoyarcade.site` and `www.littlejoyarcade.site`.
-3. In GoDaddy, **delete** the parking `A @` records, then add the Vercel `A` record; update `www`.
-   TTL 600 so rollback is quick.
-4. Wait for Vercel to verify (minutes, up to 24 h). Vercel issues and renews the certificate automatically.
-5. Confirm both hostnames serve HTTPS and `www` redirects to the apex.
+The `A`/`CNAME` records for the game hostnames are therefore deliberately left
+out of the zone. Recreating one is a two-step job and only makes sense if the
+whole arcade moves to custom hostnames:
 
-Adding DNS before the Vercel project exists leaves the domain pointing at a host that has no site for it.
+1. `gh api -X PUT repos/jd4rider/<game>/pages -f cname=<game>.littlejoyarcade.site`
+   (and add the matching `public/CNAME` file so a rebuild keeps it).
+2. Update `playUrl`/`siteUrl` in the catalogue and the `games` table.
 
-### GoDaddy API version (once a key exists)
+## Adding a new game subdomain
 
-Export `GODADDY_KEY` and `GODADDY_SECRET` (production keys from <https://developer.godaddy.com/keys>), read the
-zone first, then `PUT` the replacement set:
+Use the automation rather than hand-editing records:
 
 ```bash
-curl -s "https://api.godaddy.com/v1/domains/littlejoyarcade.site/records" \
-  -H "Authorization: sso-key $GODADDY_KEY:$GODADDY_SECRET"
-
-curl -s -X PUT "https://api.godaddy.com/v1/domains/littlejoyarcade.site/records" \
-  -H "Authorization: sso-key $GODADDY_KEY:$GODADDY_SECRET" \
-  -H 'Content-Type: application/json' \
-  -d '[{"type":"A","name":"@","data":"216.198.79.1","ttl":600},
-       {"type":"A","name":"@","data":"64.29.17.1","ttl":600}]'
+GODADDY_PAT=gd_pat_... node scripts/register-subdomain.mjs my-game \
+  --target jd4rider.github.io \
+  --repo jd4rider/my-game
 ```
 
-`PUT` replaces every record of the submitted types. If MX/TXT records exist, submit them in the same payload or
-use `PATCH`/individual record endpoints instead. Review the zone dump before writing.
+The GoDaddy API accepts the personal access token as a bearer token
+(`Authorization: Bearer gd_pat_...`). The older `sso-key key:secret` form only
+works with legacy API keys and returns `401` for PATs.
+
+The same operation exists in the portal at `/#/admin` → *Register a game
+subdomain*, which calls the `register-subdomain` Edge Function; the PAT lives in
+Supabase function secrets, never in the browser.
+
+## Certificates
+
+GitHub issues the certificate for a Pages custom domain automatically once the
+hostname resolves to GitHub and the domain is verified for the account. Until a
+host has its own certificate, GitHub serves only its wildcard `*.github.io`
+certificate, which fails hostname validation for
+`<game>.littlejoyarcade.site` — browsers show a certificate error even though
+HTTP works. That is the state the game subdomains were left in: DNS correct,
+certificate never issued. Nothing in the current catalogue depends on them.
+
+Check a single host:
+
+```bash
+dig +short pipe-dreams.littlejoyarcade.site @1.1.1.1
+echo | openssl s_client -connect 185.199.108.153:443 \
+  -servername pipe-dreams.littlejoyarcade.site 2>/dev/null \
+  | openssl x509 -noout -subject -ext subjectAltName
+```
+
+A `subject=CN=*.github.io` answer means the per-domain certificate is still
+missing; the host is not usable over HTTPS yet. Re-request it with:
+
+```bash
+gh api -X PUT repos/jd4rider/<game>/pages \
+  -f cname=<game>.littlejoyarcade.site -F https_enforced=true
+```
 
 ## Verification
 
 ```bash
-dig +short NS littlejoyarcade.site @1.1.1.1
 dig +short A littlejoyarcade.site @1.1.1.1
-dig +short CNAME www.littlejoyarcade.site @1.1.1.1
-curl -sI https://littlejoyarcade.site | head -5
-curl -sI https://www.littlejoyarcade.site | head -5
+dig +short CNAME jewel-match.littlejoyarcade.site @1.1.1.1
+curl -sI https://littlejoyarcade.site | head -3
+curl -s -o /dev/null -w '%{http_code}\n' https://jewel-match.littlejoyarcade.site/play/
 ```
 
-Expected: GoDaddy nameservers, the two Vercel A records above, HTTP 200 on the apex, a 301/308 from `www` to
-the apex, and a valid certificate on both. `vercel domains verify littlejoyarcade.site` should switch from
-"not configured properly" to verified. DNS caches can hold the old parking IPs for up to the previous TTL; test with
-`dig @1.1.1.1` before assuming a propagation problem.
-
-## Option C — Cloudflare Pages (chosen host)
-
-Cloudflare Pages can serve the custom domain in two ways:
-
-**1. Zone on Cloudflare (recommended).** Move the domain's nameservers to Cloudflare (free plan), then add
-`littlejoyarcade.site` and `www.littlejoyarcade.site` under Workers & Pages → `littlejoyarcade` → Custom domains.
-Cloudflare creates the proxied records and the certificate itself. This also gives API access to DNS, so all
-game subdomains can be managed in one place.
-
-**2. DNS stays at GoDaddy.** Add `CNAME www → littlejoyarcade.pages.dev`. The apex cannot use a CNAME at GoDaddy,
-so the apex would need GoDaddy forwarding to `www` (works, but weaker for SEO and certificates). If keeping
-GoDaddy DNS matters more than using Cloudflare, Netlify is the smoother free host because it provides an apex A
-record — the app itself is host-agnostic.
-
-## Optional: moving nameservers to Cloudflare
-
-This is what makes a free, commercial-use Cloudflare Pages deployment on the apex possible, and it also gives
-the project programmatic DNS access. It is a disruptive, approval-required change: add the zone, review the
-imported records (especially MX/TXT), then replace `ns19/ns20.domaincontrol.com` at GoDaddy with the Cloudflare
-pair. Existing MX/TXT records must be recreated exactly in Cloudflare before the switch.
+Expected: the four GitHub A records, a CNAME to `jd4rider.github.io`, HTTP 200
+on the apex, and HTTP 200 on each game's `/play/` once its certificate exists.
 
 ## Rollback
 
-Restore the exported record set — the parking A records were `3.33.130.190` and `15.197.148.33`, and `www`
-pointed at the apex. For a nameserver move, restoring the GoDaddy nameservers reverts everything.
+The zone can be restored from the GoDaddy API dump before any change. The old
+parking records were `A @ → 3.33.130.190` and `15.197.148.33`.

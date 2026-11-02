@@ -1,6 +1,24 @@
 # Deployment
 
-## Hosting decision
+## Current hosting (GitHub Pages, everywhere)
+
+The portal and all eleven games are GitHub Pages sites. Nothing about the frontends is on Firebase, Netlify,
+Cloudflare or Vercel — those were evaluated and are kept only as unused spares.
+
+| Piece | Where it runs |
+| --- | --- |
+| Portal | GitHub Pages project site `jd4rider/littlejoyarcade`, custom domain `littlejoyarcade.site` |
+| Games | One GitHub Pages project site per game repo, playable build published to `/play/` |
+| Game URLs | `https://jd4rider.github.io/<game>/play/` — no custom domain on the game repos |
+| Database + login | Supabase project `fqovramltegcfiyebyrt` |
+| Builds | GitHub Actions in this repo and in each game repo |
+
+A game lives at `https://jd4rider.github.io/<game>/play/`. GitHub gives every Pages site one canonical hostname: if
+a game repo sets a custom domain (or ships a `public/CNAME`), `github.io` 301s to it instead of serving the game,
+which is exactly what broke the embedded player. So the catalogue links `github.io` and the game repos carry no
+`public/CNAME`. The subdomain records and the certificate caveat are covered in `DNS_CONFIGURATION.md`.
+
+## Hosting options considered
 
 | Option | Commercial use | Cost | Verdict |
 | --- | --- | --- | --- |
