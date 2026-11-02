@@ -89,20 +89,24 @@ offline are queued under `lja:<game>:pending` and flushed by `progress.sync()`.
 
 ## Hosting architecture
 
-Recommended production target: **Cloudflare Pages** (free tier permits commercial use; unlimited static
-requests and bandwidth, custom domains, preview deployments). Each game can move to its own Pages project on a
-subdomain, or stay on GitHub Pages until it needs to move.
+Production target chosen by the owner: **Vercel** for the frontend, with **Supabase** for Postgres, auth and row
+level security. Vercel serves the static Vite bundle and gives production plus preview deployments from Git;
+Supabase is the actual backend, since Vercel does not host databases.
+
+Vercel's Hobby plan is for personal, non-commercial projects only. That is fine while accounts are being built
+out, but an ad-supported or paid arcade needs Vercel Pro (~$20/user/month) before monetization. Cloudflare Pages
+(free, commercial use allowed) is the fallback if Pro is not wanted; the build is host-agnostic either way.
 
 Current deployment: GitHub Pages project site, because it is the only hosting credential available in this
-environment. GitHub's acceptable-use policy discourages using Pages as the primary host for a commercial
-business, so the move to Cloudflare Pages is required before ads or purchases go live. Details and costs:
-`DEPLOYMENT.md`; DNS: `DNS_CONFIGURATION.md`.
+environment. It remains the working preview while the Vercel project is created. Details: `DEPLOYMENT.md`;
+DNS: `DNS_CONFIGURATION.md`.
 
 ## Dependency map
 
 | Component | Depends on | Blocks |
 | --- | --- | --- |
 | Portal | nothing at runtime | — |
+| Vercel project | GitHub repo import | production URL, domain cutover |
 | Accounts | Supabase project + build-time env vars | cloud saves, entitlements, admin |
 | Cloud saves | SDK wired into each game | cross-device progress |
 | Storefront | Stripe (or similar) + webhook endpoint | purchases |

@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "description": "Little Joy Arcade — a small, polished home for casual browser and desktop games.",
   "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -14,7 +17,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "oxlint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "deploy:vercel": "npx vercel --prod"
   },
   "dependencies": {
     "@littlejoyarcade/sdk": "*",

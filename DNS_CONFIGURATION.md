@@ -5,97 +5,70 @@
 | Record | Value |
 | --- | --- |
 | Nameservers | `ns19.domaincontrol.com`, `ns20.domaincontrol.com` (GoDaddy) |
-| `littlejoyarcade.site` A | `3.33.130.190`, `15.197.148.33` (GoDaddy parking page) |
-| `www.littlejoyarcade.site` | CNAME-like alias to the apex; same parking IPs |
-| SOA serial | `2026110200` |
-| `bubblewrapgame.online` | GitHub Pages, custom domain configured and serving HTTPS |
+| `littlejoyarcade.site` A | `3.33.130.190`, `15.197.148.33` — GoDaddy parking page (HTTP 200, not our site) |
+| `www.littlejoyarcade.site` | parking IPs |
+| `bubblewrapgame.online` | GitHub Pages, custom domain + HTTPS working |
 
-The domain resolves, but it serves GoDaddy's parked page. **No DNS records have been changed yet**: no GoDaddy
-API key or Cloudflare login was available in this environment, and nameserver changes must be approved.
+No records have been changed: no GoDaddy API key and no Vercel account token were available here. The parking
+A records must be **replaced**, not added to, or the apex will keep resolving to GoDaddy's parked page.
 
-Not touched and must stay untouched: MX, SPF, DKIM, DMARC and any verification TXT records. A domain inventory
-before changes shows none beyond the parking records, but re-check in the GoDaddy DNS panel before editing.
+Before editing, export the full record list from GoDaddy → DNS → Manage Zones (or the API) and confirm no MX,
+SPF, DKIM, DMARC or verification TXT records exist that must be preserved.
 
 ## Target layout
 
 | Hostname | Purpose | Points at |
 | --- | --- | --- |
-| `littlejoyarcade.site` | Main portal | Cloudflare Pages project `littlejoyarcade` |
-| `www.littlejoyarcade.site` | Redirect to apex | Same Pages project (Cloudflare handles the redirect) |
-| `bubblewrap.littlejoyarcade.site` | Bubble Wrap | Bubble Wrap's current deployment |
-| `pipes.littlejoyarcade.site` | Pipe Dreams | `jd4rider.github.io` |
-| `jewels.littlejoyarcade.site` | Jewel Match | `jd4rider.github.io` |
-| `pixelstitch.littlejoyarcade.site` | Pixel Stitch | `jd4rider.github.io` |
-| `sandsort.littlejoyarcade.site` | Sand Sort Studio | `jd4rider.github.io` |
-| `lighthouse.littlejoyarcade.site` | Lighthouse Keeper | `jd4rider.github.io` |
-| `lasers.littlejoyarcade.site` | Laser Logic | `jd4rider.github.io` |
-| `circuitcrafter.littlejoyarcade.site` | Circuit Crafter | `jd4rider.github.io` |
+| `littlejoyarcade.site` | Main portal | Vercel project |
+| `www.littlejoyarcade.site` | Redirect to apex | Vercel project |
+| `bubblewrap.littlejoyarcade.site` | Bubble Wrap (optional, later) | Bubble Wrap's deployment |
+| `pipes`, `jewels`, `pixelstitch`, `sandsort`, `lighthouse`, `lasers`, `circuitcrafter` | Other games (optional, later) | GitHub Pages per game |
 
-`auth.` and `api.` subdomains are **not** needed: Supabase hosts auth on its own domain, and the portal is
-static. Creating them would add certificate surface for no benefit. Document them as reserved for later.
+`auth.` and `api.` are not needed: Supabase hosts auth, and the portal is static.
 
-## Option A — keep GoDaddy nameservers (recommended for the portal preview)
+## Vercel cutover (recommended)
 
-Add these in GoDaddy → DNS → Manage Zones. This points the apex at the current GitHub Pages deployment so the
-custom domain works today, before any Cloudflare work:
+The exact records are shown in **Vercel → Project → Settings → Domains** after adding the domain. Typical values:
 
-| Type | Name | Value | TTL |
+| Type | Name | Value | Notes |
 | --- | --- | --- | --- |
-| A | `@` | `185.199.108.153` | 600 |
-| A | `@` | `185.199.109.153` | 600 |
-| A | `@` | `185.199.110.153` | 600 |
-| A | `@` | `185.199.111.153` | 600 |
-| CNAME | `www` | `jd4rider.github.io` | 600 |
+| A | `@` | `76.76.21.21` | Replaces the two GoDaddy parking A records |
+| CNAME | `www` | `cname.vercel-dns.com` | Replace the existing `www` |
+| TXT | `_vercel` | value shown by Vercel | Only if Vercel asks for domain verification |
 
-Then, in the repo, add a `CNAME` file containing `littlejoyarcade.site` and set the Pages custom domain:
+Use Vercel's displayed values, not these, if they differ.
 
-```bash
-gh api -X PUT repos/jd4rider/littlejoyarcade/pages -f cname=littlejoyarcade.site
-```
+### Order of operations (this order matters)
 
-Order matters: create the DNS records **before** setting the Pages custom domain, otherwise Pages will redirect
-the `github.io` URL to a domain that does not resolve yet and the preview goes dark. Certificate issuance can
-take up to 24 hours; `gh api repos/jd4rider/littlejoyarcade/pages` reports `https_certificate.state`.
+1. Deploy to Vercel and confirm the `*.vercel.app` URL renders.
+2. In Vercel → Domains, add `littlejoyarcade.site` and `www.littlejoyarcade.site`.
+3. In GoDaddy, **delete** the parking `A @` records, then add the Vercel `A` record; update `www`.
+   TTL 600 so rollback is quick.
+4. Wait for Vercel to verify (minutes, up to 24 h). Vercel issues and renews the certificate automatically.
+5. Confirm both hostnames serve HTTPS and `www` redirects to the apex.
 
-For a GoDaddy API script, export `GODADDY_KEY` and `GODADDY_SECRET` (production keys from
-<https://developer.godaddy.com/keys>) and use:
+Adding DNS before the Vercel project exists leaves the domain pointing at a host that has no site for it.
 
-```bash
-curl -s -X PUT "https://api.godaddy.com/v1/domains/littlejoyarcade.site/records" \
-  -H "Authorization: sso-key $GODADDY_KEY:$GODADDY_SECRET" \
-  -H 'Content-Type: application/json' \
-  -d '[{"type":"A","name":"@","data":"185.199.108.153","ttl":600},
-       {"type":"A","name":"@","data":"185.199.109.153","ttl":600},
-       {"type":"A","name":"@","data":"185.199.110.153","ttl":600},
-       {"type":"A","name":"@","data":"185.199.111.153","ttl":600},
-       {"type":"CNAME","name":"www","data":"jd4rider.github.io","ttl":600}]'
-```
+### GoDaddy API version (once a key exists)
 
-`PUT` replaces **all** records of those types; `PATCH` would be safer if other records already exist. Read the
-zone first:
+Export `GODADDY_KEY` and `GODADDY_SECRET` (production keys from <https://developer.godaddy.com/keys>), read the
+zone first, then `PUT` the replacement set:
 
 ```bash
 curl -s "https://api.godaddy.com/v1/domains/littlejoyarcade.site/records" \
   -H "Authorization: sso-key $GODADDY_KEY:$GODADDY_SECRET"
+
+curl -s -X PUT "https://api.godaddy.com/v1/domains/littlejoyarcade.site/records" \
+  -H "Authorization: sso-key $GODADDY_KEY:$GODADDY_SECRET" \
+  -H 'Content-Type: application/json' \
+  -d '[{"type":"A","name":"@","data":"76.76.21.21","ttl":600},
+       {"type":"CNAME","name":"www","data":"cname.vercel-dns.com","ttl":600}]'
 ```
 
-## Option B — move to Cloudflare nameservers (recommended before monetization)
+`PUT` replaces every record of the submitted types. If MX/TXT records exist, submit them in the same payload or
+use `PATCH`/individual record endpoints instead. Review the zone dump before writing.
 
-Changing nameservers is a disruptive, approval-required action. It is worth doing only when the site moves to
-Cloudflare Pages:
-
-1. Add the domain as a zone in Cloudflare (free plan). Cloudflare imports existing records — review the import
-   and confirm no MX/TXT records were dropped.
-2. In GoDaddy → Nameservers → *Change*, replace `ns19/ns20.domaincontrol.com` with the two Cloudflare
-   nameservers shown in the zone.
-3. Wait for activation (usually under an hour, up to 24). Verify with
-   `dig +short NS littlejoyarcade.site @1.1.1.1`.
-4. Add proxied records: `@` CNAME → `<project>.pages.dev` and `www` CNAME → `<project>.pages.dev`. Cloudflare
-   supports CNAME flattening at the apex, so no A records are needed.
-5. Game subdomains: `CNAME <game> → jd4rider.github.io` (DNS-only, then configure the custom domain in that
-   game's Pages settings so the certificate matches).
-
-## Verification commands
+## Verification
 
 ```bash
 dig +short NS littlejoyarcade.site @1.1.1.1
@@ -105,11 +78,18 @@ curl -sI https://littlejoyarcade.site | head -5
 curl -sI https://www.littlejoyarcade.site | head -5
 ```
 
-Expected: GoDaddy or Cloudflare nameservers, the hosting IPs/CNAME, HTTP 200 (or a 301 to the canonical host)
-and a valid certificate for both apex and `www`.
+Expected: GoDaddy nameservers, Vercel's A/CNAME values, HTTP 200 on the apex, a 301/308 from `www` to the apex,
+and a valid certificate on both. DNS caches can hold the old parking IPs for up to the previous TTL; test with
+`dig @1.1.1.1` before assuming a propagation problem.
+
+## Optional: moving nameservers to Cloudflare
+
+Not required for Vercel. Only worth it if you also want Cloudflare's CDN/WAF. It is a disruptive, approval-required
+change: add the zone, review the imported records (especially MX/TXT), then replace `ns19/ns20.domaincontrol.com`
+at GoDaddy with the Cloudflare pair. With Cloudflare DNS, keep Vercel's records DNS-only (grey cloud) or use
+Cloudflare's Vercel integration; proxying without it can break certificate validation.
 
 ## Rollback
 
-Before editing, export the full record list to a file. To roll back, restore the parked A records
-(`3.33.130.190`, `15.197.148.33`) and remove the added CNAME. For a nameserver move, restoring
-`ns19/ns20.domaincontrol.com` at GoDaddy reverts to GoDaddy DNS.
+Restore the exported record set — the parking A records were `3.33.130.190` and `15.197.148.33`, and `www`
+pointed at the apex. For a nameserver move, restoring the GoDaddy nameservers reverts everything.
