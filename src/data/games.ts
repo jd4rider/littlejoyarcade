@@ -1,0 +1,401 @@
+// The catalogue is data, not markup: one entry per real, deployed game.
+// Every URL here was checked against the live site or GitHub release.
+
+export type Category =
+  | 'Puzzle'
+  | 'Relaxing'
+  | 'Logic'
+  | 'Strategy'
+  | 'Arcade'
+  | 'Brain Training'
+  | 'Casual'
+
+export type Runtime = 'Phaser 4' | 'React 19'
+
+export interface DownloadLink {
+  label: string
+  platform: 'macOS' | 'Windows' | 'Linux'
+  url: string
+  note?: string
+}
+
+export interface Game {
+  id: string
+  name: string
+  tagline: string
+  description: string
+  categories: Category[]
+  runtime: Runtime
+  version: string
+  updated: string
+  status: 'live' | 'coming-soon'
+  featured?: boolean
+  playUrl: string
+  siteUrl: string
+  repoUrl: string
+  releasesUrl: string
+  downloads: DownloadLink[]
+  cover: { from: string; to: string; emoji: string }
+  highlights: string[]
+  howToPlay: string[]
+  levels: string
+  saveKey: string
+}
+
+const repo = (id: string) => `https://github.com/jd4rider/${id}`
+
+export const GAMES: Game[] = [
+  {
+    id: 'bubblewrap',
+    name: 'Bubble Wrap',
+    tagline: 'A whole sheet of tiny, satisfying pops.',
+    description:
+      'A 12 × 9 sheet of bubble wrap you can pop by tapping or dragging. Classic mode is pure zen; Journey mode adds five timed levels, coins and three power-ups. Each pop is synthesised with the Web Audio API — there are no audio files — and phones that expose the Vibration API get a tiny haptic tick.',
+    categories: ['Relaxing', 'Casual', 'Arcade'],
+    runtime: 'React 19',
+    version: '0.2.0',
+    updated: '2026-11-02',
+    status: 'live',
+    featured: true,
+    playUrl: 'https://bubblewrapgame.online/play/',
+    siteUrl: 'https://bubblewrapgame.online/',
+    repoUrl: repo('bubble-wrap'),
+    releasesUrl: `${repo('bubble-wrap')}/releases`,
+    downloads: [
+      {
+        label: 'macOS (Apple Silicon)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/bubble-wrap/releases/download/v0.2.0/Bubble-Wrap-mac-arm64.dmg',
+      },
+      {
+        label: 'macOS (Intel)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/bubble-wrap/releases/download/v0.2.0/Bubble-Wrap-mac-x64.dmg',
+      },
+      {
+        label: 'Windows installer',
+        platform: 'Windows',
+        url: 'https://github.com/jd4rider/bubble-wrap/releases/download/v0.2.0/Bubble-Wrap-win-setup.exe',
+      },
+    ],
+    cover: { from: '#38bdf8', to: '#2563eb', emoji: '🫧' },
+    highlights: [
+      'Classic full-sheet mode plus a five-level Journey with stars, coins and power-ups',
+      'Haptic pops on devices that support the Vibration API',
+      'Desktop saves live in SQLite; the web build uses IndexedDB with a localStorage fallback',
+      'Installable on macOS via Homebrew cask and on Windows via PowerShell',
+    ],
+    howToPlay: [
+      'Tap or drag across the sheet to pop bubbles.',
+      'In Journey mode, beat the bubble target before the timer runs out.',
+      'Spend coins on Burst, Chain and Time Boost between levels.',
+    ],
+    levels: 'Classic sheet + 5 Journey levels',
+    saveKey: 'bubble-wrap-save-v2',
+  },
+  {
+    id: 'pipe-dreams',
+    name: 'Pipe Dreams',
+    tagline: 'Turn the pipes. Guide the water.',
+    description:
+      'A rotating-pipe puzzle where water has to reach the OUT valve. Grids grow from 4 × 4 to 9 × 9, then add tees, crosses, brick walls and bolted pipes that cannot move. Finish at or under par for three stars.',
+    categories: ['Puzzle', 'Relaxing', 'Logic'],
+    runtime: 'Phaser 4',
+    version: '0.2.0',
+    updated: '2026-11-02',
+    status: 'live',
+    featured: true,
+    playUrl: 'https://jd4rider.github.io/pipe-dreams/play/',
+    siteUrl: 'https://jd4rider.github.io/pipe-dreams/',
+    repoUrl: repo('pipe-dreams'),
+    releasesUrl: `${repo('pipe-dreams')}/releases`,
+    downloads: [],
+    cover: { from: '#0ea5e9', to: '#0c4a6e', emoji: '🔧' },
+    highlights: [
+      '60 levels across five worlds, plus a 90-second Rush mode',
+      'Wrap-around edge pipes and flowing water effects added in v0.2.0',
+      'Brick walls and bolted pipes keep later levels honest',
+      'Par-based star scoring with hints and resets',
+    ],
+    howToPlay: [
+      'Tap a pipe to turn it a quarter turn.',
+      'Connect IN to OUT so the water can flow all the way through.',
+      'Pipes marked with a bolt are fixed — route around them.',
+    ],
+    levels: '60 levels · 5 worlds + Rush',
+    saveKey: 'pipe-dreams-save-v1',
+  },
+  {
+    id: 'jewel-match',
+    name: 'Jewel Match',
+    tagline: 'Swap, sparkle, cascade.',
+    description:
+      'A match-3 with real depth: line gems, bombs, stars and rainbows appear from the shapes you build. Journey mode plots 48 levels across six regions with score, collect and timed goals; Classic, Timed Blitz and Zen round out the set.',
+    categories: ['Puzzle', 'Casual', 'Brain Training'],
+    runtime: 'Phaser 4',
+    version: '0.3.1',
+    updated: '2026-11-02',
+    status: 'live',
+    featured: true,
+    playUrl: 'https://jd4rider.github.io/jewel-match/play/',
+    siteUrl: 'https://jd4rider.github.io/jewel-match/',
+    repoUrl: repo('jewel-match'),
+    releasesUrl: `${repo('jewel-match')}/releases`,
+    downloads: [],
+    cover: { from: '#a855f7', to: '#4c1d95', emoji: '💎' },
+    highlights: [
+      'Four modes: Journey, Classic, Timed Blitz and Zen',
+      'Line gems, bombs, stars and rainbow gems from 4-in-a-row, L/T and 2 × 2 shapes',
+      'Five power-ups: Hammer, Bomb, Zap, Shuffle and Extra moves',
+      '48 Journey levels over six regions with three-star ratings',
+    ],
+    howToPlay: [
+      'Swap two neighbouring gems to line up three or more.',
+      'Build four in a line for a line gem, an L or T for a bomb, a 2 × 2 for a star.',
+      'Swap two specials together for a much bigger blast.',
+    ],
+    levels: '48 Journey levels · 6 regions',
+    saveKey: 'jewel-match-save-v2',
+  },
+  {
+    id: 'pixel-stitch',
+    name: 'Pixel Stitch',
+    tagline: 'Numbered clues, hidden pictures.',
+    description:
+      'A nonogram (picross) game where the numbers beside each row and above each column describe a hidden picture. Twenty-four starter patterns are verified to be solvable with pure line logic — no guessing. Paint your own design and share it as a short code.',
+    categories: ['Puzzle', 'Logic', 'Brain Training'],
+    runtime: 'Phaser 4',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/pixel-stitch/play/',
+    siteUrl: 'https://jd4rider.github.io/pixel-stitch/',
+    repoUrl: repo('pixel-stitch'),
+    releasesUrl: `${repo('pixel-stitch')}/releases`,
+    downloads: [
+      {
+        label: 'macOS (Apple Silicon)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/pixel-stitch/releases/download/v0.1.0/Pixel-Stitch-mac-arm64.dmg',
+      },
+      {
+        label: 'macOS (Intel)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/pixel-stitch/releases/download/v0.1.0/Pixel-Stitch-mac-x64.dmg',
+      },
+      {
+        label: 'Windows installer',
+        platform: 'Windows',
+        url: 'https://github.com/jd4rider/pixel-stitch/releases/download/v0.1.0/Pixel-Stitch-win-setup.exe',
+      },
+      {
+        label: 'Linux AppImage',
+        platform: 'Linux',
+        url: 'https://github.com/jd4rider/pixel-stitch/releases/download/v0.1.0/Pixel-Stitch-linux-x86_64.AppImage',
+      },
+    ],
+    cover: { from: '#f472b6', to: '#831843', emoji: '🧵' },
+    highlights: [
+      '24 starter puzzles across four packs, from 5 × 5 to 10 × 10',
+      'Every puzzle verified solvable by line logic in the test suite',
+      'Paint-and-share editor with short PS1 share codes',
+      'Drag to fill, tap to clear, and auto-crossed leftovers',
+    ],
+    howToPlay: [
+      'Read each clue as ordered groups: "3 2" means three filled, a gap, then two.',
+      'Tap or drag to fill squares; tap again to clear them.',
+      'Switch to Mark (or right-click) to cross out squares you know are empty.',
+    ],
+    levels: '24 patterns · 4 packs + editor',
+    saveKey: 'pixel-stitch-save-v1',
+  },
+  {
+    id: 'sand-sort-studio',
+    name: 'Sand Sort Studio',
+    tagline: 'Pour, stack, sort every colour.',
+    description:
+      'A pour-sorting puzzle with 60 levels across five worlds. Twin flasks hold two colours, padlocked flasks open once enough are sealed, and chameleon sand changes colour every time it moves. Rush mode gives you 120 seconds and buys more time for each solve.',
+    categories: ['Puzzle', 'Relaxing', 'Logic'],
+    runtime: 'Phaser 4',
+    version: '0.1.1',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/sand-sort-studio/play/',
+    siteUrl: 'https://jd4rider.github.io/sand-sort-studio/',
+    repoUrl: repo('sand-sort-studio'),
+    releasesUrl: `${repo('sand-sort-studio')}/releases`,
+    downloads: [],
+    cover: { from: '#fbbf24', to: '#b45309', emoji: '🏖️' },
+    highlights: [
+      '60 levels across five worlds, plus a 120-second Rush mode',
+      'Twin flasks, padlocked flasks and colour-changing chameleon sand',
+      'Free hint, undo and reset on every level',
+      'Ghost-sand rendering bug fixed in v0.1.1',
+    ],
+    howToPlay: [
+      'Tap a flask, then another, to pour its top colour across.',
+      'You can pour onto an empty flask or onto the same colour.',
+      'A flask holding one colour is sealed — fill them all to win.',
+    ],
+    levels: '60 levels · 5 worlds + Rush',
+    saveKey: 'sand-sort-save-v1',
+  },
+  {
+    id: 'lighthouse-keeper',
+    name: 'Lighthouse Keeper',
+    tagline: 'Light the coast. Keep the reef dark.',
+    description:
+      'Rotate lighthouses, flip mirrors and tint lenses so every buoy is lit in the colour it asks for — while every forbidden reef marker stays untouched. A night-coast puzzle about routing light rather than water.',
+    categories: ['Puzzle', 'Logic', 'Strategy'],
+    runtime: 'Phaser 4',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/lighthouse-keeper/play/',
+    siteUrl: 'https://jd4rider.github.io/lighthouse-keeper/',
+    repoUrl: repo('lighthouse-keeper'),
+    releasesUrl: `${repo('lighthouse-keeper')}/releases`,
+    downloads: [
+      {
+        label: 'macOS (Apple Silicon)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/lighthouse-keeper/releases/download/v0.1.0/Lighthouse-Keeper-mac-arm64.dmg',
+      },
+      {
+        label: 'macOS (Intel)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/lighthouse-keeper/releases/download/v0.1.0/Lighthouse-Keeper-mac-x64.dmg',
+      },
+      {
+        label: 'Windows installer',
+        platform: 'Windows',
+        url: 'https://github.com/jd4rider/lighthouse-keeper/releases/download/v0.1.0/Lighthouse-Keeper-win-setup.exe',
+      },
+      {
+        label: 'Linux AppImage',
+        platform: 'Linux',
+        url: 'https://github.com/jd4rider/lighthouse-keeper/releases/download/v0.1.0/Lighthouse-Keeper-linux-x86_64.AppImage',
+      },
+    ],
+    cover: { from: '#22d3ee', to: '#1e3a8a', emoji: '🗼' },
+    highlights: [
+      '24 stations across four coasts: Harbor Watch, Cliffside, Reef Waters and Storm Coast',
+      'Mirrors flip and slide; lenses tint beams red, green or blue',
+      'Forbidden reef markers must stay dark — a real constraint, not decoration',
+      'Every level’s solved art is re-traced by the beam engine in tests',
+    ],
+    howToPlay: [
+      'Tap a lighthouse to turn it a quarter turn — each shines one beam.',
+      'Tap a mirror to flip it, or drag it onto open water to move it.',
+      'Tap a lens to cycle red → green → blue; white (W) buoys need an untinted beam.',
+    ],
+    levels: '24 stations · 4 coasts',
+    saveKey: 'lighthouse-keeper-save-v1',
+  },
+  {
+    id: 'laser-logic',
+    name: 'Laser Logic',
+    tagline: 'Angle the light into every receiver.',
+    description:
+      'Steer laser beams with mirrors, colour filters, splitters and prisms. Targets light only when they receive exactly the colour they ask for. Sixty Journey levels across five worlds, plus a two-minute Rush mode.',
+    categories: ['Logic', 'Puzzle', 'Brain Training'],
+    runtime: 'Phaser 4',
+    version: '0.1.0',
+    updated: '2026-11-01',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/laser-logic/play/',
+    siteUrl: 'https://jd4rider.github.io/laser-logic/',
+    repoUrl: repo('laser-logic'),
+    releasesUrl: `${repo('laser-logic')}/releases`,
+    downloads: [],
+    cover: { from: '#f43f5e', to: '#7f1d1d', emoji: '🔴' },
+    highlights: [
+      'Splitters send a beam two ways; prisms break white light into red, green and blue',
+      'Colour filters pass only their own wavelength',
+      'Movable mirrors can be dragged to any empty cell',
+      '60 Journey levels over five worlds plus a 120-second Rush',
+    ],
+    howToPlay: [
+      'Tap a mirror to flip it and steer the beams.',
+      'A target lights only when it receives exactly its own colour.',
+      'Use filters, splitters and prisms to reach colours a plain mirror cannot.',
+    ],
+    levels: '60 levels · 5 worlds + Rush',
+    saveKey: 'laser-logic-save-v1',
+  },
+  {
+    id: 'circuit-crafter',
+    name: 'Circuit Crafter',
+    tagline: 'Wire it. Switch it. Light it.',
+    description:
+      'A genuine little circuit simulator disguised as a puzzle: batteries push power, wires conduct only where their rotated shape connects, AND and OR gates gate the flow, timers make beacons blink, light sensors chain circuits together — and one live fuse fails the whole board.',
+    categories: ['Logic', 'Strategy', 'Brain Training'],
+    runtime: 'Phaser 4',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/circuit-crafter/play/',
+    siteUrl: 'https://jd4rider.github.io/circuit-crafter/',
+    repoUrl: repo('circuit-crafter'),
+    releasesUrl: `${repo('circuit-crafter')}/releases`,
+    downloads: [
+      {
+        label: 'macOS (Apple Silicon)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/circuit-crafter/releases/download/v0.1.0/Circuit-Crafter-mac-arm64.dmg',
+      },
+      {
+        label: 'macOS (Intel)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/circuit-crafter/releases/download/v0.1.0/Circuit-Crafter-mac-x64.dmg',
+      },
+      {
+        label: 'Windows installer',
+        platform: 'Windows',
+        url: 'https://github.com/jd4rider/circuit-crafter/releases/download/v0.1.0/Circuit-Crafter-win-setup.exe',
+      },
+      {
+        label: 'Linux AppImage',
+        platform: 'Linux',
+        url: 'https://github.com/jd4rider/circuit-crafter/releases/download/v0.1.0/Circuit-Crafter-linux-x86_64.AppImage',
+      },
+    ],
+    cover: { from: '#34d399', to: '#065f46', emoji: '⚡' },
+    highlights: [
+      'Power is spread by a fixed-point simulation, not a scripted answer table',
+      'AND / OR gates, pulsing timers, light sensors and fuses',
+      '24 boards across four benches, from 7 × 7 to 10 × 10',
+      'Every level’s solved art is re-simulated in the test suite',
+    ],
+    howToPlay: [
+      'Tap a wire to turn it; power follows the sides that actually connect.',
+      'Open switches to cut a circuit — some boards need a switch left off.',
+      'Beacons must blink on the timer; lamps must stay steadily lit.',
+    ],
+    levels: '24 boards · 4 benches',
+    saveKey: 'circuit-crafter-save-v1',
+  },
+]
+
+export const CATEGORIES: Category[] = [
+  'Puzzle',
+  'Relaxing',
+  'Logic',
+  'Strategy',
+  'Arcade',
+  'Brain Training',
+  'Casual',
+]
+
+export const gamesById = new Map(GAMES.map((game) => [game.id, game]))
+
+export const featuredGames = GAMES.filter((game) => game.featured)
+
+export function relatedGames(game: Game, count = 3): Game[] {
+  return GAMES.filter((other) => other.id !== game.id)
+    .sort((a, b) => {
+      const overlap = (g: Game) => g.categories.filter((c) => game.categories.includes(c)).length
+      return overlap(b) - overlap(a)
+    })
+    .slice(0, count)
+}
