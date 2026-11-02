@@ -19,6 +19,12 @@ interface AuthValue {
   setGuestName(name: string): void
   displayName: string
   sendMagicLink(email: string): Promise<{ error: string | null }>
+  signInWithPassword(email: string, password: string): Promise<{ error: string | null }>
+  signUpWithPassword(
+    email: string,
+    password: string,
+    displayName?: string,
+  ): Promise<{ error: string | null; needsConfirmation: boolean }>
   signOut(): Promise<void>
   saveDisplayName(name: string): Promise<{ error: string | null }>
 }
@@ -113,6 +119,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null }
   }, [])
 
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    if (!supabase) return { error: 'Cloud accounts are not configured for this build yet.' }
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    return { error: error?.message ?? null }
+  }, [])
+
+  const signUpWithPassword = useCallback(
+    async (email: string, password: string, displayName?: string) => {
+      if (!supabase) return { error: 'Cloud accounts are not configured for this build yet.', needsConfirmation: false }
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          // Kept for the profile trigger and future confirmation emails.
+          data: displayName ? { display_name: displayName.trim().slice(0, 32) } : undefined,
+          emailRedirectTo: `${window.location.origin}${window.location.pathname}`,
+        },
+      })
+      if (error) return { error: error.message, needsConfirmation: false }
+      return { error: null, needsConfirmation: !data.session }
+    },
+    [],
+  )
+
   const signOut = useCallback(async () => {
     if (supabase) await supabase.auth.signOut()
   }, [])
@@ -141,10 +171,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setGuestName,
       displayName: profile?.displayName || guestName || user?.email?.split('@')[0] || 'Guest',
       sendMagicLink,
+      signInWithPassword,
+      signUpWithPassword,
       signOut,
       saveDisplayName,
     }),
-    [guestName, loading, profile, saveDisplayName, sendMagicLink, setGuestName, signOut, user],
+    [
+      guestName,
+      loading,
+      profile,
+      saveDisplayName,
+      sendMagicLink,
+      signInWithPassword,
+      signUpWithPassword,
+      setGuestName,
+      signOut,
+      user,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
