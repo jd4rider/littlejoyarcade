@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { isBackendConfigured, supabase } from './supabase'
+import { getAuthProviders, isBackendConfigured, supabase } from './supabase'
 
 const GUEST_KEY = 'lja:guest-name'
 
@@ -19,6 +19,8 @@ interface AuthValue {
   setGuestName(name: string): void
   displayName: string
   sendMagicLink(email: string): Promise<{ error: string | null }>
+  providers: string[]
+  signInWithOAuth(provider: string): Promise<{ error: string | null }>
   signInWithPassword(email: string, password: string): Promise<{ error: string | null }>
   signUpWithPassword(
     email: string,
@@ -44,6 +46,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(isBackendConfigured)
   const [guestName, setGuestNameState] = useState(readGuestName)
+  const [providers, setProviders] = useState<string[]>([])
+
+  useEffect(() => {
+    let alive = true
+    void getAuthProviders().then((list) => {
+      if (alive) setProviders(list.filter((provider) => provider !== 'email'))
+    })
+    return () => {
+      alive = false
+    }
+  }, [])
 
   useEffect(() => {
     if (!supabase) {
@@ -119,6 +132,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null }
   }, [])
 
+  const signInWithOAuth = useCallback(async (provider: string) => {
+    if (!supabase) return { error: 'Cloud accounts are not configured for this build yet.' }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider as Parameters<typeof supabase.auth.signInWithOAuth>[0]['provider'],
+      options: {
+        // Return to whatever origin the player started on; every game subdomain
+        // and the portal are listed in the Supabase redirect allow-list.
+        redirectTo: `${window.location.origin}${window.location.pathname}`,
+      },
+    })
+    return { error: error?.message ?? null }
+  }, [])
+
   const signInWithPassword = useCallback(async (email: string, password: string) => {
     if (!supabase) return { error: 'Cloud accounts are not configured for this build yet.' }
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
@@ -171,6 +197,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setGuestName,
       displayName: profile?.displayName || guestName || user?.email?.split('@')[0] || 'Guest',
       sendMagicLink,
+      providers,
+      signInWithOAuth,
       signInWithPassword,
       signUpWithPassword,
       signOut,
@@ -182,6 +210,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       saveDisplayName,
       sendMagicLink,
+      providers,
+      signInWithOAuth,
       signInWithPassword,
       signUpWithPassword,
       setGuestName,

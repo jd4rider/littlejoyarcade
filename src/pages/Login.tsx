@@ -6,7 +6,17 @@ import { backendHelp } from '../lib/supabase'
 type Mode = 'signin' | 'create'
 
 export default function Login() {
-  const { configured, sendMagicLink, signInWithPassword, signUpWithPassword, guestName, setGuestName, user } = useAuth()
+  const {
+    configured,
+    sendMagicLink,
+    providers,
+    signInWithOAuth,
+    signInWithPassword,
+    signUpWithPassword,
+    guestName,
+    setGuestName,
+    user,
+  } = useAuth()
   const navigate = useNavigate()
   const [mode, setMode] = useState<Mode>('signin')
   const [email, setEmail] = useState('')
@@ -43,6 +53,25 @@ export default function Login() {
       return
     }
     navigate('/dashboard')
+  }
+
+  const onOAuth = async (provider: string) => {
+    setError(null)
+    setNotice(null)
+    setBusy(true)
+    const result = await signInWithOAuth(provider)
+    setBusy(false)
+    if (result.error) setError(result.error)
+  }
+
+  const providerLabel: Record<string, string> = {
+    google: 'Continue with Google',
+    facebook: 'Continue with Facebook',
+    github: 'Continue with GitHub',
+    apple: 'Continue with Apple',
+    discord: 'Continue with Discord',
+    twitter: 'Continue with X',
+    twitch: 'Continue with Twitch',
   }
 
   const onMagicLink = async () => {
@@ -83,6 +112,26 @@ export default function Login() {
         </div>
       ) : (
         <>
+          {providers.length > 0 ? (
+            <div className="card mt-6 space-y-2 p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-white/45">One-tap sign in</p>
+              {providers.map((provider) => (
+                <button
+                  key={provider}
+                  type="button"
+                  onClick={() => onOAuth(provider)}
+                  disabled={busy}
+                  className="btn btn-ghost w-full justify-start disabled:opacity-40"
+                >
+                  {providerLabel[provider] ?? `Continue with ${provider}`}
+                </button>
+              ))}
+              <p className="pt-1 text-xs leading-relaxed text-white/35">
+                Social sign-in is provided by the same Little Joy account — your progress is shared across every game.
+              </p>
+            </div>
+          ) : null}
+
           <form onSubmit={onSubmit} className="card mt-6 space-y-4 p-5">
             <div className="grid grid-cols-2 gap-1 rounded-xl bg-ink-900/60 p-1" role="tablist" aria-label="Account mode">
               <button
@@ -175,6 +224,12 @@ export default function Login() {
                 Passwords are handled by Supabase Auth; we never store them ourselves. Signed-in progress syncs to your
                 account, and you can delete the account at any time.
               </p>
+              {providers.length === 0 ? (
+                <p className="mt-2 text-xs leading-relaxed text-white/30">
+                  Google, Facebook and other providers appear here as soon as their credentials are added to the
+                  project.
+                </p>
+              ) : null}
             </div>
           </form>
 
