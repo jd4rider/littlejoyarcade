@@ -579,6 +579,38 @@ export const GAMES: Game[] = [
     levels: '100 Journey levels · 8 chapters + daily, Zen and Classic',
     saveKey: 'hexodus-save-v1',
   },
+  {
+    id: 'purrfect-squares',
+    name: 'Purrfect Squares',
+    tagline: 'Draw a rectangle for every cat.',
+    description:
+      'A cozy, untimed logic puzzle. Every numbered cat needs a rectangle of exactly that many squares, and every tile of the wooden board must be covered. Drag from one tile to another to draw a rectangle, tap one to lift it, and lean on three-stage hints and unlimited undo instead of a clock. Two hundred Journey boards across eight chapters — each generated from a seed and solver-verified to have exactly one solution — plus daily, zen, expert and unlimited modes.',
+    categories: ['Puzzle', 'Logic', 'Relaxing', 'Brain Training'],
+    runtime: 'Phaser 4',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/purrfect-squares/play/',
+    preferredPlayUrl: 'https://purrfectsquares.littlejoyarcade.site/play/',
+    siteUrl: 'https://jd4rider.github.io/purrfect-squares/',
+    repoUrl: repo('purrfect-squares'),
+    releasesUrl: `${repo('purrfect-squares')}/releases`,
+    downloads: [],
+    cover: { from: '#f6c48a', to: '#4f9d69', emoji: '🐈' },
+    highlights: [
+      '200 Journey boards, each verified to have exactly one solution',
+      'Drag-to-draw rectangles with two-tap and keyboard alternatives',
+      'No timer, no lives, unlimited undo and three-stage hints',
+      'Daily catnap, Zen, Expert and Unlimited modes, plus five unlockable themes',
+    ],
+    howToPlay: [
+      'Drag across tiles to draw a rectangle, or tap one corner and then the other.',
+      'A rectangle must hold exactly one cat and have the same area as its number.',
+      'Tap a placed rectangle to lift it, and keep going until every tile is covered.',
+    ],
+    levels: '200 Journey boards · 8 chapters + daily, zen, expert and unlimited',
+    saveKey: 'purrfect-squares-save-v1',
+  },
 ]
 
 // Versions, dates and download links are generated from each repository's
