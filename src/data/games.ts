@@ -676,6 +676,39 @@ export const GAMES: Game[] = [
     levels: '72 holes in 8 gardens',
     saveKey: 'mini-golf-garden-save-v1',
   },
+  {
+    id: 'prism-party',
+    name: 'Prism Party',
+    tagline: 'Turn the mirrors, split the spectrum, light every crystal.',
+    description:
+      'A calm, tactile light puzzle. Rotate mirrors and prisms to steer a beam of light around a raised board and into coloured crystals. White light splits into red, green and blue, filters strip channels away, splitters share one beam between two crystals, and portals carry the light across the board. Two hundred puzzles across five rooms, each built from a working solution and then re-solved by an exhaustive solver before shipping, with three stars for solving in the fewest possible turns. No timer, unlimited undo, and a daily board identical for everyone.',
+    categories: ['Puzzle', 'Logic', 'Relaxing', 'Brain Training'],
+    runtime: 'Phaser 4',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/prism-party/play/',
+    preferredPlayUrl: 'https://prismparty.littlejoyarcade.site/play/',
+    siteUrl: 'https://jd4rider.github.io/prism-party/',
+    repoUrl: repo('prism-party'),
+    releasesUrl: `${repo('prism-party')}/releases`,
+    downloads: [],
+    cover: { from: '#7c5cf6', to: '#1a1235', emoji: '\u{1F537}' },
+    highlights: [
+      '200 puzzles, every one solved and verified by a backtracking solver',
+      'A real light engine: additive RGB mixing and per-channel transmission, so no device invents light',
+      'Untimed, with unlimited undo, redo and restart',
+      'Three stars for solving in the fewest possible turns',
+      'Daily puzzle, Zen mode and free play',
+    ],
+    howToPlay: [
+      'Tap a mirror or prism to turn it.',
+      'Steer the beam into every coloured crystal at the same time.',
+      'Prisms separate white light into red, green and blue; filters strip colours out.',
+    ],
+    levels: '200 puzzles \u00b7 5 worlds + daily, zen and free play',
+    saveKey: 'prism-party-save-v1',
+  },
 ]
 
 // Versions, dates and download links are generated from each repository's
