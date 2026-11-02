@@ -34,6 +34,8 @@ export interface Game {
   status: 'live' | 'coming-soon'
   featured?: boolean
   playUrl: string
+  /** Preferred host for this game. Probed at play time; falls back to playUrl. */
+  preferredPlayUrl?: string
   siteUrl: string
   repoUrl: string
   releasesUrl: string
@@ -109,6 +111,7 @@ export const GAMES: Game[] = [
     status: 'live',
     featured: true,
     playUrl: 'https://jd4rider.github.io/pipe-dreams/play/',
+    preferredPlayUrl: 'https://pipe-dreams.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/pipe-dreams/',
     repoUrl: repo('pipe-dreams'),
     releasesUrl: `${repo('pipe-dreams')}/releases`,
@@ -146,6 +149,7 @@ export const GAMES: Game[] = [
     status: 'live',
     featured: true,
     playUrl: 'https://jd4rider.github.io/jewel-match/play/',
+    preferredPlayUrl: 'https://jewel-match.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/jewel-match/',
     repoUrl: repo('jewel-match'),
     releasesUrl: `${repo('jewel-match')}/releases`,
@@ -182,6 +186,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-02',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/pixel-stitch/play/',
+    preferredPlayUrl: 'https://pixel-stitch.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/pixel-stitch/',
     repoUrl: repo('pixel-stitch'),
     releasesUrl: `${repo('pixel-stitch')}/releases`,
@@ -234,6 +239,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-02',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/sand-sort-studio/play/',
+    preferredPlayUrl: 'https://sand-sort-studio.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/sand-sort-studio/',
     repoUrl: repo('sand-sort-studio'),
     releasesUrl: `${repo('sand-sort-studio')}/releases`,
@@ -270,6 +276,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-02',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/lighthouse-keeper/play/',
+    preferredPlayUrl: 'https://lighthouse-keeper.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/lighthouse-keeper/',
     repoUrl: repo('lighthouse-keeper'),
     releasesUrl: `${repo('lighthouse-keeper')}/releases`,
@@ -322,6 +329,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-01',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/laser-logic/play/',
+    preferredPlayUrl: 'https://laser-logic.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/laser-logic/',
     repoUrl: repo('laser-logic'),
     releasesUrl: `${repo('laser-logic')}/releases`,
@@ -358,6 +366,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-02',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/circuit-crafter/play/',
+    preferredPlayUrl: 'https://circuit-crafter.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/circuit-crafter/',
     repoUrl: repo('circuit-crafter'),
     releasesUrl: `${repo('circuit-crafter')}/releases`,
@@ -410,6 +419,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-02',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/rumble-rally/play/',
+    preferredPlayUrl: 'https://rumble-rally.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/rumble-rally/',
     repoUrl: repo('rumble-rally'),
     releasesUrl: `${repo('rumble-rally')}/releases`,
@@ -447,6 +457,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-02',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/whisker-grid/play/',
+    preferredPlayUrl: 'https://whisker-grid.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/whisker-grid/',
     repoUrl: repo('whisker-grid'),
     releasesUrl: `${repo('whisker-grid')}/releases`,
@@ -484,6 +495,7 @@ export const GAMES: Game[] = [
     updated: '2026-11-02',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/blocked-in/play/',
+    preferredPlayUrl: 'https://blocked-in.littlejoyarcade.site/play/',
     siteUrl: 'https://jd4rider.github.io/blocked-in/',
     repoUrl: repo('blocked-in'),
     releasesUrl: `${repo('blocked-in')}/releases`,

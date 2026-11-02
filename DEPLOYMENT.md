@@ -213,6 +213,22 @@ Each game keeps its own repository and pipeline:
 - A game can later move to its own Vercel or Cloudflare project on a subdomain; only `playUrl` in
   `src/data/games.ts` (and the `games` table row) needs updating.
 
+## Play route resolution and health checks
+
+A game entry carries two URLs: `playUrl` (the canonical GitHub Pages build, `https://jd4rider.github.io/<game>/play/`)
+and an optional `preferredPlayUrl` (`https://<game>.littlejoyarcade.site/play/`). At play time
+`src/lib/playUrl.ts` probes the preferred host with a 2.5 s `no-cors` fetch — which only resolves when DNS and TLS
+both work — and falls back to `playUrl` when the probe fails. The verdict is cached in `sessionStorage` for ten
+minutes, so a recovered or newly broken host is picked up without a redeploy.
+
+```bash
+node scripts/check-play-routes.mjs          # table; exits 1 only if a canonical URL is down
+node scripts/check-play-routes.mjs --strict # also fails while any subdomain is unreachable
+```
+
+`.github/workflows/check-play-routes.yml` runs that probe nightly, on catalogue changes and on demand, and opens (or
+comments on) a single GitHub issue titled *Play route health: a game is unreachable* instead of failing silently.
+
 ## Local builds
 
 ```bash
