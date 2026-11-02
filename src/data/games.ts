@@ -539,6 +539,19 @@ export const gamesById = new Map(GAMES.map((game) => [game.id, game]))
 
 export const featuredGames = GAMES.filter((game) => game.featured)
 
+/**
+ * Swap the catalogue in place with rows loaded from the database. Called once
+ * before the app renders, so every page (including derived lists) sees the same
+ * data without each component needing its own fetch.
+ */
+export function replaceCatalog(next: Game[]): void {
+  if (next.length === 0) return
+  GAMES.splice(0, GAMES.length, ...next)
+  gamesById.clear()
+  for (const game of GAMES) gamesById.set(game.id, game)
+  featuredGames.splice(0, featuredGames.length, ...GAMES.filter((game) => game.featured))
+}
+
 export function relatedGames(game: Game, count = 3): Game[] {
   return GAMES.filter((other) => other.id !== game.id)
     .sort((a, b) => {

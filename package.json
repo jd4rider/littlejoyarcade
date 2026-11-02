@@ -20,6 +20,9 @@
     "test:watch": "vitest",
     "create:game": "node tools/create-game.mjs",
     "sync:releases": "node scripts/sync-releases.mjs",
+    "seed:catalog": "node scripts/seed-catalog.mjs",
+    "publish:game": "node scripts/publish-game.mjs",
+    "subdomain:register": "node scripts/register-subdomain.mjs",
     "deploy:vercel": "npx vercel --prod"
   },
   "dependencies": {
@@ -36,6 +39,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^4.6.0",
     "oxlint": "^1.89.0",
+    "pg": "^8.23.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.2",
     "vite": "^6.3.5",

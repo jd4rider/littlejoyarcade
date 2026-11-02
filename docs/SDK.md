@@ -1,0 +1,192 @@
+# Little Joy Arcade SDK
+
+Everything a game needs to plug into the arcade: accounts, cloud saves,
+achievements, entitlements, analytics, and publishing a new title. The SDK is
+framework-agnostic TypeScript in `packages/sdk`, plus one dependency-free
+browser/Electron client and two Node publishing scripts.
+
+```
+packages/sdk/
+  src/index.ts      createArcade, progress store helper
+  src/client.ts     the runtime (local-first, offline-safe)
+  src/supabase.ts   CloudAdapter backed by Supabase + RLS
+  src/local.ts      storage, envelopes, conflict merging
+  src/phaser.ts     bridge for Phaser scenes
+  src/react.tsx     hook/provider for React
+  src/electron.ts   file-backed storage for Electron preload bridges
+  desktop/arcade-client.js   drop-in script: account panel + cloud mirror
+```
+
+## 1. Quick start (any game)
+
+```ts
+import { createArcade, createSupabaseCloud } from '@littlejoyarcade/sdk'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
+
+const arcade = createArcade({
+  gameId: 'star-trail',
+  schemaVersion: 1,
+  cloud: createSupabaseCloud(supabase),
+})
+
+await arcade.initialize()          // resolves the signed-in user, then syncs
+const save = arcade.progress.load() // local first; never blocks on the network
+arcade.progress.save({ level: 4 })  // writes locally, pushes when signed in
+await arcade.achievements.unlock('first_clear')
+```
+
+`progress.save` always writes locally first. When the player is signed in and
+online it also writes the cloud row; offline it queues a pending envelope that
+the next `sync()` flushes. Newest `updatedAt` wins, ties go to the cloud, and a
+local edit is never silently replaced by an older cloud copy.
+
+## 2. Interfaces
+
+```ts
+interface Arcade {
+  gameId: string
+  initialize(): Promise<ArcadeUser | null>
+  auth: {
+    getUser(): ArcadeUser | null
+    refresh(): Promise<ArcadeUser | null>
+    signOut(): Promise<void>
+    onChange(listener: (user: ArcadeUser | null) => void): () => void
+  }
+  progress: {
+    load<T>(): T | null
+    save<T>(data: T): Promise<void>
+    sync(): Promise<SyncStatus>
+    status(): SyncStatus
+    clear(): void
+  }
+  achievements: { unlock(slug): Promise<boolean>; has(slug): boolean; list(): string[]; sync(): Promise<string[]> }
+  entitlements: { has(slug): boolean; list(): string[]; refresh(): Promise<string[]>; adsAllowed(): boolean }
+  store: { getProducts(): Promise<Product[]> }
+  analytics: { track(name, props?): void; events(): ArcadeEvent[]; flush(): Promise<void> }
+  platform: { runtime: 'browser' | 'electron' | 'capacitor' | 'unknown'; online: boolean; touch: boolean }
+  envelope(): ProgressEnvelope | null
+}
+```
+
+Types (`src/types.ts`): `Json`, `StorageLike`, `ArcadeUser`, `ProgressEnvelope`,
+`SyncStatus`, `Product`, `AchievementDefinition`, `ArcadeEvent`, `PlatformInfo`,
+`CloudAdapter`, `ArcadeOptions`.
+
+`CloudAdapter` is the only backend surface. Swap Supabase for anything by
+implementing `loadProgress`, `saveProgress`, `loadAchievements`,
+`unlockAchievement`, `loadEntitlements`, `listProducts`, and optionally
+`getUser`/`signOut`/`onAuthChange`.
+
+## 3. Framework adapters
+
+**Phaser** — `import { attachArcade } from '@littlejoyarcade/sdk/phaser'` then
+call `attachArcade(scene, arcade)` to get a scene-scoped save/achievement helper,
+or use `arcade` directly in `create()`; no Phaser dependency is imported by the
+SDK itself.
+
+**React** — wrap the app in `<ArcadeProvider arcade={arcade}>` from
+`@littlejoyarcade/sdk/react` and call `useArcade()` in components.
+
+**Electron** — keep `contextIsolation: true` and `sandbox: true`. Expose a
+narrow preload bridge and adapt it with `createElectronStorage(bridge)` so saves
+live in `app.getPath('userData')` instead of `localStorage`.
+
+## 4. Drop-in client (no build step)
+
+For games that already ship their own save code, copy
+`packages/sdk/desktop/arcade-client.js` into `public/` and load:
+
+```html
+<script src="./arcade-client.js" data-game-id="star-trail"></script>
+```
+
+It adds an account panel (create/sign in/sync/sign out), refreshes sessions, and
+mirrors Web Storage keys into `game_progress`. For IndexedDB/SQLite saves, define
+`window.LJA_SNAPSHOT` / `window.LJA_APPLY_SNAPSHOT` before loading it. The public
+anon key inside the file is safe to ship; RLS protects the rows.
+
+## 5. Publishing a game (API)
+
+The catalogue is database-driven: the portal reads `public.games` at startup and
+falls back to the bundled catalogue only if the backend is unavailable. A row
+can be written two ways.
+
+**CLI / server**
+
+```bash
+SUPABASE_DB_PASSWORD=... node scripts/publish-game.mjs game.json
+SUPABASE_DB_PASSWORD=... node scripts/publish-game.mjs --list
+```
+
+Manifest shape (the same as `Game` in `src/data/games.ts`):
+
+```json
+{
+  "id": "star-trail",
+  "name": "Star Trail",
+  "tagline": "Collect the sparks.",
+  "description": "A small constellation puzzle.",
+  "categories": ["Puzzle", "Logic"],
+  "runtime": "Phaser 4",
+  "version": "0.1.0",
+  "updated": "2026-11-02",
+  "status": "live",
+  "featured": false,
+  "playUrl": "https://star-trail-lja.web.app/",
+  "siteUrl": "https://star-trail-lja.web.app/",
+  "repoUrl": "https://github.com/jd4rider/star-trail",
+  "downloads": [],
+  "cover": { "from": "#38bdf8", "to": "#0c4a6e", "emoji": "✨" },
+  "highlights": ["20 hand-built levels"],
+  "howToPlay": ["Tap a star to collect it."],
+  "levels": "20 levels",
+  "saveKey": "star-trail-save-v1"
+}
+```
+
+The script upserts every presentation column plus the raw manifest, so new
+fields need no migration.
+
+**Admin UI** — `/admin` (owner role only) lists the catalogue, toggles
+status/featured, and will host the manifest form. Writes go through the anon
+client but Postgres enforces `games_admin_write` (`profiles.role = 'admin'`), so
+the policy, not the UI, is the security boundary.
+
+## 6. Subdomain automation
+
+`scripts/register-subdomain.mjs` registers a game hostname idempotently using the
+GoDaddy API, optionally claims it on GitHub Pages, then verifies DNS:
+
+```bash
+GODADDY_PAT=gd_pat_... node scripts/register-subdomain.mjs star-trail \
+  --target star-trail-lja.web.app \
+  --repo jd4rider/star-trail
+```
+
+- `--target` is where traffic should go: `jd4rider.github.io` for Pages,
+  `<site>.web.app` for Firebase Hosting, `littlejoyarcade-xxx.netlify.app` for
+  Netlify.
+- `--repo` is optional; when present the script sets the repo's Pages custom
+  domain too.
+- It edits only the CNAME for that subdomain and leaves MX/TXT/www untouched.
+- Dry run by default; pass `CONFIRM=yes` to apply.
+
+For Firebase Hosting, also attach the domain in the Firebase console once
+(Hosting → Custom domains), which issues the certificate; the script cannot do
+that step with a CLI session.
+
+## 7. Release sync
+
+`npm run sync:releases` regenerates `src/data/releases.json` from each repo's
+latest published GitHub release (version, date, download URLs). The scheduled
+workflow commits changes, which redeploys the site. See `DEPLOYMENT.md`.
+
+## 8. Security model
+
+- The anon key is public; every player-owned table is protected by RLS.
+- Entitlements are read-only for players; only the service role grants them.
+- Purchases are verified server-side; a redirect is never proof of payment.
+- Admin operations are authorised by `is_admin()` in Postgres, not by hidden UI.
+- The drop-in client stores only its own session and mirrors game saves.
