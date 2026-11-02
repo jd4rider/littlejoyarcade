@@ -71,7 +71,9 @@ function downloadsFor(release) {
   const assets = (release.assets ?? []).filter((asset) => !asset.name.endsWith('.blockmap'))
   const downloads = []
   for (const wanted of DOWNLOADS) {
-    const asset = assets.find((candidate) => candidate.name.toLowerCase().endsWith(wanted.suffix))
+    // Asset names are matched case-insensitively; the suffix list keeps the
+    // real spelling ("...AppImage"), so both sides are folded.
+    const asset = assets.find((candidate) => candidate.name.toLowerCase().endsWith(wanted.suffix.toLowerCase()))
     if (!asset) continue
     downloads.push({
       label: wanted.label,
