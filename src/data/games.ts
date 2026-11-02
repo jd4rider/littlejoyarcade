@@ -7,6 +7,7 @@ export type Category =
   | 'Logic'
   | 'Strategy'
   | 'Arcade'
+  | 'Physics'
   | 'Brain Training'
   | 'Casual'
 
@@ -447,6 +448,7 @@ export const CATEGORIES: Category[] = [
   'Logic',
   'Strategy',
   'Arcade',
+  'Physics',
   'Brain Training',
   'Casual',
 ]
