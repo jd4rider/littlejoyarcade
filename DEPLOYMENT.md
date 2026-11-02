@@ -16,8 +16,16 @@ gives automatic production and preview deployments from this repository.
 app while **Supabase** provides Postgres, auth and row level security. The schema in `supabase/migrations/` is
 written for exactly that split.
 
-Current state: GitHub Pages preview at <https://jd4rider.github.io/littlejoyarcade/>. Vercel is not deployed yet
-because the CLI is not installed and no Vercel account token exists in this environment.
+Current state (2 November 2026): deployed to Vercel at <https://littlejoyarcade.vercel.app> and verified. The
+production domain `littlejoyarcade.site` (and `www`) is attached to the project `littlejoyarcade`, but DNS still
+points at GoDaddy's parking page, so the custom domain does not serve the site yet. The GitHub Pages preview at
+<https://jd4rider.github.io/littlejoyarcade/> stays up until the cutover.
+
+Auto-deploy on push is **not** connected yet: `vercel git connect` failed because the Vercel GitHub App does not
+have access to this new repository. Fix by installing/authorising the app for it at
+<https://github.com/apps/vercel/installations/new>, then run `npx vercel git connect` once. Until then, deploys
+are made from this machine with `npm run deploy:vercel` (`npx vercel --prod`), which is already authenticated as
+`jd4rider`.
 
 ## One-time Vercel setup (owner, ~3 minutes)
 

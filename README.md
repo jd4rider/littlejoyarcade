@@ -3,8 +3,9 @@
 A small, polished home for hand-made casual games — plus the shared SDK, database schema and deployment
 tooling that lets the collection grow without rebuilding the platform each time.
 
-- **Preview (live now):** <https://jd4rider.github.io/littlejoyarcade/>
-- **Production target:** Vercel + Supabase at <https://littlejoyarcade.site> (project import and DNS cutover pending — see `DEPLOYMENT.md` and `DNS_CONFIGURATION.md`)
+- **Vercel deployment (live now):** <https://littlejoyarcade.vercel.app>
+- **Production domain:** <https://littlejoyarcade.site> — attached in Vercel, DNS cutover pending (see `DNS_CONFIGURATION.md`)
+- **Preview mirror:** <https://jd4rider.github.io/littlejoyarcade/>
 - **Games in the catalogue:** 8 (Bubble Wrap, Pipe Dreams, Jewel Match, Pixel Stitch, Sand Sort Studio,
   Lighthouse Keeper, Laser Logic, Circuit Crafter)
 
@@ -58,8 +59,8 @@ importing the repository is enough:
 3. **Apply the schema:** `npx supabase link --project-ref <ref> && npx supabase db push`.
 4. **Set env vars** in Vercel → Settings → Environment Variables for Production and Preview:
    `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — then redeploy.
-5. **Connect the domain:** add it in Vercel → Domains, then replace the GoDaddy parking records with the values
-   Vercel shows.
+5. **Connect the domain:** already attached in Vercel; replace the GoDaddy parking records with the two A
+   records in `DNS_CONFIGURATION.md` and Vercel issues the certificate.
 
 Full runbook: `DEPLOYMENT.md`. DNS records and verification: `DNS_CONFIGURATION.md`.
 

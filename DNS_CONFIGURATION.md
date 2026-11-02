@@ -9,8 +9,10 @@
 | `www.littlejoyarcade.site` | parking IPs |
 | `bubblewrapgame.online` | GitHub Pages, custom domain + HTTPS working |
 
-No records have been changed: no GoDaddy API key and no Vercel account token were available here. The parking
-A records must be **replaced**, not added to, or the apex will keep resolving to GoDaddy's parked page.
+The domain has been added to the Vercel project `littlejoyarcade` for both `littlejoyarcade.site` and
+`www.littlejoyarcade.site`, and Vercel reports project ownership as verified. No DNS records have been changed
+yet: GoDaddy API credentials were not available. The parking A records must be **replaced**, not added to, or
+the apex will keep resolving to GoDaddy's parked page.
 
 Before editing, export the full record list from GoDaddy → DNS → Manage Zones (or the API) and confirm no MX,
 SPF, DKIM, DMARC or verification TXT records exist that must be preserved.
@@ -28,15 +30,19 @@ SPF, DKIM, DMARC or verification TXT records exist that must be preserved.
 
 ## Vercel cutover (recommended)
 
-The exact records are shown in **Vercel → Project → Settings → Domains** after adding the domain. Typical values:
+These are the records Vercel's verifier returned for this exact project (2 November 2026):
 
 | Type | Name | Value | Notes |
 | --- | --- | --- | --- |
-| A | `@` | `76.76.21.21` | Replaces the two GoDaddy parking A records |
-| CNAME | `www` | `cname.vercel-dns.com` | Replace the existing `www` |
-| TXT | `_vercel` | value shown by Vercel | Only if Vercel asks for domain verification |
+| A | `@` | `216.198.79.1` | Replaces **both** GoDaddy parking A records |
+| A | `@` | `64.29.17.1` | Second required apex record |
 
-Use Vercel's displayed values, not these, if they differ.
+`www` already CNAMEs to `littlejoyarcade.site`, so it follows the apex automatically once the two A records
+change. If you prefer an explicit `www` record, use `CNAME www → cname.vercel-dns.com`. No `_vercel` TXT record
+is needed for this domain — Vercel already verified project ownership.
+
+Alternative: switching nameservers to `ns1.vercel-dns.com` / `ns2.vercel-dns.com` also works, but that is a
+broader change than two A records.
 
 ### Order of operations (this order matters)
 
@@ -61,8 +67,8 @@ curl -s "https://api.godaddy.com/v1/domains/littlejoyarcade.site/records" \
 curl -s -X PUT "https://api.godaddy.com/v1/domains/littlejoyarcade.site/records" \
   -H "Authorization: sso-key $GODADDY_KEY:$GODADDY_SECRET" \
   -H 'Content-Type: application/json' \
-  -d '[{"type":"A","name":"@","data":"76.76.21.21","ttl":600},
-       {"type":"CNAME","name":"www","data":"cname.vercel-dns.com","ttl":600}]'
+  -d '[{"type":"A","name":"@","data":"216.198.79.1","ttl":600},
+       {"type":"A","name":"@","data":"64.29.17.1","ttl":600}]'
 ```
 
 `PUT` replaces every record of the submitted types. If MX/TXT records exist, submit them in the same payload or
@@ -78,8 +84,9 @@ curl -sI https://littlejoyarcade.site | head -5
 curl -sI https://www.littlejoyarcade.site | head -5
 ```
 
-Expected: GoDaddy nameservers, Vercel's A/CNAME values, HTTP 200 on the apex, a 301/308 from `www` to the apex,
-and a valid certificate on both. DNS caches can hold the old parking IPs for up to the previous TTL; test with
+Expected: GoDaddy nameservers, the two Vercel A records above, HTTP 200 on the apex, a 301/308 from `www` to
+the apex, and a valid certificate on both. `vercel domains verify littlejoyarcade.site` should switch from
+"not configured properly" to verified. DNS caches can hold the old parking IPs for up to the previous TTL; test with
 `dig @1.1.1.1` before assuming a propagation problem.
 
 ## Optional: moving nameservers to Cloudflare
