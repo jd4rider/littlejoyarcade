@@ -611,6 +611,38 @@ export const GAMES: Game[] = [
     levels: '200 Journey boards · 8 chapters + daily, zen, expert and unlimited',
     saveKey: 'purrfect-squares-save-v1',
   },
+  {
+    id: 'skipping-stones',
+    name: 'Skipping Stones',
+    tagline: 'Flat stones, a long lake, the perfect angle.',
+    description:
+      'A physics arcade game about the oldest good idea at a lake. Drag to set power and aim, release, and watch a flat stone skip away from you while it keeps a little energy for one more bounce. Five lakes each with their own light and wind, a hundred Journey boards that were generated and then proven with a stored winning throw, a daily stone identical for everybody, and a collection of stones that genuinely throw differently. No timer, no lives, just one more throw.',
+    categories: ['Arcade', 'Physics', 'Relaxing', 'Casual'],
+    runtime: 'Phaser 4',
+    version: '0.1.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/skipping-stones/play/',
+    preferredPlayUrl: 'https://skippingstones.littlejoyarcade.site/play/',
+    siteUrl: 'https://jd4rider.github.io/skipping-stones/',
+    repoUrl: repo('skipping-stones'),
+    releasesUrl: `${repo('skipping-stones')}/releases`,
+    downloads: [],
+    cover: { from: '#1f9d7a', to: '#0e2c3d', emoji: '🪨' },
+    highlights: [
+      '100 Journey challenges across five lakes, each proven by a stored throw',
+      'Deterministic stone physics: power, launch angle, spin, wind and stone shape',
+      'A daily challenge seeded by the UTC date, the same board for everyone',
+      'Six stones and six trails, balanced so nothing is pay-to-win',
+    ],
+    howToPlay: [
+      'Drag up from the water to set power, slide left or right to aim, then release.',
+      'A shallow, fast, spinning stone skips. A steep or tired one goes straight in.',
+      'Hit the buoys, make the skip count, and chase your best distance.',
+    ],
+    levels: '100 Journey challenges · 5 lakes + daily, zen, endless, precision and trick shot',
+    saveKey: 'skipping-stones-save-v1',
+  },
 ]
 
 // Versions, dates and download links are generated from each repository's
