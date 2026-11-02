@@ -5,7 +5,7 @@ tooling that lets the collection grow without rebuilding the platform each time.
 
 - **Production host:** GitHub Pages, served at <https://littlejoyarcade.site> (`public/CNAME` + custom domain)
 - **Deployed alternatives:** <https://littlejoyarcade.pages.dev>, <https://littlejoyarcade.vercel.app>, and the Netlify site (created, unused)
-- **Backend:** Supabase (auth + Postgres + RLS) — the schema and SDK adapter are ready; project credentials pending
+- **Backend:** Supabase project `fqovramltegcfiyebyrt` — schema, RLS and the eight-game seed are applied; the two public keys are set as repository variables
 - **DNS:** GoDaddy nameservers unchanged; apex A records point at GitHub Pages and `www` CNAMEs to `jd4rider.github.io`
 - **Games in the catalogue:** 8 (Bubble Wrap, Pipe Dreams, Jewel Match, Pixel Stitch, Sand Sort Studio,
   Lighthouse Keeper, Laser Logic, Circuit Crafter)
@@ -74,10 +74,12 @@ and inside Electron without rewrite rules. Game pages themselves are served from
 ## Status
 
 Working and verified: the catalogue, search and filters, game detail pages, embedded play shell, guest
-dashboard with local achievements and data export, responsive layout, CI, Pages deployment.
+dashboard with local achievements and data export, responsive layout, CI, Pages deployment, the custom domain,
+and the Supabase database with row level security.
 
-Built but waiting on credentials: Supabase accounts, cloud saves, entitlements, storefront and the owner
-admin area (schema and RLS are written; the deployed build has no backend keys yet).
+Waiting on one dashboard setting: the Supabase Site URL and redirect allow-list, which email magic-link login
+needs. Cloud saves, entitlements, the storefront and the owner admin area are built and will work once a player
+can sign in.
 
 Not started: per-game SDK wiring inside the eight game repos, payment provider checkout, AdSense units,
 Capacitor mobile builds. `ROADMAP.md` lists the order.

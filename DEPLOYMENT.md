@@ -117,6 +117,12 @@ With a token I can create the project, set env vars, deploy, attach the domain a
 
 ## Backend: Supabase (database + login)
 
+**Status (2 November 2026):** project `littlejoyarcade` (`fqovramltegcfiyebyrt`, West US / North California)
+created; migrations `0001–0003` applied; the eight-game seed and achievement definitions are in place; RLS is
+active; `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set as repository variables. The generated database
+password is in the gitignored `.secrets/supabase.env` on this machine. Remaining: set the auth Site URL and
+redirect allow-list, then grant the first player `admin`.
+
 Recommended path, because it keeps billing and setup in one place:
 
 **A. Via Vercel Marketplace (fastest)** — Project → Storage/Marketplace → Supabase → create the integration.

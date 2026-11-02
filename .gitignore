@@ -10,3 +10,4 @@ coverage
 .wrangler
 .vercel
 dns-backup-*.json
+.secrets/
