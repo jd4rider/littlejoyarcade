@@ -259,6 +259,32 @@
     "updated": "2026-11-02",
     "downloads": []
   },
+  "bubble-spiral": {
+    "version": "0.1.1",
+    "updated": "2026-11-02",
+    "downloads": [
+      {
+        "label": "macOS (Apple Silicon)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/bubble-spiral/releases/download/v0.1.1/Bubble-Spiral-mac-arm64.dmg"
+      },
+      {
+        "label": "macOS (Intel)",
+        "platform": "macOS",
+        "url": "https://github.com/jd4rider/bubble-spiral/releases/download/v0.1.1/Bubble-Spiral-mac-x64.dmg"
+      },
+      {
+        "label": "Windows installer",
+        "platform": "Windows",
+        "url": "https://github.com/jd4rider/bubble-spiral/releases/download/v0.1.1/Bubble-Spiral-win-setup.exe"
+      },
+      {
+        "label": "Linux AppImage",
+        "platform": "Linux",
+        "url": "https://github.com/jd4rider/bubble-spiral/releases/download/v0.1.1/Bubble-Spiral-linux-x86_64.AppImage"
+      }
+    ]
+  },
   "hexodus": {
     "version": "0.1.1",
     "updated": "2026-11-02",
