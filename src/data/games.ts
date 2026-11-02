@@ -696,12 +696,12 @@ export const GAMES: Game[] = [
       {
         label: 'macOS (Apple Silicon)',
         platform: 'macOS',
-        url: 'https://github.com/jd4rider/prism-party/releases/download/v0.1.0/Prism%20Party-0.1.0-arm64.dmg',
+        url: 'https://github.com/jd4rider/prism-party/releases/download/v0.1.0/Prism.Party-0.1.0-arm64.dmg',
       },
       {
         label: 'macOS (Intel)',
         platform: 'macOS',
-        url: 'https://github.com/jd4rider/prism-party/releases/download/v0.1.0/Prism%20Party-0.1.0.dmg',
+        url: 'https://github.com/jd4rider/prism-party/releases/download/v0.1.0/Prism.Party-0.1.0.dmg',
       },
     ],
     cover: { from: '#7c5cf6', to: '#1a1235', emoji: '\u{1F537}' },
