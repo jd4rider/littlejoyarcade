@@ -679,9 +679,9 @@ export const GAMES: Game[] = [
   {
     id: 'prism-party',
     name: 'Prism Party',
-    tagline: 'Turn the mirrors, split the spectrum, light every crystal.',
+    tagline: 'Drag mirrors onto the board, split the spectrum, light every crystal.',
     description:
-      'A calm, tactile light puzzle. Rotate mirrors and prisms to steer a beam of light around a raised board and into coloured crystals. White light splits into red, green and blue, filters strip channels away, splitters share one beam between two crystals, and portals carry the light across the board. Two hundred puzzles across five rooms, each built from a working solution and then re-solved by an exhaustive solver before shipping, with three stars for solving in the fewest possible turns. No timer, unlimited undo, and a daily board identical for everyone.',
+      'A calm, tactile light puzzle. Some optics are already on the board and some are loose in a tray, so most boards cannot be solved by turning alone: drag a mirror or prism into an empty socket, then tap it to aim it. Colour-locked doors only open for their own wavelength, directional crystals only drink from one side, and walls close off the wrong turns. White light splits into red, green and blue, filters strip channels away, splitters share one beam between two crystals, and portals carry the light across the board. Two hundred puzzles across five rooms, each built from a working solution and then re-solved by an exhaustive solver before shipping, placements included, with three stars for solving in the fewest possible actions. No timer, unlimited undo, and a daily board identical for everyone.',
     categories: ['Puzzle', 'Logic', 'Relaxing', 'Brain Training'],
     runtime: 'Phaser 4',
     version: '0.1.0',
@@ -707,15 +707,17 @@ export const GAMES: Game[] = [
     cover: { from: '#7c5cf6', to: '#1a1235', emoji: '\u{1F537}' },
     highlights: [
       '200 puzzles, every one solved and verified by a backtracking solver',
+      'Drag loose mirrors and prisms into sockets - the route does not exist until you do',
+      'Colour-locked doors, directional crystals and 1,000+ walls to route around',
       'A real light engine: additive RGB mixing and per-channel transmission, so no device invents light',
       'Untimed, with unlimited undo, redo and restart',
-      'Three stars for solving in the fewest possible turns',
       'Daily puzzle, Zen mode and free play',
     ],
     howToPlay: [
-      'Tap a mirror or prism to turn it.',
+      'Drag a piece from the tray into a glowing socket.',
+      'Tap a mirror, prism or seated piece to turn it.',
       'Steer the beam into every coloured crystal at the same time.',
-      'Prisms separate white light into red, green and blue; filters strip colours out.',
+      'Prisms separate white light; filters strip colours out; doors only open for their own colour.',
     ],
     levels: '200 puzzles \u00b7 5 worlds + daily, zen and free play',
     saveKey: 'prism-party-save-v1',
