@@ -3,9 +3,10 @@
 A small, polished home for hand-made casual games — plus the shared SDK, database schema and deployment
 tooling that lets the collection grow without rebuilding the platform each time.
 
-- **Production host (free, commercial-use):** <https://littlejoyarcade.pages.dev> — Cloudflare Pages project `littlejoyarcade`
-- **Production domain:** <https://littlejoyarcade.site> — DNS cutover pending (see `DNS_CONFIGURATION.md`)
-- **Mirrors:** <https://littlejoyarcade.vercel.app> and <https://jd4rider.github.io/littlejoyarcade/>
+- **Production host (free, commercial-use):** Netlify — project creation pending one-time CLI login (`netlify.toml` is ready)
+- **Deployed alternatives:** <https://littlejoyarcade.pages.dev> (Cloudflare Pages) and <https://littlejoyarcade.vercel.app>
+- **Production domain:** <https://littlejoyarcade.site> — apex A record via `scripts/godaddy-apply-dns.sh`, no nameserver change
+- **Preview mirror:** <https://jd4rider.github.io/littlejoyarcade/>
 - **Games in the catalogue:** 8 (Bubble Wrap, Pipe Dreams, Jewel Match, Pixel Stitch, Sand Sort Studio,
   Lighthouse Keeper, Laser Logic, Circuit Crafter)
 

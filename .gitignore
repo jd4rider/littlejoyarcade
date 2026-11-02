@@ -9,4 +9,4 @@ coverage
 .env.*.local
 .wrangler
 .vercel
-.vercel
+dns-backup-*.json

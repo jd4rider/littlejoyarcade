@@ -4,16 +4,41 @@
 
 | Option | Commercial use | Cost | Verdict |
 | --- | --- | --- | --- |
-| **Cloudflare Pages** | Allowed on free tier | $0 — 500 builds/month, 20k files, unmetered static requests | **Chosen.** Best free tier for this project |
-| Vercel — Hobby | Personal, non-commercial only | $0 | Keep as a preview mirror; not for a monetized arcade |
+| **Netlify — Free** | Allowed | $0; 100 GB bandwidth, 300 build min/month | **Chosen.** Its apex A record works with GoDaddy DNS, so no nameserver change |
+| Cloudflare Pages | Allowed on free tier | $0 — 500 builds/month, 20k files, unmetered static requests | Deployed and kept as an alternative; apex needs Cloudflare DNS |
+| Vercel — Hobby | Personal, non-commercial only | $0 | Preview mirror; not for a monetized arcade |
 | Vercel — Pro | Permitted | ~$20/user/month | Only if Vercel-specific features are needed |
-| Netlify — Free | Allowed | $0; 100 GB bandwidth, 300 build min/month | Best fallback if DNS stays at GoDaddy (apex A record) |
 | Firebase Hosting — Spark | Allowed | $0; 10 GB storage, 360 MB/day transfer | Works, but the transfer cap is tighter |
 | Azure Static Web Apps — Free | Allowed | $0; 100 GB/month | Workable, more setup friction |
 | GitHub Pages | Discouraged for business sites | $0 | Preview only |
 
-Both Cloudflare Pages and Vercel are deployed. **Cloudflare is the intended production host** because its free
-tier explicitly allows commercial use with unmetered static requests. Vercel Hobby stays as a preview mirror.
+**Netlify is the intended production host**, chosen because it supports an apex `A` record: the domain can stay on
+GoDaddy's nameservers, which avoids a disruptive DNS migration. Cloudflare Pages stays deployed as an
+alternative, and Vercel as a preview mirror. All three free tiers permit commercial use except Vercel Hobby.
+
+### Netlify (free, chosen)
+
+`netlify.toml` contains the build (`npm run build`), publish directory (`dist`), security headers, immutable
+asset caching and an SPA fallback. Netlify project creation is pending a one-time browser login on this machine
+(`npx netlify-cli login`); once authorised:
+
+```bash
+npx netlify-cli sites:create --name littlejoyarcade
+npx netlify-cli deploy --prod --dir=dist
+```
+
+DNS: Netlify's external-DNS mode needs one apex `A` record (`75.2.60.5`). `scripts/godaddy-apply-dns.sh` applies
+it with the GoDaddy token from the environment, backs up the zone first, and preserves the existing `_dmarc` TXT
+and `_domainconnect` records. `scripts/godaddy-restore-dns.sh` rolls it back.
+
+```bash
+export GODADDY_PAT='gd_pat_...'
+scripts/godaddy-apply-dns.sh              # dry run
+CONFIRM=yes scripts/godaddy-apply-dns.sh  # apply + poll public DNS
+```
+
+CI: `.github/workflows/netlify.yml` builds and tests on every push and deploys once `NETLIFY_AUTH_TOKEN` and
+`NETLIFY_SITE_ID` exist as repository secrets; otherwise it logs a notice and skips.
 
 ### Cloudflare Pages (free, chosen)
 
