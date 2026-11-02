@@ -310,5 +310,30 @@
         "url": "https://github.com/jd4rider/hexodus/releases/download/v0.1.1/Hexodus-linux-x86_64.AppImage"
       }
     ]
+  },
+  "purrfect-squares": {
+    "version": "0.1.0",
+    "updated": "2026-11-02",
+    "downloads": []
+  },
+  "skipping-stones": {
+    "version": "0.1.0",
+    "updated": "2026-11-02",
+    "downloads": []
+  },
+  "mini-golf-garden": {
+    "version": "0.1.0",
+    "updated": "2026-11-02",
+    "downloads": []
+  },
+  "prism-party": {
+    "version": "0.1.0",
+    "updated": "2026-11-02",
+    "downloads": []
+  },
+  "bus-jam-bonanza": {
+    "version": "1.0.0",
+    "updated": "2026-11-02",
+    "downloads": []
   }
 }
