@@ -692,7 +692,18 @@ export const GAMES: Game[] = [
     siteUrl: 'https://jd4rider.github.io/prism-party/',
     repoUrl: repo('prism-party'),
     releasesUrl: `${repo('prism-party')}/releases`,
-    downloads: [],
+    downloads: [
+      {
+        label: 'macOS (Apple Silicon)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/prism-party/releases/download/v0.1.0/Prism%20Party-0.1.0-arm64.dmg',
+      },
+      {
+        label: 'macOS (Intel)',
+        platform: 'macOS',
+        url: 'https://github.com/jd4rider/prism-party/releases/download/v0.1.0/Prism%20Party-0.1.0.dmg',
+      },
+    ],
     cover: { from: '#7c5cf6', to: '#1a1235', emoji: '\u{1F537}' },
     highlights: [
       '200 puzzles, every one solved and verified by a backtracking solver',
