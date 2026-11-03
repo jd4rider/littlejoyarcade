@@ -831,7 +831,7 @@ export const GAMES: Game[] = [
     categories: ['Puzzle', 'Arcade', 'Physics', 'Casual'],
     runtime: 'Unity WebGL',
     version: '0.1.0',
-    updated: '2026-11-02',
+    updated: '2026-11-03',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/cannon-clash-3d-web/play/',
     siteUrl: 'https://jd4rider.github.io/cannon-clash-3d-web/',
@@ -847,7 +847,7 @@ export const GAMES: Game[] = [
       'Mouse and touch input, no install and no download',
     ],
     howToPlay: [
-      'Open the game and wait for the Unity progress bar - the first load streams about 55 MB',
+      'Open the game and wait for the Unity progress bar - the first load streams about 81 MB',
       'Aim the cannon, then choose the power for the shot',
       'Clear the target without running out of shots',
       'Use the fullscreen button in the footer for the largest view',
