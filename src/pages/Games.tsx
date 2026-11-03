@@ -41,7 +41,7 @@ export default function Games() {
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-joy-amber/85">The shelf</p>
         <h1 className="text-3xl font-extrabold tracking-tight text-cream sm:text-4xl">All games</h1>
         <p className="mt-2 max-w-2xl text-white/60">
-          Eight games, all playable in the browser. Desktop installers are linked on the games that have them.
+          {GAMES.length} games, all playable in the browser. Desktop installers are linked on the games that have them.
         </p>
       </header>
 
