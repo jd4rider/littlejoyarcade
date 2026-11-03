@@ -13,7 +13,7 @@ export type Category =
   | 'Brain Training'
   | 'Casual'
 
-export type Runtime = 'Phaser 4' | 'Phaser 3' | 'React 19' | 'Unity WebGL' | 'Babylon.js'
+export type Runtime = 'Phaser 4' | 'Phaser 3' | 'React 19' | 'Unity WebGL' | 'Babylon.js' | 'PixiJS 8'
 
 export interface DownloadLink {
   label: string
@@ -754,6 +754,40 @@ export const GAMES: Game[] = [
     ],
     levels: '300 levels \u00b7 10 worlds + daily, zen, expert and endless',
     saveKey: 'bus-jam-bonanza-save-v1',
+  },
+  {
+    id: 'gear-garden',
+    name: 'Gear Garden',
+    tagline: 'Fit the gears. Wake the garden.',
+    description:
+      'A portrait-first 2.5D clockwork puzzle. Fit brass gears onto wooden axles, then send a motor\u2019s power through them to blooms, windmills, fountains and clockwork birds. Gears only mesh when their tooth counts add up to 24, a compound shaft carries motion to a second layer, belts cross and reverse, clutches must be engaged, and a driven axle can stall or overload. All 1,000 gardens across twenty worlds were constructed from a working mechanism, verified by the same solver the game uses for hints, and re-validated in CI, so no shipped garden can be unsolvable. Exact rational ratios mean a speed requirement is never a matter of rounding.',
+    categories: ['Puzzle', 'Logic', 'Brain Training', 'Casual'],
+    runtime: 'PixiJS 8',
+    version: '1.0.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/gear-garden/play/',
+    preferredPlayUrl: 'https://geargarden.littlejoyarcade.site/play/',
+    siteUrl: 'https://jd4rider.github.io/gear-garden/',
+    repoUrl: repo('gear-garden'),
+    releasesUrl: `${repo('gear-garden')}/releases`,
+    downloads: [],
+    cover: { from: '#e3ad55', to: '#2f4633', emoji: '\u2699\uFE0F' },
+    highlights: [
+      '1,000 gardens across twenty themed worlds, each one solver-verified before shipping',
+      'A real transmission simulation: mesh directions, exact ratios, compound shafts, belts, clutches and torque loads',
+      'Contradictions are explained \u2014 two drives disagreeing, a braked axle, or a mechanism behind too much load',
+      'Tactile 2.5D brass and copper gears with layered shadows and mechanisms that bloom when powered',
+      'Solver-backed hints, full undo/redo, portrait touch controls plus a keyboard path, and offline saves',
+    ],
+    howToPlay: [
+      'Tap a gear in the tray, then tap an empty wooden axle to fit it.',
+      'Neighbouring gears mesh only when their tooth counts add up to 24. Watch the objective\u2019s direction and speed.',
+      'Press RUN to turn the motor. If nothing moves, check the chain, a released clutch or an overloaded drive.',
+      'Wake every mechanism in the garden. Undo and restart are always free.',
+    ],
+    levels: '1,000 gardens \u00b7 20 worlds + daily, zen, endless and free build',
+    saveKey: 'gear-garden-save-v1',
   },
   {
     id: 'wrecking-yard',
