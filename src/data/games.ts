@@ -13,7 +13,7 @@ export type Category =
   | 'Brain Training'
   | 'Casual'
 
-export type Runtime = 'Phaser 4' | 'Phaser 3' | 'React 19' | 'Unity WebGL' | 'Babylon.js' | 'PixiJS 8'
+export type Runtime = 'Phaser 4' | 'Phaser 3' | 'React 19' | 'Unity WebGL' | 'Babylon.js' | 'PixiJS 8' | 'Three.js'
 
 export interface DownloadLink {
   label: string
@@ -855,6 +855,40 @@ export const GAMES: Game[] = [
     ],
     levels: '1000 levels \u00b7 20 worlds + daily and sandbox',
     saveKey: 'bridge-buddies-save-v1',
+  },
+  {
+    id: 'brick-blitz',
+    name: 'Brick Blitz',
+    tagline: 'Smash the wall. Catch the chaos.',
+    description:
+      'A portrait-first 3D brick-breaker built with Three.js. Ten worlds of fifty levels each, a boss at the end of every world, forty power-ups including the bad ones, and twenty-five brick types that change how you aim: shield plating to burn off, colour locks that ignore ordinary hits, portals that move the ball, gravity wells that bend it, and switches that open every bulkhead on the level. The ball runs on a fixed 120 Hz step with swept collisions, so a hit is a hit on every screen size, and fast balls cannot tunnel through a brick.',
+    categories: ['Arcade', 'Casual'],
+    runtime: 'Three.js',
+    version: '1.0.0',
+    updated: '2026-11-02',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/brick-blitz/play/',
+    preferredPlayUrl: 'https://brickblitz.littlejoyarcade.site/play/',
+    siteUrl: 'https://jd4rider.github.io/brick-blitz/',
+    repoUrl: repo('brick-blitz'),
+    releasesUrl: `${repo('brick-blitz')}/releases`,
+    downloads: [],
+    cover: { from: '#4de1ff', to: '#1b0b2e', emoji: '\u{1F9F1}' },
+    highlights: [
+      '500 levels across ten themed worlds, every one structurally validated in CI before it ships',
+      '40 power-ups with deterministic conflict rules: tiny beats mega, speed is capped, the ball swarm is capped',
+      '25 brick types with real behaviours, not just different colours \u2014 portals, gravity wells, switches and armoured cores',
+      'Ten bosses with three health phases and telegraphed attacks, from the Brick Titan to the Blitz King',
+      'Deterministic swept collision physics and portrait-first touch controls with keyboard support',
+    ],
+    howToPlay: [
+      'Drag anywhere in the lower half of the screen to slide the paddle. On desktop use the mouse or arrow keys.',
+      'Tap LAUNCH. Where the ball lands on the paddle sets the angle: centre goes almost straight up, edges go wide.',
+      'Read the glyphs: shields need fire, colour locks need electricity, bulkheads never break. Catch capsules but avoid the red-ringed ones.',
+      'Break the objective, then the boss core. Stars come from score, not from speed.',
+    ],
+    levels: '500 levels \u00b7 10 worlds + endless, survival, boss rush, daily, zen and 8 challenges',
+    saveKey: 'brick-blitz-save-v1',
   },
 ]
 
