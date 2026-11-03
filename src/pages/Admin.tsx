@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { isBackendConfigured, supabase } from '../lib/supabase'
+import { loadFeedbackInbox, type FeedbackRecord } from '../lib/feedback'
 import { useAuth } from '../lib/auth'
 
 interface AdminGame {
@@ -19,11 +20,23 @@ interface AdminProduct {
   price_cents: number
 }
 
+function shortDate(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return '—'
+  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
 export default function Admin() {
   const { user, profile, loading } = useAuth()
   const [games, setGames] = useState<AdminGame[]>([])
   const [products, setProducts] = useState<AdminProduct[]>([])
-  const [counts, setCounts] = useState<{ players: number; entitlements: number; sessions: number } | null>(null)
+  const [counts, setCounts] = useState<{
+    players: number
+    entitlements: number
+    sessions: number
+    feedback: number
+  } | null>(null)
+  const [feedback, setFeedback] = useState<FeedbackRecord[]>([])
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -34,20 +47,27 @@ export default function Admin() {
   const load = useCallback(async () => {
     if (!supabase) return
     setError(null)
-    const [gamesResult, productsResult, players, entitlements, sessions] = await Promise.all([
-      supabase.from('games').select('id,name,status,featured,version').order('sort_order'),
-      supabase.from('products').select('id,name,entitlement,active,price_cents').order('created_at'),
-      supabase.from('profiles').select('id', { count: 'exact', head: true }),
-      supabase.from('entitlements').select('id', { count: 'exact', head: true }).is('revoked_at', null),
-      supabase.from('game_sessions').select('id', { count: 'exact', head: true }),
-    ])
+    const [gamesResult, productsResult, players, entitlements, sessions, feedbackTotal, inbox] =
+      await Promise.all([
+        supabase.from('games').select('id,name,status,featured,version').order('sort_order'),
+        supabase.from('products').select('id,name,entitlement,active,price_cents').order('created_at'),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        supabase.from('entitlements').select('id', { count: 'exact', head: true }).is('revoked_at', null),
+        supabase.from('game_sessions').select('id', { count: 'exact', head: true }),
+        supabase.from('game_feedback').select('id', { count: 'exact', head: true }),
+        loadFeedbackInbox(200),
+      ])
     if (gamesResult.error) setError(gamesResult.error.message)
+    else if (feedbackTotal.error) setError(feedbackTotal.error.message)
+    else if (inbox.error) setError(inbox.error)
     setGames((gamesResult.data ?? []) as AdminGame[])
     setProducts((productsResult.data ?? []) as AdminProduct[])
+    setFeedback(inbox.entries)
     setCounts({
       players: players.count ?? 0,
       entitlements: entitlements.count ?? 0,
       sessions: sessions.count ?? 0,
+      feedback: feedbackTotal.count ?? inbox.entries.length,
     })
   }, [])
 
@@ -104,6 +124,8 @@ export default function Admin() {
       setError(parseError instanceof Error ? parseError.message : 'Invalid manifest JSON')
     }
   }
+
+  const gameLabel = (id: string) => games.find((game) => game.id === id)?.name ?? id
 
   const registerSubdomain = async () => {
     if (!supabase) return
@@ -233,11 +255,12 @@ export default function Admin() {
         </div>
       </section>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: 'Players', value: counts?.players },
           { label: 'Active entitlements', value: counts?.entitlements },
           { label: 'Game sessions', value: counts?.sessions },
+          { label: 'Feedback notes', value: counts?.feedback },
         ].map((stat) => (
           <div key={stat.label} className="card p-4">
             <p className="text-[0.68rem] uppercase tracking-wide text-white/45">{stat.label}</p>
@@ -301,6 +324,51 @@ export default function Admin() {
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section className="card mt-6 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-5 py-4">
+          <div>
+            <h2 className="text-lg font-bold text-cream">Player feedback</h2>
+            <p className="text-xs text-white/45">
+              Newest first. Scores are public, written notes are visible only to you.
+            </p>
+          </div>
+          <span className="pill">
+            {feedback.length} recent{counts && counts.feedback > feedback.length ? ` of ${counts.feedback}` : ''}
+          </span>
+        </div>
+        <ul className="divide-y divide-white/10">
+          {feedback.map((entry) => (
+            <li key={entry.id} className="px-5 py-4">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="text-sm font-semibold text-cream">{gameLabel(entry.gameId)}</span>
+                <span className="text-sm text-joy-amber" aria-hidden="true">
+                  {'★'.repeat(entry.rating)}
+                  <span className="text-white/20">{'★'.repeat(5 - entry.rating)}</span>
+                </span>
+                <span className="sr-only">{entry.rating} out of 5</span>
+                <span className="text-xs text-white/45">
+                  {entry.playerName ?? 'Guest'}
+                  {entry.gameVersion ? ` · v${entry.gameVersion}` : ''}
+                </span>
+                <time dateTime={entry.createdAt} className="ml-auto text-xs text-white/35">
+                  {shortDate(entry.createdAt)}
+                </time>
+              </div>
+              {entry.comment ? (
+                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-white/70">{entry.comment}</p>
+              ) : (
+                <p className="mt-2 text-xs text-white/30">Rating only, no note.</p>
+              )}
+            </li>
+          ))}
+          {feedback.length === 0 ? (
+            <li className="px-5 py-6 text-center text-sm text-white/45">
+              No feedback yet. Notes land here as soon as players send them.
+            </li>
+          ) : null}
+        </ul>
       </section>
 
       <section className="card mt-6 overflow-hidden">

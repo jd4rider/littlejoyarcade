@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import FeedbackForm from '../components/FeedbackForm'
 import { Cover, GameCard } from '../components/ui'
 import { gamesById, relatedGames } from '../data/games'
 import { recordLaunch } from '../lib/arcade'
@@ -77,6 +78,8 @@ export default function GameDetail() {
               ))}
             </ol>
           </section>
+
+          <FeedbackForm gameId={game.id} gameName={game.name} gameVersion={game.version} />
         </div>
 
         <aside className="space-y-4">
