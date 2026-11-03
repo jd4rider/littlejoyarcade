@@ -335,5 +335,25 @@
     "version": "1.0.0",
     "updated": "2026-11-02",
     "downloads": []
+  },
+  "gear-garden": {
+    "version": "1.0.0",
+    "updated": "2026-11-03",
+    "downloads": []
+  },
+  "traffic-tangle": {
+    "version": "1.0.0",
+    "updated": "2026-11-03",
+    "downloads": []
+  },
+  "bridge-buddies": {
+    "version": "0.1.0",
+    "updated": "2026-11-03",
+    "downloads": []
+  },
+  "brick-blitz": {
+    "version": "1.0.0",
+    "updated": "2026-11-03",
+    "downloads": []
   }
 }
