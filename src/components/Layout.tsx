@@ -1,5 +1,6 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import { TIP_URL, TipJarBanner, useTipJar } from './TipJar'
 
 function Logo() {
   return (
@@ -29,6 +30,10 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
 
 export default function Layout() {
   const { user, loading, profile } = useAuth()
+  const { pathname } = useLocation()
+  const tip = useTipJar()
+  // The support page already shows the full coffee card, so skip the pill there.
+  const showTip = tip.visible && pathname !== '/support'
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -54,6 +59,9 @@ export default function Layout() {
             </NavLink>
             <NavLink to="/dashboard" className={navLink}>
               My arcade
+            </NavLink>
+            <NavLink to="/support" className={navLink}>
+              Support
             </NavLink>
           </nav>
 
@@ -90,10 +98,13 @@ export default function Layout() {
           <NavLink to="/dashboard" className={navLink}>
             My arcade
           </NavLink>
+          <NavLink to="/support" className={navLink}>
+            Support
+          </NavLink>
         </nav>
       </header>
 
-      <main id="main" className="flex-1">
+      <main id="main" className={showTip ? 'flex-1 pb-24' : 'flex-1'}>
         <Outlet />
       </main>
 
@@ -105,6 +116,15 @@ export default function Layout() {
               A small, carefully made collection of puzzle and logic games. Free in your browser, with desktop
               builds for macOS, Windows and Linux where they exist.
             </p>
+            <a
+              href={TIP_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-joy-amber/35 bg-joy-amber/10 px-3.5 py-2 text-xs font-semibold text-joy-amber transition hover:bg-joy-amber/20"
+            >
+              <span aria-hidden="true">☕</span>
+              Buy me a coffee
+            </a>
           </div>
           <div>
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-white/40">Explore</h2>
@@ -162,6 +182,8 @@ export default function Layout() {
           </p>
         </div>
       </footer>
+
+      {showTip ? <TipJarBanner onDismiss={tip.dismiss} /> : null}
     </div>
   )
 }
