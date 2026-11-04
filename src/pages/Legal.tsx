@@ -128,6 +128,39 @@ export default function Legal({ kind }: { kind: Kind }) {
         ))}
       </div>
       {kind === 'support' ? (
+        <section
+          aria-labelledby="tip-heading"
+          className="card mt-6 flex flex-col gap-5 p-5 sm:flex-row sm:items-center"
+        >
+          <img
+            src="./support-qr.png"
+            alt="QR code for the Little Joy Arcade Buy Me a Coffee page"
+            width={700}
+            height={700}
+            loading="lazy"
+            decoding="async"
+            className="h-40 w-40 shrink-0 self-center rounded-2xl bg-white p-2 sm:self-start"
+          />
+          <div className="min-w-0">
+            <h2 id="tip-heading" className="text-lg font-bold text-cream">
+              Buy me a coffee
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/60">
+              Every game here is free, has no ads inside gameplay, and asks nothing of your streak. If you would
+              like to chip in for the hosting and the next game, scan the code on your phone or open the link.
+            </p>
+            <a
+              href="https://www.buymeacoffee.com/jd4rider"
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-ghost mt-3 text-sm"
+            >
+              buymeacoffee.com/jd4rider ↗
+            </a>
+          </div>
+        </section>
+      ) : null}
+      {kind === 'support' ? (
         <div className="mt-6 flex flex-wrap gap-3">
           <a
             href="https://github.com/jd4rider/littlejoyarcade/issues"
