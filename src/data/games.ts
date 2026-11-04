@@ -865,7 +865,7 @@ export const GAMES: Game[] = [
     categories: ['Arcade'],
     runtime: 'Unity WebGL',
     version: '0.1.0',
-    updated: '2026-11-02',
+    updated: '2026-11-03',
     status: 'live',
     playUrl: 'https://jd4rider.github.io/wrecking-yard-web/play/',
     siteUrl: 'https://jd4rider.github.io/wrecking-yard-web/',
