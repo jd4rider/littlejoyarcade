@@ -169,21 +169,37 @@ export default function Layout() {
         </div>
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 border-t border-white/10 px-4 py-5 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p>© {YEAR} Little Joy Arcade. Games made by hand, no dark patterns.</p>
-          <p>
-            Built with{' '}
-            <a
-              href="https://freebuff.com"
-              className="font-semibold text-white/60 hover:text-cream"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Freebuff
-            </a>
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>
+              Built with{' '}
+              <a
+                href="https://freebuff.com"
+                className="font-semibold text-white/60 hover:text-cream"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Freebuff
+              </a>
+            </span>
+            <span aria-hidden="true" className="text-white/20">
+              ·
+            </span>
+            <span>
+              Site by{' '}
+              <a
+                href="https://jd4codes.com"
+                className="font-semibold text-white/60 hover:text-cream"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Jonathan Forrider Web Designs <span className="font-normal text-white/35">· jd4codes.com</span>
+              </a>
+            </span>
           </p>
         </div>
       </footer>
 
-      {showTip ? <TipJarBanner onDismiss={tip.dismiss} /> : null}
+      {showTip ? <TipJarBanner revealed={tip.revealed} onDismiss={tip.dismiss} /> : null}
     </div>
   )
 }
