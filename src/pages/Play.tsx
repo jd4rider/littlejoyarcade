@@ -41,6 +41,9 @@ export default function Play() {
   if (!game) return <NotFound />
 
   const currentUrl = route?.url ?? game.playUrl
+  // Version-stamped so a shipped fix is fetched instead of a cached game shell
+  // (GitHub Pages serves HTML with a ten minute cache).
+  const framedUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(game.version)}`
 
   const fallBack = () => {
     if (route?.source === 'subdomain') setRoute({ url: game.playUrl, source: 'canonical' })
@@ -71,7 +74,7 @@ export default function Play() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <a href={currentUrl} target="_blank" rel="noreferrer" className="btn btn-ghost px-3 py-1.5 text-xs">
+          <a href={framedUrl} target="_blank" rel="noreferrer" className="btn btn-ghost px-3 py-1.5 text-xs">
             <span className="hidden sm:inline">Open in new tab</span>
             <span className="sm:hidden" aria-hidden="true">
               ↗
@@ -86,8 +89,8 @@ export default function Play() {
       <div className="relative flex-1 overflow-hidden bg-black">
         {route ? (
           <iframe
-            key={currentUrl}
-            src={currentUrl}
+            key={framedUrl}
+            src={framedUrl}
             title={`${game.name} game`}
             className="h-full w-full border-0"
             allow="autoplay; fullscreen; gamepad; accelerometer; gyroscope"
