@@ -1236,6 +1236,41 @@ export const GAMES: Game[] = [
     levels: '20 levels \u00b7 4 worlds \u00b7 4 play styles',
     saveKey: 'doodle-rescue-3d-save-v1',
   },
+  {
+    id: 'orb-sort-3d',
+    name: 'Orb Sort 3D',
+    tagline: 'Pour the marbles. Seal the tube. Sort it clean.',
+    description:
+      'A real 3D marble-sorting puzzle rendered by the Unity WebGL player. Glass tubes hold stacks of glossy marbles: pour one tube into another and every matching marble on top leaves together in a single run, so the pour you get is the rule you were shown rather than one ball at a time. The marbles actually fly — they leave the tipped lip, collide in mid-air and settle into the receiving tube under physics. Finish a tube and a stopper caps it, locking it for the rest of the level. All 300 levels are stored boards an exhaustive search has already solved, so each one ships with a verified solution rather than a guess.',
+    categories: ['Puzzle', 'Logic', 'Casual'],
+    runtime: 'Unity WebGL',
+    version: '0.1.0',
+    updated: '2026-11-10',
+    status: 'live',
+    playUrl: 'https://jd4rider.github.io/orb-sort-3d-web/play/',
+    siteUrl: 'https://jd4rider.github.io/orb-sort-3d-web/',
+    repoUrl: repo('orb-sort-3d-web'),
+    releasesUrl: `${repo('orb-sort-3d-web')}/releases`,
+    downloads: [],
+    cover: { from: '#7c5cff', to: '#0b1020', emoji: '🔮' },
+    highlights: [
+      'Native Unity WebGL build with real 3D glass tubes and glossy marbles',
+      'Run pours: every matching marble on top leaves in one pour, not one at a time',
+      'Marbles leave the tube under physics and collide before they settle',
+      'Completed tubes are capped and sealed, so a finished tube stays finished',
+      '300 levels, each one solved exhaustively before it was published',
+      '12 themed worlds, a portrait play area that letterboxes on desktop',
+    ],
+    howToPlay: [
+      'Wait behind the Unity progress bar while the payload streams in - the first load is about 58 MB',
+      'Tap a tube to pick it up, then tap another to pour into it.',
+      'A pour moves the whole matching run from the top of the source tube, so plan around the colour you expose.',
+      'Finish a tube and it gets capped - three sealed tubes clears level 1.',
+      'There is no timer in the main mode: the board waits for you.',
+    ],
+    levels: '300 levels across 12 worlds',
+    saveKey: '',
+  },
 ]
 
 // Versions, dates and download links are generated from each repository's
