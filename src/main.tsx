@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { AuthProvider } from './lib/auth'
-import { replaceCatalog } from './data/games'
+import { GAMES, replaceCatalog } from './data/games'
 import type { Game } from './data/games'
 import { supabase } from './lib/supabase'
 import './index.css'
@@ -25,7 +25,12 @@ async function loadCatalog(): Promise<void> {
     const games = (result.data ?? [])
       .map((row) => row.manifest as Game | null)
       .filter((game): game is Game => Boolean(game && game.id && game.playUrl))
-    replaceCatalog(games)
+    // The bundled catalogue is the fallback for games that are live but not yet
+    // seeded in the database, so a newly shipped game still appears on the
+    // shelf without a service-role publish step.
+    const bundled = [...GAMES]
+    const known = new Set(games.map((game) => game.id))
+    replaceCatalog([...games, ...bundled.filter((game) => !known.has(game.id))])
   } catch {
     // Static catalogue stays in place.
   }
