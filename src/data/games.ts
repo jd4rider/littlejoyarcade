@@ -1124,10 +1124,10 @@ export const GAMES: Game[] = [
     name: 'Doodle Rescue 3D',
     tagline: 'Sketch it. Build it. Save the puppy.',
     description:
-      'A 3D physics drawing adventure built in Godot 4 and rendered straight in the browser. Drag a finger across the diorama and the glowing pencil leaves a real 3D beam with real collision: draw a roof to keep bees off Biscuit, a deck for him to cross a ravine, a wall to turn a rolling boulder, or a ramp that drops a toy ball into a basket. The puppy reacts to everything \u2014 ears back when the bees get close, a little spin when he is safe \u2014 and the result comes from the simulation that actually ran, not a scripted answer. Four toy worlds hold 20 hand-built levels, each with a stored solution that the shipping physics re-runs before release. A measured pen budget on every level, three stars for an efficient rescue, a journey map, cosmetic pens unlocked with stars, and progress that saves locally and syncs to a Little Joy Arcade account.',
+      'A 3D physics drawing adventure built in Godot 4 and rendered straight in the browser. Drag a finger across the diorama and the glowing pencil leaves a real 3D beam with real collision: fill Biscuit’s round kennel doorway with a doodle plug, a deck for him to cross a ravine, a wall to turn a rolling boulder, or a ramp that drops a toy ball into a basket. The puppy reacts to everything \u2014 ears back when the bees get close, a little spin when he is safe \u2014 and the result comes from the simulation that actually ran, not a scripted answer. In Bee Defence the plug is structural: a doodle that does not catch the wooden frame on both sides gets shoved in by the swarm. Four toy worlds hold 20 hand-built levels, each with a stored solution that the shipping physics re-runs before release. A measured pen budget on every level, three stars for an efficient rescue, a journey map, cosmetic pens unlocked with stars, and progress that saves locally and syncs to a Little Joy Arcade account.',
     categories: ['Physics', 'Puzzle', 'Casual', 'Arcade'],
     runtime: 'Godot 4',
-    version: '0.1.0',
+    version: '0.2.0',
     updated: '2026-11-09',
     status: 'live',
     featured: true,
@@ -1139,6 +1139,7 @@ export const GAMES: Game[] = [
     cover: { from: '#8fd7ff', to: '#2f5d3a', emoji: '\u{270F}\u{FE0F}' },
     highlights: [
       'Genuine 3D drawing: every stroke becomes a rounded 3D beam with real collision, not a flat line',
+      'Bee Defence is structural: fill the round kennel doorway, catch the frame on both sides, or the swarm shoves the doodle in',
       'Four play styles \u2014 Bee Defence, Bridge Build, Danger Dodge and Contraptions \u2014 sharing one pencil',
       'Biscuit the puppy: oversized eyes, floppy ears, blinking, breathing, nervous trembles and a victory spin',
       '20 hand-built levels across four toy worlds, each replayed by the shipping physics before release',
@@ -1151,6 +1152,7 @@ export const GAMES: Game[] = [
     ],
     howToPlay: [
       'Drag on the scene with a mouse or finger. A glowing pencil line previews the beam.',
+      'Bee levels: scribble across the round doorway. The doodle fills the hole; if it does not catch the wooden frame, the bees shove it in.',
       'Let go to build it: the stroke becomes a real 3D structure with real collision.',
       'Press Play. Bees attack, Biscuit crosses, boulders roll, or the ball starts moving.',
       'Keep Biscuit safe for the whole timer, or get him to the flag. Retry as often as you like.',
