@@ -20,6 +20,11 @@
       }
     ]
   },
+  "stackstorm": {
+    "version": "1.0.1",
+    "updated": "2026-11-10",
+    "downloads": []
+  },
   "pipe-dreams": {
     "version": "0.2.1",
     "updated": "2026-11-02",
