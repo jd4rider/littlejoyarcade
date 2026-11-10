@@ -130,7 +130,7 @@ export const GAMES: Game[] = [
       'Five modes: Classic Marathon, Storm Mode, Sprint, Time Attack and the 500-level Puzzle Journey',
       'Storm Mode charges a meter on clears and spends it on a twelve-second double-score surge',
       '500 Journey levels across ten worlds, each constructed from a proven solution and replay-validated in the test suite',
-      'Eight colour themes, fourteen trophies and lifetime statistics saved locally and synced by the arcade client',
+      'Eight colour themes, thirteen trophies and lifetime statistics saved locally and synced by the arcade client',
       'Portrait-first touch pad with press-and-hold movement, optional swipe gestures, and full keyboard controls',
       'Runs entirely in the browser with no account required and a fully offline core game',
     ],
