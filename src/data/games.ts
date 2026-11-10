@@ -114,7 +114,7 @@ export const GAMES: Game[] = [
       'A neon falling-block puzzle game with a real Super Rotation System engine and a half-second slide window after every landing: successful moves and rotations restart the lock timer, so a piece can still be nudged into place. Classic Marathon and Storm Mode build combos, back-to-back bonuses and a rechargeable surge; Sprint chases forty lines; Time Attack packs a score hunt into two minutes. Puzzle Journey adds 500 levels across ten themed worlds, each built from a working solution and replayed by the shipped engine before release: fill the wells with I pieces, spend the decoys without sealing your own route, and beat the gold time for three stars. Themes, trophies, lifetime statistics and local saves work offline; a Little Joy Arcade account syncs the same payload across devices.',
     categories: ['Puzzle', 'Arcade', 'Casual'],
     runtime: 'Phaser 3',
-    version: '1.0.3',
+    version: '1.0.4',
     updated: '2026-11-10',
     status: 'live',
     featured: true,
