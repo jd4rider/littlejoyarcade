@@ -1439,7 +1439,7 @@ export const GAMES: Game[] = [
       'A cosy 3D cat territory logic puzzle built in Godot 4 and exported to the web. A wooden tray of bevelled tiles sits on a lamplit table, each colour a territory, and every square you tap places a real Blender-modelled cat. Purrfect Territory 3D has 1,000 campaign puzzles across ten chapters, from Sunbeam Steps to Nine Lives Summit, plus a daily purr and endless practice. Every campaign board is generated once and committed only after an independent exact solver proves it has a single answer, then rated by a human-style deduction solver instead of by board size, so a small board can be genuinely tricky and a big one can be a gentle unwind. Hints name the rule they used. Your stars, streak and trophies sync through the Little Joy Arcade account, and the game keeps playing offline.',
     categories: ['Puzzle', 'Logic', 'Relaxing'],
     runtime: 'Godot 4',
-    version: '1.1.0',
+    version: '1.1.1',
     updated: '2026-11-11',
     status: 'live',
     featured: true,
