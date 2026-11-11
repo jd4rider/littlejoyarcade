@@ -52,7 +52,7 @@ export default function GameDetail() {
               What makes it good
             </h2>
             <ul className="mt-3 space-y-2.5 text-sm leading-relaxed text-white/65">
-              {game.highlights.map((highlight) => (
+              {(game.highlights ?? []).map((highlight) => (
                 <li key={highlight} className="flex gap-2">
                   <span aria-hidden="true" className="text-joy-mint">
                     ✦
@@ -68,7 +68,7 @@ export default function GameDetail() {
               How to play
             </h2>
             <ol className="mt-3 space-y-2.5 text-sm leading-relaxed text-white/65">
-              {game.howToPlay.map((step, index) => (
+              {(game.howToPlay ?? []).map((step, index) => (
                 <li key={step} className="flex gap-3">
                   <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-bold text-cream">
                     {index + 1}
@@ -108,9 +108,9 @@ export default function GameDetail() {
             <h2 id="downloads-heading" className="text-sm font-semibold uppercase tracking-[0.16em] text-white/40">
               Desktop downloads
             </h2>
-            {game.downloads.length > 0 ? (
+            {(game.downloads ?? []).length > 0 ? (
               <ul className="mt-3 space-y-2">
-                {game.downloads.map((download) => (
+                {(game.downloads ?? []).map((download) => (
                   <li key={download.url}>
                     <a href={download.url} className="btn btn-ghost w-full justify-between px-4 py-2.5 text-sm">
                       <span>{download.label}</span>
@@ -124,14 +124,16 @@ export default function GameDetail() {
                 This one is browser-only for now. The web build is the full game — nothing is held back.
               </p>
             )}
-            <a
-              href={game.releasesUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-3 inline-block text-xs font-semibold text-joy-sky hover:underline"
-            >
-              All releases on GitHub ↗
-            </a>
+            {game.releasesUrl ? (
+              <a
+                href={game.releasesUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-block text-xs font-semibold text-joy-sky hover:underline"
+              >
+                All releases on GitHub ↗
+              </a>
+            ) : null}
           </section>
 
           <section className="card p-5" aria-labelledby="platform-heading">

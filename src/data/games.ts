@@ -57,6 +57,39 @@ export interface Game {
 
 const repo = (id: string) => `https://github.com/jd4rider/${id}`
 
+/**
+ * Database rows are the source of truth for the catalogue, but a row can be
+ * written by the publish script or the admin screen with only the fields that
+ * changed. Filling the gaps here keeps a partial row from rendering an
+ * undefined list and taking the whole detail page down.
+ */
+export function normalizeGame(raw: Partial<Game> & Pick<Game, 'id' | 'name' | 'tagline' | 'playUrl'>): Game {
+  const repoUrl = raw.repoUrl ?? ''
+  return {
+    id: raw.id,
+    name: raw.name,
+    tagline: raw.tagline ?? '',
+    description: raw.description ?? '',
+    categories: Array.isArray(raw.categories) ? raw.categories : [],
+    runtime: raw.runtime ?? 'Phaser 3',
+    version: raw.version ?? '0.0.0',
+    updated: raw.updated ?? '',
+    status: raw.status === 'coming-soon' ? 'coming-soon' : 'live',
+    featured: Boolean(raw.featured),
+    playUrl: raw.playUrl,
+    preferredPlayUrl: raw.preferredPlayUrl,
+    siteUrl: raw.siteUrl ?? raw.playUrl,
+    repoUrl,
+    releasesUrl: raw.releasesUrl ?? (repoUrl ? `${repoUrl}/releases` : ''),
+    downloads: Array.isArray(raw.downloads) ? raw.downloads : [],
+    cover: raw.cover ?? { from: '#1e293b', to: '#0b1026', emoji: '\uD83C\uDFAE' },
+    highlights: Array.isArray(raw.highlights) ? raw.highlights : [],
+    howToPlay: Array.isArray(raw.howToPlay) ? raw.howToPlay : [],
+    levels: raw.levels ?? '',
+    saveKey: raw.saveKey ?? '',
+  }
+}
+
 export const GAMES: Game[] = [
   {
     id: 'galactic-gadgeteer',

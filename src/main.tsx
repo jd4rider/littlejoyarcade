@@ -4,7 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './lib/auth'
-import { GAMES, replaceCatalog } from './data/games'
+import { GAMES, normalizeGame, replaceCatalog } from './data/games'
 import type { Game } from './data/games'
 import { supabase } from './lib/supabase'
 import './index.css'
@@ -30,13 +30,20 @@ async function loadCatalog(): Promise<void> {
     const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500))
     const result = await Promise.race([query, timeout])
     if (!result || result.error) return
-    const games = (result.data ?? [])
-      .map((row) => row.manifest as Game | null)
-      .filter((game): game is Game => Boolean(game && game.id && game.playUrl))
     // The bundled catalogue is the fallback for games that are live but not yet
     // seeded in the database, so a newly shipped game still appears on the
     // shelf without a service-role publish step.
     const bundled = [...GAMES]
+    const bundledById = new Map(bundled.map((game) => [game.id, game]))
+    const games = (result.data ?? [])
+      .map((row) => {
+        const manifest = row.manifest as (Partial<Game> & { id?: string }) | null
+        if (!manifest?.id || !manifest.playUrl) return null
+        // A row only has to carry what it changed; the rest comes from the
+        // bundled entry, and normalizeGame fills anything neither provides.
+        return normalizeGame({ ...bundledById.get(manifest.id), ...manifest } as Game)
+      })
+      .filter((game): game is Game => Boolean(game))
     const known = new Set(games.map((game) => game.id))
     replaceCatalog([...games, ...bundled.filter((game) => !known.has(game.id))])
   } catch {
