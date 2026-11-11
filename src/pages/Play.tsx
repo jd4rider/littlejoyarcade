@@ -10,6 +10,7 @@ export default function Play() {
   const game = id ? gamesById.get(id) : undefined
   const shell = useRef<HTMLDivElement>(null)
   const [fullscreen, setFullscreen] = useState(false)
+  const [immersive, setImmersive] = useState(false)
   const [route, setRoute] = useState<PlayRoute | null>(null)
 
   useEffect(() => {
@@ -50,16 +51,34 @@ export default function Play() {
   }
 
   const toggleFullscreen = async () => {
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen()
-      else await shell.current?.requestFullscreen()
-    } catch {
-      // Fullscreen can be blocked by the browser or an embedding iframe.
+    if (immersive) {
+      setImmersive(false)
+      return
     }
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen()
+        return
+      }
+      if (shell.current?.requestFullscreen) {
+        await shell.current.requestFullscreen()
+        return
+      }
+    } catch {
+      // Mobile Safari and some embedded browsers refuse element fullscreen.
+    }
+    // Fall back to a viewport-filling shell and hide the portal chrome.
+    setImmersive(true)
   }
 
+  const chromeHidden = immersive || fullscreen
+
   return (
-    <div ref={shell} className="flex h-dvh flex-col bg-ink-950">
+    <div
+      ref={shell}
+      className={`flex h-dvh flex-col bg-ink-950 ${immersive ? 'fixed inset-0 z-[100] h-screen' : ''}`}
+    >
+      {!chromeHidden && (
       <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-ink-900/90 px-3 py-2 sm:px-4">
         <div className="flex min-w-0 items-center gap-3">
           <Link to={`/game/${game.id}`} className="btn btn-ghost px-3 py-1.5 text-xs">
@@ -81,12 +100,22 @@ export default function Play() {
             </span>
           </a>
           <button type="button" onClick={toggleFullscreen} className="btn btn-ghost px-3 py-1.5 text-xs">
-            {fullscreen ? 'Exit full screen' : 'Full screen'}
+            {chromeHidden ? 'Exit full screen' : 'Full screen'}
           </button>
         </div>
       </header>
+      )}
 
       <div className="relative flex-1 overflow-hidden bg-black">
+        {chromeHidden && (
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="absolute right-2 top-2 z-20 rounded-full border border-white/25 bg-ink-950/75 px-3 py-2 text-xs font-semibold text-cream backdrop-blur"
+          >
+            Exit full screen
+          </button>
+        )}
         {route ? (
           <iframe
             key={framedUrl}
@@ -105,12 +134,14 @@ export default function Play() {
         )}
       </div>
 
+      {!chromeHidden && (
       <p className="border-t border-white/10 bg-ink-900/90 px-4 py-2 text-center text-[0.7rem] text-white/35">
         If the game does not load, use “Open in new tab”. Progress in this game is saved on this device.{' '}
         <Link to={`/game/${game.id}`} className="font-semibold text-white/55 underline underline-offset-2 hover:text-cream">
           Rate this game
         </Link>
       </p>
+      )}
     </div>
   )
 }
