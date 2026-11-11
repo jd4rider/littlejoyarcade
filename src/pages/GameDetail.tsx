@@ -19,7 +19,7 @@ export default function GameDetail() {
       <div className="mt-4 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="space-y-6">
           <div className="card overflow-hidden">
-            <Cover game={game} className="h-56 w-full sm:h-72" />
+            <Cover game={game} className="h-56 w-full sm:h-72" animated />
             <div className="space-y-4 p-5 sm:p-6">
               <div className="flex flex-wrap items-center gap-2">
                 {game.categories.map((category) => (

@@ -326,6 +326,26 @@ body {
     animation-duration: var(--cp-dur, 900ms);
     animation-iteration-count: infinite;
   }
+
+  /* On a game's own page the cover is the subject, so it runs unprompted. */
+  .cover-scene--live .cover-emoji {
+    animation: var(--emoji-anim) var(--emoji-dur, 700ms) ease-in-out infinite;
+  }
+
+  .cover-scene--live .cover-glow {
+    opacity: 0.24;
+  }
+
+  .cover-scene--live .cover-jet {
+    opacity: 0.9;
+    animation: cover-jet 260ms ease-in-out infinite;
+  }
+
+  .cover-scene--live .cp {
+    animation-name: var(--cp-anim);
+    animation-duration: var(--cp-dur, 900ms);
+    animation-iteration-count: infinite;
+  }
 }
 
 @keyframes cover-jet {

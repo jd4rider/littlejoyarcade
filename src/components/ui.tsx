@@ -80,12 +80,21 @@ function coverParticles(game: Game, motion: CoverMotion) {
   })
 }
 
-export function Cover({ game, className = '' }: { game: Game; className?: string }) {
+export function Cover({
+  game,
+  className = '',
+  animated = false,
+}: {
+  game: Game
+  className?: string
+  /** Run the scene continuously instead of only on hover, e.g. on a game's own page. */
+  animated?: boolean
+}) {
   const motion = motionFor(game.cover.emoji)
 
   return (
     <div
-      className={`grid-cover cover-scene cover-scene--${motion} ${className}`}
+      className={`grid-cover cover-scene cover-scene--${motion} ${animated ? 'cover-scene--live' : ''} ${className}`}
       data-motion={motion}
       style={{ background: `linear-gradient(140deg, ${game.cover.from}, ${game.cover.to})` }}
     >
