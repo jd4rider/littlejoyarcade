@@ -54,8 +54,8 @@ function coverParticles(game: Game, motion: CoverMotion) {
   const random = seededRandom(`${game.id}:${motion}`)
   const rises = motion === 'cat' || motion === 'bubble' || motion === 'wobble'
 
-  return Array.from({ length: 9 }, (_, index) => {
-    const angle = (index / 9) * Math.PI * 2 + random() * 0.6
+  return Array.from({ length: 12 }, (_, index) => {
+    const angle = (index / 12) * Math.PI * 2 + random() * 0.6
     let dx = Math.cos(angle) * (16 + random() * 20)
     let dy = Math.sin(angle) * (16 + random() * 20)
 
@@ -90,6 +90,7 @@ export function Cover({ game, className = '' }: { game: Game; className?: string
       style={{ background: `linear-gradient(140deg, ${game.cover.from}, ${game.cover.to})` }}
     >
       <span aria-hidden="true" className="cover-glow" />
+      {motion === 'rocket' ? <span aria-hidden="true" className="cover-jet" /> : null}
       <span aria-hidden="true" className="cover-particles">
         {coverParticles(game, motion).map((particle) => (
           <i key={particle.key} className="cp" style={particle.style} />
