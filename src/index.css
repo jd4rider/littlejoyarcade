@@ -218,6 +218,11 @@ body {
     content: '🐾';
   }
 
+  .cover-scene--bubble .cover-emoji {
+    /* The glyph is mostly transparent, so give it a rim light on blue. */
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.9));
+  }
+
   .cover-scene--bubble .cp {
     /* Hollow soap bubbles instead of solid dots. */
     background: rgba(232, 248, 255, 0.14);
