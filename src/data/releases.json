@@ -1,11 +1,16 @@
 {
+  "galactic-gadgeteer": {
+    "version": "0.2.0",
+    "updated": "2026-11-11",
+    "downloads": []
+  },
   "jetstep-jam": {
     "version": "1.0.2",
     "updated": "2026-11-11",
     "downloads": []
   },
-  "galactic-gadgeteer": {
-    "version": "0.2.0",
+  "switchshot-adventures": {
+    "version": "1.0.0",
     "updated": "2026-11-11",
     "downloads": []
   },
@@ -42,6 +47,11 @@
   },
   "fruit-fusion-frenzy": {
     "version": "1.0.1",
+    "updated": "2026-11-11",
+    "downloads": []
+  },
+  "slingstorm": {
+    "version": "0.1.0",
     "updated": "2026-11-11",
     "downloads": []
   },
