@@ -1,4 +1,9 @@
 {
+  "galactic-gadgeteer": {
+    "version": "0.2.0",
+    "updated": "2026-11-11",
+    "downloads": []
+  },
   "bubblewrap": {
     "version": "0.2.1",
     "updated": "2026-11-02",
@@ -21,8 +26,23 @@
     ]
   },
   "stackstorm": {
-    "version": "1.1.1",
+    "version": "1.1.2",
     "updated": "2026-11-10",
+    "downloads": []
+  },
+  "neon-rivals": {
+    "version": "1.0.1",
+    "updated": "2026-11-11",
+    "downloads": []
+  },
+  "fruit-fusion-frenzy": {
+    "version": "1.0.1",
+    "updated": "2026-11-11",
+    "downloads": []
+  },
+  "fluff-frenzy": {
+    "version": "1.0.0",
+    "updated": "2026-11-11",
     "downloads": []
   },
   "pipe-dreams": {
