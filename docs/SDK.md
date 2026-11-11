@@ -65,6 +65,7 @@ interface Arcade {
   entitlements: { has(slug): boolean; list(): string[]; refresh(): Promise<string[]>; adsAllowed(): boolean }
   store: { getProducts(): Promise<Product[]> }
   analytics: { track(name, props?): void; events(): ArcadeEvent[]; flush(): Promise<void> }
+  support: { url: string; open(): void }
   platform: { runtime: 'browser' | 'electron' | 'capacitor' | 'unknown'; online: boolean; touch: boolean }
   envelope(): ProgressEnvelope | null
 }
@@ -122,7 +123,110 @@ own origin's `localStorage`, and posts `lja:auth` back whenever it signs in or
 out so the portal header stays in step. Only the portal origins are trusted; a
 direct visit to the game falls back to its own account panel.
 
-## 5. Publishing a game (API)
+## 5. Tip jar (Buy Me a Coffee)
+
+One URL serves every surface: `https://www.buymeacoffee.com/jd4rider`. The
+drop-in client owns it, so a game never hard-codes the link:
+
+```js
+window.LittleJoyArcade.tipJar.url   // the URL
+window.LittleJoyArcade.tipJar.open() // opens it in a new tab
+```
+
+With the npm SDK it is `arcade.support.open()` / `arcade.support.url`. A game
+build can override the destination with `data-tip-url` on its client script or
+`window.LJA_TIP_URL` (for a title that ever needs its own page).
+
+Placement rules:
+
+- Results, game-over, pause and menu screens only. Never during play, never an
+  interstitial, and only one surface per run.
+- Never open it automatically. It is a click, always.
+- Best moment is right after the player earned something: a cleared level, a new
+  best, a finished run.
+- Keep the next action primary. The tip jar is a quiet footer under the panel,
+  not a wall in front of it.
+- Say what it is plainly: "Buy me a coffee". No countdowns, no prices, no
+  "donate".
+
+### Phaser
+
+Draw it as a tertiary button under the results card and let the client handle
+the new tab. Jewel Match's results panel is the reference implementation
+(`src/phaser/support.js` + the end of `showPanel()`):
+
+```js
+import { openTipJar } from './support.js'
+
+p.add(button(this, W / 2, 760, '☕ Buy me a coffee', () => openTipJar(), {
+  w: 300, h: 46, size: 18, color: 0x3b2a12, textColor: '#fde68a',
+}))
+```
+
+`support.js` calls `window.LittleJoyArcade.tipJar.open()` when the drop-in
+client is present and falls back to the plain URL otherwise, so the button also
+works in Electron or a bare static build.
+
+### Unity
+
+For WebGL, bridge into the page with a `.jslib` plugin next to your other
+WebGL plugins:
+
+```csharp
+// Assets/Plugins/WebGL/LittleJoyTipJar.jslib
+mergeInto(LibraryManager.library, {
+  LJA_OpenTipJar: function () {
+    if (window.LittleJoyArcade && window.LittleJoyArcade.tipJar) {
+      window.LittleJoyArcade.tipJar.open();
+    } else {
+      window.open('https://www.buymeacoffee.com/jd4rider', '_blank', 'noopener');
+    }
+  }
+});
+```
+
+```csharp
+// TipJar.cs
+using System.Runtime.InteropServices;
+using UnityEngine;
+
+public static class TipJar
+{
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")] private static extern void LJA_OpenTipJar();
+    public static void Open() => LJA_OpenTipJar();
+#else
+    public static void Open() =>
+        Application.OpenURL("https://www.buymeacoffee.com/jd4rider");
+#endif
+}
+```
+
+Wire `TipJar.Open()` to a `Button.onClick` on the game-over/results canvas. In
+WebGL the button must live inside the Unity canvas so the browser treats the
+click as a real user gesture; otherwise the popup is blocked. Desktop builds go
+through `Application.OpenURL`, which is the same page in the default browser.
+
+### Godot
+
+```gdscript
+const TIP_URL := "https://www.buymeacoffee.com/jd4rider"
+
+func _on_tip_button_pressed() -> void:
+    if OS.has_feature("web"):
+        var js := "window.LittleJoyArcade && window.LittleJoyArcade.tipJar ? " \
+            + "window.LittleJoyArcade.tipJar.open() : window.open('%s', '_blank')" % TIP_URL
+        JavaScriptBridge.eval(js)
+    else:
+        OS.shell_open(TIP_URL)
+```
+
+Add the button to the results/game-over `CanvasLayer` (so it sits above the
+game and receives a real click), and keep the same copy as the web games. In a
+web export, load `arcade-client.js` before the canvas if you also want accounts
+and cloud saves; if it is absent the `window.open` fallback still works.
+
+## 6. Publishing a game (API)
 
 The catalogue is database-driven: the portal reads `public.games` at startup and
 falls back to the bundled catalogue only if the backend is unavailable. A row
@@ -169,7 +273,7 @@ status/featured, and will host the manifest form. Writes go through the anon
 client but Postgres enforces `games_admin_write` (`profiles.role = 'admin'`), so
 the policy, not the UI, is the security boundary.
 
-## 6. Subdomain automation
+## 7. Subdomain automation
 
 `scripts/register-subdomain.mjs` registers a game hostname idempotently using the
 GoDaddy API, optionally claims it on GitHub Pages, then verifies DNS:
@@ -212,13 +316,13 @@ The function verifies the caller's JWT, checks their profile row, then writes
 only the requested CNAME through the GoDaddy API. A non-admin gets `403` even if
 they call it directly with the anon key.
 
-## 7. Release sync
+## 8. Release sync
 
 `npm run sync:releases` regenerates `src/data/releases.json` from each repo's
 latest published GitHub release (version, date, download URLs). The scheduled
 workflow commits changes, which redeploys the site. See `DEPLOYMENT.md`.
 
-## 8. Security model
+## 9. Security model
 
 - The anon key is public; every player-owned table is protected by RLS.
 - Entitlements are read-only for players; only the service role grants them.

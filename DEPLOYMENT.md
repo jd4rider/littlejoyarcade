@@ -194,6 +194,11 @@ Favorites and recently played are portal features: favorites live in
 `public.game_favorites` and recently played in `public.game_activity`, merged
 with the device copy at sign-in. **No game code is needed for either.**
 
+The tip jar is portal-provided too: the client exposes
+`window.LittleJoyArcade.tipJar.open()`, so a results screen only needs its own
+button. Placement rules and the Unity/Godot bridges are in `docs/SDK.md`
+(section 5).
+
 ### 4. Verify before shipping
 
 1. Guest play with the network blocked: the game plays and saves locally.

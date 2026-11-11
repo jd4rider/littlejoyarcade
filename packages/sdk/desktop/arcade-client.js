@@ -28,6 +28,11 @@
   var ANON = (script && script.dataset.anonKey) || window.LJA_SUPABASE_ANON_KEY || '__LJA_ANON_KEY__'
   var CONFIGURED = ANON.indexOf('__LJA_') !== 0 && ANON.length > 40
 
+  // One tip jar for the whole arcade. Games draw their own button and call
+  // tipJar.open(), so the link lives here instead of in fifty game builds.
+  var TIP_URL =
+    (script && script.dataset.tipUrl) || window.LJA_TIP_URL || 'https://www.buymeacoffee.com/jd4rider'
+
   var SESSION_KEY = 'lja:session'
   var META_KEY = 'lja:mirror:' + GAME_ID
   var EXCLUDE = /^(lja:|sb-|supabase\.)/
@@ -167,6 +172,23 @@
       } catch (error) {
         /* ignore */
       }
+    }
+  }
+
+  // Games call this from results/menu UI only. A new tab keeps the run paused
+  // underneath instead of navigating the player away from the game.
+  function openTipJar() {
+    try {
+      var opened = window.open(TIP_URL, '_blank', 'noopener,noreferrer')
+      if (opened) opened.opener = null
+      return true
+    } catch (error) {
+      try {
+        location.href = TIP_URL
+      } catch (fallbackError) {
+        /* ignore */
+      }
+      return false
     }
   }
 
@@ -645,6 +667,7 @@
     __installed: true,
     gameId: GAME_ID,
     configured: CONFIGURED,
+    tipJar: { url: TIP_URL, open: openTipJar },
     signIn: signIn,
     signUp: signUp,
     signOut: signOut,

@@ -84,4 +84,6 @@ export interface ArcadeOptions {
   online?: () => boolean
   /** Cap on local analytics events; oldest are dropped first. */
   analyticsLimit?: number
+  /** Tip-jar destination; defaults to the arcade's Buy Me a Coffee page. */
+  tipUrl?: string
 }

@@ -50,12 +50,19 @@ export interface Arcade {
     events(): ArcadeEvent[]
     flush(): Promise<void>
   }
+  /** The arcade's tip jar. Surface it on results/menu screens only. */
+  support: {
+    readonly url: string
+    open(): void
+  }
   platform: PlatformInfo
   /** For adapters that need the raw envelope (Phaser/Electron bridges). */
   envelope(): ProgressEnvelope | null
 }
 
 const key = (gameId: string, part: string) => `lja:${gameId}:${part}`
+
+const DEFAULT_TIP_URL = 'https://www.buymeacoffee.com/jd4rider'
 
 function detectPlatform(online: () => boolean): PlatformInfo {
   const nav = typeof navigator === 'undefined' ? null : navigator
@@ -369,6 +376,14 @@ export function createArcade(options: ArcadeOptions): Arcade {
         } catch {
           // keep them queued for the next flush
         }
+      },
+    },
+
+    support: {
+      url: options.tipUrl ?? DEFAULT_TIP_URL,
+      open() {
+        if (typeof window === 'undefined') return
+        window.open(options.tipUrl ?? DEFAULT_TIP_URL, '_blank', 'noopener,noreferrer')
       },
     },
 
