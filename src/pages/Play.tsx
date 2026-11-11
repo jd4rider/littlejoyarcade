@@ -197,7 +197,11 @@ export default function Play() {
 
       {!chromeHidden && (
       <p className="border-t border-white/10 bg-ink-900/90 px-4 py-2 text-center text-[0.7rem] text-white/35">
-        If the game does not load, use “Open in new tab”. Progress in this game is saved on this device.{' '}
+        If the game does not load, use “Open in new tab”. Your progress saves on this device —{' '}
+        <Link to="/login" className="font-semibold text-white/70 underline underline-offset-2 hover:text-cream">
+          sign in
+        </Link>{' '}
+        to save it to the cloud and pick it up on any device.{' '}
         <Link to={`/game/${game.id}`} className="font-semibold text-white/55 underline underline-offset-2 hover:text-cream">
           Rate this game
         </Link>

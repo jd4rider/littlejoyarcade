@@ -21,7 +21,7 @@ const VALUES = [
   {
     emoji: '💾',
     title: 'Your progress stays yours',
-    body: 'Saves work offline and live on your device. Sign in to keep them across devices as games adopt cloud saves.',
+    body: 'Want to keep your progress? Sign in free with one Little Joy Arcade account and your saves follow you to every device. No account needed to play.',
   },
 ]
 
