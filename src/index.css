@@ -250,6 +250,9 @@ body {
     opacity: 0.9;
     animation: cover-jet 260ms ease-in-out infinite;
   }
+
+  .cover-scene--rocket {
+    --emoji-anim: cover-rocket;
     --cp-anim: cover-thrust;
     --cp-color: #ffb45c;
     --emoji-dur: 420ms;
