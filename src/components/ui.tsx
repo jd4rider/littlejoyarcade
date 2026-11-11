@@ -99,7 +99,6 @@ export function Cover({
       style={{ background: `linear-gradient(140deg, ${game.cover.from}, ${game.cover.to})` }}
     >
       <span aria-hidden="true" className="cover-glow" />
-      {motion === 'rocket' ? <span aria-hidden="true" className="cover-jet" /> : null}
       <span aria-hidden="true" className="cover-particles">
         {coverParticles(game, motion).map((particle) => (
           <i key={particle.key} className="cp" style={particle.style} />
@@ -108,6 +107,8 @@ export function Cover({
       <div className="cover-stage">
         <span aria-hidden="true" className="cover-emoji">
           {game.cover.emoji}
+          {/* Lives inside the glyph so the flame inherits its size and motion. */}
+          {motion === 'rocket' ? <span aria-hidden="true" className="cover-jet" /> : null}
         </span>
       </div>
     </div>

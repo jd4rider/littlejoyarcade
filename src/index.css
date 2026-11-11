@@ -154,6 +154,7 @@ body {
   }
 
   .cover-emoji {
+    position: relative;
     display: block;
     font-size: clamp(1.6rem, 46cqmin, 3.75rem);
     line-height: 1;
@@ -195,6 +196,11 @@ body {
     animation-timing-function: cubic-bezier(0.15, 0.7, 0.3, 1);
   }
 
+  .cover-scene--rocket .cover-particles {
+    /* Rotate the exhaust so sparks leave along the rocket's thrust axis. */
+    transform: rotate(45deg);
+  }
+
   .cover-scene--rocket .cp {
     /* Elongated exhaust trail rather than a round spark. */
     width: calc(var(--szm, 1) * clamp(2px, 1.8cqmin, 4px));
@@ -234,19 +240,20 @@ body {
 
   .cover-jet {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 1;
-    width: 12cqmin;
-    height: 22cqmin;
-    margin-top: 7cqmin;
-    margin-left: -6cqmin;
+    /* Anchored on the glyph's tail; the glyph points up-right, so the plume
+       leaves at 45 degrees down-left, along the same axis. */
+    left: 12%;
+    top: 58%;
+    z-index: -1;
+    width: 30%;
+    height: 66%;
     /* A tapered flame silhouette rather than a soft blob. */
     clip-path: polygon(50% 100%, 78% 56%, 85% 26%, 66% 4%, 34% 4%, 15% 26%, 22% 56%);
     background: linear-gradient(180deg, #fffbe8 0%, #ffe27a 26%, #ffab3d 54%, #ff6a1f 80%, rgba(255, 74, 0, 0) 100%);
     filter: blur(0.6px) drop-shadow(0 0 10px rgba(255, 150, 60, 0.8));
     opacity: 0;
     transform-origin: 50% 0;
+    transform: rotate(45deg);
     transition: opacity 220ms ease;
     pointer-events: none;
   }
@@ -353,11 +360,11 @@ body {
 @keyframes cover-jet {
   0%,
   100% {
-    transform: scale(0.85, 0.8);
+    transform: rotate(45deg) scale(0.85, 0.8);
     opacity: 0.7;
   }
   50% {
-    transform: scale(1.05, 1.12);
+    transform: rotate(45deg) scale(1.05, 1.12);
     opacity: 1;
   }
 }
