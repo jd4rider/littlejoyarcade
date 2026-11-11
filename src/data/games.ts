@@ -137,7 +137,7 @@ export const GAMES: Game[] = [
       'An original portrait-first jet-boot arcade adventure starring Pip, a tiny inventor with enormous rocket boots. A 1,000-level campaign spans 20 musical worlds, from the friendly Melody Meadows machinery to the heart of the Harmony Engine. Each tall stage combines multi-floor traversal, limited jet energy, lifts, switches, hazards, enemies and required Sound Sparks. Twenty world bosses, 35 power-ups, six extra modes, 20 outfits, 30 boot skins and 102 achievements support the journey. Art, animation and adaptive Web Audio are code-generated; the game uses the Little Joy Arcade drop-in client for identity and cloud-save mirroring and keeps achievements local.',
     categories: ['Arcade'],
     runtime: 'Phaser 3',
-    version: '1.0.0',
+    version: '1.0.1',
     updated: '2026-11-11',
     status: 'live',
     featured: true,
