@@ -1,0 +1,68 @@
+-- Fluff Frenzy 1.1.1: the full Blender animation set. The fluffs now have
+-- eight baked fur actions - idle, wind-blown drag, landing squash, blink,
+-- startle, doze and celebration - played by the board, the menu and the win
+-- screen. The version also busts the cached game shell.
+
+update public.games
+set
+  version = '1.1.1',
+  manifest = '{
+  "id": "fluff-frenzy",
+  "name": "Fluff Frenzy",
+  "tagline": "Slide the row. Free the fluff. Chase the frenzy.",
+  "description": "A sliding match puzzle starring fluffy pom-pom creatures. Instead of swapping two neighbours, you grab a whole row or column and slide it, wrapping cleanly around the board so fluffs leaving one edge reappear on the other. Three or more matching fluffs burst into clouds of colour, the survivors fall, and fresh fluffs cascade in, which is where the big chains live. Five modes (Classic Arcade with a move bank, two-minute Timed Frenzy, lossless Zen Garden, a seeded Daily Challenge and a 500-level Puzzle Journey across ten themed worlds) run on the same deterministic board engine, so a recorded solution replays exactly. Charge the Fluff Fever meter for double points, use rainbow, bomb, lightning, golden, frozen and locked fluffs in the later worlds, and earn up to three stars per Journey level for solving it in fewer moves.",
+  "categories": [
+    "Puzzle",
+    "Casual",
+    "Arcade"
+  ],
+  "runtime": "Phaser 3",
+  "version": "1.1.1",
+  "updated": "2026-11-10",
+  "status": "live",
+  "featured": true,
+  "playUrl": "https://jd4rider.github.io/fluff-frenzy/play/",
+  "siteUrl": "https://jd4rider.github.io/fluff-frenzy/",
+  "repoUrl": "https://github.com/jd4rider/fluff-frenzy",
+  "releasesUrl": "https://github.com/jd4rider/fluff-frenzy/releases",
+  "downloads": [],
+  "cover": {
+    "from": "#f0495f",
+    "to": "#9a6cff",
+    "emoji": "🧶"
+  },
+  "highlights": [
+    "Whole-row and whole-column sliding with seamless wraparound: no adjacent-swap limits, just draggable fluff lines",
+    "Six Blender-rendered fluff characters with dense 3D fur, glossy embedded eyes and a soft plush silhouette",
+    "Eight baked fur animations: idle breathing, a wind-blown drag, landing squash, blink, startle, doze and a full celebration bounce",
+    "Cascade chains with escalating banners, colour-matched bursts, expanding rings and a real Fluff Fever double-score mode",
+    "Six special fluffs: rainbow wildcards, 3x3 bombs, lightning rows, golden bonus fluffs, frozen ice and locked anchors",
+    "Five modes: Classic Arcade move bank, two-minute Timed Frenzy, endless Zen Garden, seeded Daily Challenge and the Journey",
+    "500 Journey levels across ten themed worlds, each target measured against ordinary player-paced play and proven by replaying a winning run",
+    "Star ratings reward efficiency, and stars unlock three fur styles in the fluff collection",
+    "Portrait-first one-finger dragging, full keyboard support (arrows/WASD, R, P) and gamepad-friendly layout",
+    "Three graphics presets and a reduced-motion switch, with pooled particles so long cascades stay smooth",
+    "Procedural art, synthesised audio and no asset downloads: the game loads instantly and plays offline",
+    "Versioned local saves with sanitising, ten trophies and lifetime statistics; the arcade client syncs the same keys when signed in"
+  ],
+  "howToPlay": [
+    "Drag any fluff left or right to slide its whole row, or up and down to slide its column. The line wraps around the board as you move it.",
+    "Three or more matching fluffs connected in a group burst — a line, an L or a blob, never a diagonal. Everything above falls and new fluffs drop in, so one slide can set off a long cascade.",
+    "On a keyboard, hover a cell and use the arrow keys or WASD to slide that row or column. R restarts and P pauses.",
+    "Big matches and deep cascades charge the Fluff Fever meter; when it fills you get twelve seconds of double points.",
+    "In Puzzle Journey the card tells you the goal and the move limit. Every fluff freed counts, including the ones a cascade drops, and the meter ticks up as each cascade lands. Finish inside the star threshold for three stars.",
+    "Ice and padlocks anchor their row and column until a match beside them breaks them free, so clear around them first."
+  ],
+  "levels": "500 Journey levels · 10 worlds + 5 arcade modes",
+  "saveKey": "fluff-frenzy-save-v1"
+}'::jsonb,
+  updated_on = '2026-11-10',
+  updated_at = now()
+where id = 'fluff-frenzy';
+
+select id, name, version, status,
+       jsonb_array_length(manifest->'highlights') as highlights,
+       jsonb_array_length(manifest->'howToPlay') as steps,
+       jsonb_array_length(manifest->'downloads') as downloads
+from public.games
+where id = 'fluff-frenzy';
