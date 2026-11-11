@@ -329,6 +329,8 @@ body {
 
   /* On a game's own page the cover is the subject, so it runs unprompted. */
   .cover-scene--live .cover-emoji {
+    /* The hero cover is far wider than a card, so it can carry a bigger glyph. */
+    font-size: clamp(2.4rem, 44cqmin, 6rem);
     animation: var(--emoji-anim) var(--emoji-dur, 700ms) ease-in-out infinite;
   }
 
