@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ARCADE_ACHIEVEMENTS } from '../data/achievements'
 import { GAMES, gamesById } from '../data/games'
+import type { Game } from '../data/games'
 import { arcade, clearActivity, readActivity } from '../lib/arcade'
 import { useAuth } from '../lib/auth'
-import { Cover } from '../components/ui'
+import { useFavorites } from '../lib/favorites'
+import { Cover, FavoriteButton } from '../components/ui'
 
 function relative(ts: number): string {
   const diff = Date.now() - ts
@@ -21,6 +23,12 @@ export default function Dashboard() {
   const { user, displayName, configured, signOut, saveDisplayName, loading } = useAuth()
   const [activity, setActivity] = useState(readActivity)
   const [message, setMessage] = useState<string | null>(null)
+  const { favorites, error: favoritesError } = useFavorites()
+
+  const favoriteGames = useMemo(
+    () => favorites.map((id) => gamesById.get(id)).filter((game): game is Game => Boolean(game)),
+    [favorites],
+  )
 
   const stats = useMemo(() => {
     const launches = activity.length
@@ -151,6 +159,49 @@ export default function Dashboard() {
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
         <section className="space-y-6">
+          <div className="card p-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-cream">Your favorites</h2>
+              <span className="pill">{favoriteGames.length}</span>
+            </div>
+            {favoriteGames.length === 0 ? (
+              <div className="mt-3 rounded-2xl border border-dashed border-white/15 p-6 text-center">
+                <p className="text-sm text-white/55">Tap the heart on any game to keep it here.</p>
+                <Link to="/games" className="btn btn-primary mt-3 text-sm">
+                  Find a favorite
+                </Link>
+              </div>
+            ) : (
+              <ul className="mt-3 divide-y divide-white/10">
+                {favoriteGames.map((game) => (
+                  <li key={game.id} className="flex items-center gap-3 py-3">
+                    <Cover game={game} className="h-12 w-12 shrink-0 rounded-xl" />
+                    <div className="min-w-0 flex-1">
+                      <Link to={`/game/${game.id}`} className="truncate font-semibold text-cream hover:underline">
+                        {game.name}
+                      </Link>
+                      <p className="truncate text-xs text-white/40">{game.tagline}</p>
+                    </div>
+                    <Link to={`/play/${game.id}`} className="btn btn-ghost px-3 py-1.5 text-xs">
+                      Play
+                    </Link>
+                    <FavoriteButton game={game} />
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="mt-3 text-xs text-white/35">
+              {user
+                ? 'Saved to your account, so favorites follow you to every device.'
+                : 'Kept on this device. Sign in to keep favorites everywhere.'}
+            </p>
+            {favoritesError ? (
+              <p className="mt-2 text-xs text-joy-amber/85" role="status">
+                {favoritesError}
+              </p>
+            ) : null}
+          </div>
+
           <div className="card p-5">
             <h2 className="text-lg font-bold text-cream">Recently played</h2>
             {recent.length === 0 ? (

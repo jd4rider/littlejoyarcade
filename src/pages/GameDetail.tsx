@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import FeedbackForm from '../components/FeedbackForm'
-import { Cover, GameCard } from '../components/ui'
+import { Cover, FavoriteButton, GameCard } from '../components/ui'
 import { gamesById, relatedGames } from '../data/games'
 import { recordLaunch } from '../lib/arcade'
 import NotFound from './NotFound'
@@ -40,6 +40,7 @@ export default function GameDetail() {
                 <Link to={`/play/${game.id}`} onClick={() => recordLaunch(game.id)} className="btn btn-primary px-6 py-3">
                   Play now ▶
                 </Link>
+                <FavoriteButton game={game} withLabel className="px-5 py-3" />
                 <a href={game.siteUrl} target="_blank" rel="noreferrer" className="btn btn-ghost px-5 py-3">
                   Game site ↗
                 </a>

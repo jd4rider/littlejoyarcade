@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { GameCard } from '../components/ui'
 import { CATEGORIES, GAMES } from '../data/games'
+import { useFavorites } from '../lib/favorites'
 
 type Sort = 'featured' | 'newest' | 'alphabetical'
 
@@ -10,6 +11,9 @@ export default function Games() {
   const query = params.get('q') ?? ''
   const category = params.get('category') ?? ''
   const sort = (params.get('sort') as Sort | null) ?? 'featured'
+  const onlyFavorites = params.get('favorites') === '1'
+  const { favorites } = useFavorites()
+  const favoriteSet = useMemo(() => new Set(favorites), [favorites])
 
   const update = (key: string, value: string) => {
     const next = new URLSearchParams(params)
@@ -22,18 +26,19 @@ export default function Games() {
     const needle = query.trim().toLowerCase()
     return GAMES.filter((game) => {
       const matchesCategory = !category || game.categories.includes(category as never)
+      const matchesFavorites = !onlyFavorites || favoriteSet.has(game.id)
       const matchesQuery =
         !needle ||
         `${game.name} ${game.tagline} ${game.description} ${game.categories.join(' ')}`
           .toLowerCase()
           .includes(needle)
-      return matchesCategory && matchesQuery
+      return matchesCategory && matchesFavorites && matchesQuery
     }).sort((a, b) => {
       if (sort === 'newest') return b.updated.localeCompare(a.updated)
       if (sort === 'alphabetical') return a.name.localeCompare(b.name)
       return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
     })
-  }, [category, query, sort])
+  }, [category, favoriteSet, onlyFavorites, query, sort])
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
@@ -65,6 +70,16 @@ export default function Games() {
             className={`pill transition ${category === '' ? 'border-joy-amber/70 bg-joy-amber/15 text-joy-amber' : 'hover:bg-white/10'}`}
           >
             All
+          </button>
+          <button
+            type="button"
+            onClick={() => update('favorites', onlyFavorites ? '' : '1')}
+            aria-pressed={onlyFavorites}
+            className={`pill transition ${
+              onlyFavorites ? 'border-joy-coral/70 bg-joy-coral/15 text-joy-coral' : 'hover:bg-white/10'
+            }`}
+          >
+            <span aria-hidden="true">♥</span> Favorites{favorites.length > 0 ? ` (${favorites.length})` : ''}
           </button>
           {CATEGORIES.map((option) => (
             <button
@@ -105,8 +120,14 @@ export default function Games() {
           <p className="text-2xl" aria-hidden="true">
             🔍
           </p>
-          <h2 className="mt-2 text-lg font-semibold text-cream">Nothing on that shelf</h2>
-          <p className="mt-1 text-sm text-white/55">Try a different word, or clear the filters.</p>
+          <h2 className="mt-2 text-lg font-semibold text-cream">
+            {onlyFavorites ? 'No favorites yet' : 'Nothing on that shelf'}
+          </h2>
+          <p className="mt-1 text-sm text-white/55">
+            {onlyFavorites
+              ? 'Tap the heart on any game to keep it here.'
+              : 'Try a different word, or clear the filters.'}
+          </p>
           <button type="button" onClick={() => setParams(new URLSearchParams())} className="btn btn-ghost mt-4">
             Clear filters
           </button>

@@ -19,6 +19,7 @@ PostgreSQL on Supabase. Migrations live in `supabase/migrations/` and are applie
 | `purchases` | Payment records; `provider` + `provider_reference` unique | read own; **service role writes only** |
 | `entitlements` | Granted slugs (`arcade.ad_free`, …) with revocation | read own active; **service role writes only** |
 | `player_settings` | Motion, sound, ad consent | player (own row) |
+| `game_favorites` | Games a player has pinned to their own shelf | player (own rows) |
 | `game_sessions` | Session start/end for activity and admin metrics | player inserts/updates own |
 
 Achievement ids are namespaced (`pipe-dreams.first_clear`). The SDK prefixes a bare slug with the game id, so

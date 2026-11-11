@@ -11,14 +11,14 @@ const CONTENT: Record<Kind, { title: string; intro: string; sections: { heading:
       {
         heading: 'What we store without an account',
         body: [
-          'Game progress, your guest display name and a list of games you have opened are stored in your browser’s local storage. None of it leaves your device.',
+          'Game progress, your guest display name, your favorites and a list of games you have opened are stored in your browser’s local storage. None of it leaves your device.',
           'You can export or delete all of it from My arcade at any time.',
         ],
       },
       {
         heading: 'What we store with an account',
         body: [
-          'If you sign in, we store your email address, a display name, and the progress and achievements your games send to the arcade backend. Authentication is handled by Supabase; we never store passwords ourselves.',
+          'If you sign in, we store your email address, a display name, your favorite games, and the progress and achievements your games send to the arcade backend. Authentication is handled by Supabase; we never store passwords ourselves.',
           'Session identifiers are kept in secure, http-only cookies where the provider supports it, and access tokens stay in memory or provider-managed storage — never in URL query strings.',
         ],
       },

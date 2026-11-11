@@ -49,7 +49,7 @@ one monorepo build.
 Supabase provides auth (magic links, PKCE), Postgres, and row level security. No custom password handling and
 no service-role key in the browser. Purchases and entitlements are written only by trusted server code.
 
-Tables: `profiles`, `games`, `game_progress`, `achievements`, `player_achievements`, `products`, `purchases`,
+Tables: `profiles`, `games`, `game_favorites`, `game_progress`, `achievements`, `player_achievements`, `products`, `purchases`,
 `entitlements`, `player_settings`, `game_sessions`. See `DATABASE.md`.
 
 ## SDK

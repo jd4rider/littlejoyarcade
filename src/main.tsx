@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './lib/auth'
+import { FavoritesProvider } from './lib/favorites'
 import { GAMES, normalizeGame, replaceCatalog } from './data/games'
 import type { Game } from './data/games'
 import { supabase } from './lib/supabase'
@@ -57,7 +58,9 @@ void loadCatalog().finally(() => {
       <ErrorBoundary>
         <HashRouter>
           <AuthProvider>
-            <App />
+            <FavoritesProvider>
+              <App />
+            </FavoritesProvider>
           </AuthProvider>
         </HashRouter>
       </ErrorBoundary>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { CSSProperties } from 'react'
 import type { Game } from '../data/games'
+import { useFavorites } from '../lib/favorites'
 
 type CoverMotion = 'rocket' | 'cat' | 'bubble' | 'zap' | 'beam' | 'wobble' | 'spin' | 'sparkle'
 
@@ -115,9 +116,50 @@ export function Cover({
   )
 }
 
+export function FavoriteButton({
+  game,
+  withLabel = false,
+  className = '',
+}: {
+  game: Game
+  withLabel?: boolean
+  className?: string
+}) {
+  const { isFavorite, toggle } = useFavorites()
+  const active = isFavorite(game.id)
+  const label = active ? `Remove ${game.name} from your favorites` : `Add ${game.name} to your favorites`
+
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        void toggle(game.id)
+      }}
+      aria-pressed={active}
+      aria-label={label}
+      title={label}
+      className={`inline-flex items-center gap-2 transition ${
+        withLabel
+          ? `btn px-4 py-2 text-sm ${active ? 'border-joy-coral/60 bg-joy-coral/15 text-joy-coral' : 'btn-ghost'}`
+          : `h-9 w-9 justify-center rounded-full border backdrop-blur ${
+              active
+                ? 'border-joy-coral/60 bg-joy-coral/20 text-joy-coral'
+                : 'border-white/20 bg-ink-900/60 text-white/75 hover:text-cream'
+            }`
+      } ${className}`}
+    >
+      <span aria-hidden="true">{active ? '♥' : '♡'}</span>
+      {withLabel ? <span>{active ? 'Favorited' : 'Favorite'}</span> : null}
+    </button>
+  )
+}
+
 export function GameCard({ game }: { game: Game }) {
   return (
-    <article className="card card-hover group overflow-hidden">
+    <article className="card card-hover group relative overflow-hidden">
+      <FavoriteButton game={game} className="absolute right-3 top-3 z-10" />
       <Link to={`/game/${game.id}`} className="block">
         <Cover game={game} className="h-40 w-full sm:h-44" />
         <div className="space-y-2 p-4 sm:p-5">
