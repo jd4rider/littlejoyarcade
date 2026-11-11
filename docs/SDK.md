@@ -107,6 +107,13 @@ mirrors Web Storage keys into `game_progress`. For IndexedDB/SQLite saves, defin
 `window.LJA_SNAPSHOT` / `window.LJA_APPLY_SNAPSHOT` before loading it. The public
 anon key inside the file is safe to ship; RLS protects the rows.
 
+Inside the portal iframe the client also joins the player's portal session: the
+catalogue posts `{ type: 'lja:session', session }` to the game's own origin when
+someone is signed in, and the game answers with `lja:auth` whenever it signs in
+or out, so the portal header stays in step. Only the portal origins are trusted,
+and the portal only ever posts to the embedded frame's exact origin. Open the
+game in a new tab and it falls back to its own account panel.
+
 ## 5. Publishing a game (API)
 
 The catalogue is database-driven: the portal reads `public.games` at startup and

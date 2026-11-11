@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { gamesById } from '../data/games'
 import { recordLaunch } from '../lib/arcade'
 import { resolvePlayUrl, type PlayRoute } from '../lib/playUrl'
+import { supabase } from '../lib/supabase'
 import NotFound from './NotFound'
 
 export default function Play() {
   const { id } = useParams()
   const game = id ? gamesById.get(id) : undefined
   const shell = useRef<HTMLDivElement>(null)
+  const frame = useRef<HTMLIFrameElement>(null)
   const [fullscreen, setFullscreen] = useState(false)
   const [immersive, setImmersive] = useState(false)
   const [route, setRoute] = useState<PlayRoute | null>(null)
@@ -32,6 +34,63 @@ export default function Play() {
       cancelled = true
     }
   }, [game])
+
+  // The portal and the games do not share an origin, so the only way a player
+  // who signed in here is also signed in inside a game is a targeted
+  // postMessage. The game's arcade client checks our origin before trusting it.
+  const postSession = useCallback(async () => {
+    if (!route || !supabase) return
+    let origin: string
+    try {
+      origin = new URL(route.url).origin
+    } catch {
+      return
+    }
+    const { data } = await supabase.auth.getSession()
+    frame.current?.contentWindow?.postMessage({ type: 'lja:session', session: data.session ?? null }, origin)
+  }, [route])
+
+  useEffect(() => {
+    if (!route || !supabase) return
+    const client = supabase
+    let origin: string
+    try {
+      origin = new URL(route.url).origin
+    } catch {
+      return
+    }
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== origin) return
+      const payload = event.data as
+        | { type?: string; session?: { access_token?: string; refresh_token?: string } | null }
+        | null
+      if (!payload) return
+      if (payload.type === 'lja:ready') {
+        void postSession()
+        return
+      }
+      if (payload.type !== 'lja:auth') return
+      // The game signed in or out on its own; mirror it here so the header and
+      // every other game agree on who is playing.
+      const session = payload.session
+      if (session?.access_token && session.refresh_token) {
+        void client.auth.setSession({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        })
+      } else {
+        void client.auth.signOut()
+      }
+    }
+    window.addEventListener('message', onMessage)
+    const { data } = client.auth.onAuthStateChange(() => {
+      void postSession()
+    })
+    return () => {
+      window.removeEventListener('message', onMessage)
+      data.subscription.unsubscribe()
+    }
+  }, [postSession, route])
 
   useEffect(() => {
     const onChange = () => setFullscreen(Boolean(document.fullscreenElement))
@@ -118,9 +177,11 @@ export default function Play() {
         )}
         {route ? (
           <iframe
+            ref={frame}
             key={framedUrl}
             src={framedUrl}
             title={`${game.name} game`}
+            onLoad={() => void postSession()}
             className="h-full w-full border-0"
             allow="autoplay; fullscreen; gamepad; accelerometer; gyroscope"
             // Same trusted publisher, so scripts and storage are allowed; no
