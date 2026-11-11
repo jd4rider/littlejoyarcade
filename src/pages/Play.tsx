@@ -14,6 +14,7 @@ export default function Play() {
   const [fullscreen, setFullscreen] = useState(false)
   const [immersive, setImmersive] = useState(false)
   const [route, setRoute] = useState<PlayRoute | null>(null)
+  const popup = useRef<Window | null>(null)
 
   useEffect(() => {
     if (!game) return
@@ -38,6 +39,12 @@ export default function Play() {
   // The portal and the games do not share an origin, so the only way a player
   // who signed in here is also signed in inside a game is a targeted
   // postMessage. The game's arcade client checks our origin before trusting it.
+  const postSessionTo = useCallback(async (target: Window | null, origin: string) => {
+    if (!target || !supabase) return
+    const { data } = await supabase.auth.getSession()
+    target.postMessage({ type: 'lja:session', session: data.session ?? null }, origin)
+  }, [])
+
   const postSession = useCallback(async () => {
     if (!route || !supabase) return
     let origin: string
@@ -46,9 +53,11 @@ export default function Play() {
     } catch {
       return
     }
-    const { data } = await supabase.auth.getSession()
-    frame.current?.contentWindow?.postMessage({ type: 'lja:session', session: data.session ?? null }, origin)
-  }, [route])
+    await postSessionTo(frame.current?.contentWindow ?? null, origin)
+    // A tab opened from here has no iframe; the session goes to its window so
+    // the game can keep it in its own origin's storage.
+    if (popup.current && !popup.current.closed) await postSessionTo(popup.current, origin)
+  }, [postSessionTo, route])
 
   useEffect(() => {
     if (!route || !supabase) return
@@ -105,6 +114,25 @@ export default function Play() {
   // (GitHub Pages serves HTML with a ten minute cache).
   const framedUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}v=${encodeURIComponent(game.version)}`
 
+  // A normal target="_blank" link leaves the new tab with no account, because
+  // localStorage cannot cross origins. Open it ourselves and repeat the same
+  // postMessage handshake the iframe uses until the game has the session.
+  const openInNewTab = () => {
+    if (!route) return
+    let origin: string
+    try {
+      origin = new URL(route.url).origin
+    } catch {
+      return
+    }
+    const opened = window.open(framedUrl, '_blank')
+    if (!opened) return
+    popup.current = opened
+    void postSessionTo(opened, origin)
+    window.setTimeout(() => void postSessionTo(opened, origin), 1200)
+    window.setTimeout(() => void postSessionTo(opened, origin), 3500)
+  }
+
   const fallBack = () => {
     if (route?.source === 'subdomain') setRoute({ url: game.playUrl, source: 'canonical' })
   }
@@ -135,7 +163,7 @@ export default function Play() {
   return (
     <div
       ref={shell}
-      className={`flex h-dvh flex-col bg-ink-950 ${immersive ? 'fixed inset-0 z-[100] h-screen' : ''}`}
+      className={`flex h-dvh flex-col overflow-hidden bg-ink-950 ${immersive ? 'fixed inset-0 z-[100]' : ''}`}
     >
       {!chromeHidden && (
       <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-ink-900/90 px-3 py-2 sm:px-4">
@@ -152,7 +180,16 @@ export default function Play() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <a href={framedUrl} target="_blank" rel="noreferrer" className="btn btn-ghost px-3 py-1.5 text-xs">
+          <a
+            href={framedUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(event) => {
+              event.preventDefault()
+              openInNewTab()
+            }}
+            className="btn btn-ghost px-3 py-1.5 text-xs"
+          >
             <span className="hidden sm:inline">Open in new tab</span>
             <span className="sm:hidden" aria-hidden="true">
               ↗
@@ -165,7 +202,7 @@ export default function Play() {
       </header>
       )}
 
-      <div className="relative flex-1 overflow-hidden bg-black">
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
         {chromeHidden && (
           <button
             type="button"
@@ -184,6 +221,7 @@ export default function Play() {
             onLoad={() => void postSession()}
             className="h-full w-full border-0"
             allow="autoplay; fullscreen; gamepad; accelerometer; gyroscope"
+            allowFullScreen
             // Same trusted publisher, so scripts and storage are allowed; no
             // top-level navigation and no popups beyond the game's own links.
             sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-orientation-lock"

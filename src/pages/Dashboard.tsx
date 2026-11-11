@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ARCADE_ACHIEVEMENTS } from '../data/achievements'
 import { GAMES, gamesById } from '../data/games'
 import type { Game } from '../data/games'
-import { arcade, clearActivity, readActivity } from '../lib/arcade'
+import { arcade, clearActivity, readActivity, syncActivity } from '../lib/arcade'
 import { useAuth } from '../lib/auth'
 import { useFavorites } from '../lib/favorites'
 import { Cover, FavoriteButton } from '../components/ui'
@@ -25,13 +25,29 @@ export default function Dashboard() {
   const [message, setMessage] = useState<string | null>(null)
   const { favorites, error: favoritesError } = useFavorites()
 
+  // The device shelf paints immediately; a signed-in account copy is merged in
+  // right after, so a second device sees the same recently played list.
+  useEffect(() => {
+    if (!user) {
+      setActivity(readActivity())
+      return
+    }
+    let alive = true
+    void syncActivity().then((next) => {
+      if (alive) setActivity(next)
+    })
+    return () => {
+      alive = false
+    }
+  }, [user])
+
   const favoriteGames = useMemo(
     () => favorites.map((id) => gamesById.get(id)).filter((game): game is Game => Boolean(game)),
     [favorites],
   )
 
   const stats = useMemo(() => {
-    const launches = activity.length
+    const launches = activity.reduce((total, entry) => total + entry.plays, 0)
     const distinctGames = new Set(activity.map((entry) => entry.gameId)).size
     const distinctDays = new Set(activity.map((entry) => new Date(entry.at).toDateString())).size
     return { launches, distinctGames, distinctDays, gamesCompleted: 0 }
@@ -144,7 +160,7 @@ export default function Dashboard() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: 'Sessions', value: stats.launches, hint: 'on this device' },
+          { label: 'Sessions', value: stats.launches, hint: user ? 'across your devices' : 'on this device' },
           { label: 'Games tried', value: `${stats.distinctGames}/${GAMES.length}`, hint: 'of the shelf' },
           { label: 'Play days', value: stats.distinctDays, hint: 'nice and casual' },
           { label: 'Ads in gameplay', value: '0', hint: 'always' },
@@ -157,8 +173,8 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-        <section className="space-y-6">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
+        <section className="min-w-0 space-y-6">
           <div className="card p-5">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-cream">Your favorites</h2>
@@ -281,7 +297,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <aside className="space-y-6">
+        <aside className="min-w-0 space-y-6">
           <section className="card p-5">
             <h2 className="text-lg font-bold text-cream">Account</h2>
             <form onSubmit={onSaveName} className="mt-3 space-y-2">
@@ -303,8 +319,10 @@ export default function Dashboard() {
             </form>
             <dl className="mt-4 space-y-2 border-t border-white/10 pt-3 text-sm">
               <div className="flex justify-between gap-2">
-                <dt className="text-white/45">Account</dt>
-                <dd className="font-medium text-cream">{loading ? '…' : user ? user.email : 'Guest'}</dd>
+                <dt className="shrink-0 text-white/45">Account</dt>
+                <dd className="min-w-0 truncate text-right font-medium text-cream">
+                  {loading ? '…' : user ? user.email : 'Guest'}
+                </dd>
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-white/45">Cloud saves</dt>
