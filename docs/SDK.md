@@ -107,12 +107,20 @@ mirrors Web Storage keys into `game_progress`. For IndexedDB/SQLite saves, defin
 `window.LJA_SNAPSHOT` / `window.LJA_APPLY_SNAPSHOT` before loading it. The public
 anon key inside the file is safe to ship; RLS protects the rows.
 
-Inside the portal iframe the client also joins the player's portal session: the
-catalogue posts `{ type: 'lja:session', session }` to the game's own origin when
-someone is signed in, and the game answers with `lja:auth` whenever it signs in
-or out, so the portal header stays in step. Only the portal origins are trusted,
-and the portal only ever posts to the embedded frame's exact origin. Open the
-game in a new tab and it falls back to its own account panel.
+Because every `jd4rider.github.io` game shares one storage origin, only the
+game's own keys are mirrored: keys named `<game-id>-…` by default, or exactly
+the list in `data-save-keys` / `window.LJA_SAVE_KEYS` when the save predates the
+id (for example `bubble-wrap-save-v2` for `bubblewrap`). Declaring the list is
+what keeps one game's sync from replacing another game's cloud row.
+
+The client also joins the player's portal session. Embedded in the iframe, the
+catalogue posts `{ type: 'lja:session', session }` to the game's exact origin.
+Opened in a new tab, the client announces `{ type: 'lja:ready' }` to
+`window.opener` and the portal answers with the same session message, so the tab
+opens signed in instead of asking again. The game then keeps the session in its
+own origin's `localStorage`, and posts `lja:auth` back whenever it signs in or
+out so the portal header stays in step. Only the portal origins are trusted; a
+direct visit to the game falls back to its own account panel.
 
 ## 5. Publishing a game (API)
 

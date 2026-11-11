@@ -68,13 +68,41 @@ after the next deploy. Never put a service-role key in a `VITE_*` variable.
 
 ## Supabase
 
-Migrations live in `supabase/migrations/` and are applied with the Supabase CLI:
+Migrations live in `supabase/migrations/` and are applied with the Supabase CLI.
+**Use the CLI you are already logged in to** — there is no need for the
+dashboard, a service-role key, or the owner's password:
 
 ```bash
-npx supabase link --project-ref fqovramltegcfiyebyrt
-npx supabase db push
-npx supabase secrets set GODADDY_PAT=gd_pat_...   # only for register-subdomain
-npx supabase functions deploy register-subdomain
+supabase login                        # once per machine; skip if the next command works
+supabase projects list                # proves the saved token is valid
+supabase link --project-ref fqovramltegcfiyebyrt
+supabase migration list --linked      # local vs remote history before you push
+supabase db push                      # applies every migration the remote lacks
+```
+
+`supabase db push` writes to production, so read the SQL first and keep the
+project linked. If a migration was applied by hand (for example with `psql`),
+record it so the next `db push` does not run it again:
+
+```bash
+psql "$(cat supabase/.temp/pooler-url)" -v ON_ERROR_STOP=1 \
+  -f supabase/migrations/00NN_name.sql
+supabase migration repair --status applied 00NN --remote --yes
+supabase migration list --linked      # 00NN should now show in both columns
+```
+
+Notes that have cost time before:
+
+- Use the Homebrew CLI (`/opt/homebrew/bin/supabase`). An older npm global
+  build can fail on macOS with a darwin binary error.
+- Migration prefixes must be unique. Two files sharing a prefix (two `0046_*`)
+  means the second is skipped; renumber it and repair the history.
+- Never commit `supabase/.temp/` or `.secrets/`, and never put a service-role
+  key in a `VITE_*` variable or a game build.
+
+```bash
+supabase secrets set GODADDY_PAT=gd_pat_...   # only for register-subdomain
+supabase functions deploy register-subdomain
 ```
 
 Auth redirect URLs must include `https://littlejoyarcade.site/**`,
@@ -84,6 +112,102 @@ and `http://localhost:5173/**`. Grant the owner role with:
 ```sql
 update public.profiles set role = 'admin' where id = '<auth uid>';
 ```
+
+## Wiring a game into accounts and saves
+
+The platform owns the account, the cloud row and the shelf; a game only has to
+copy one client and say which keys are its save. Do not fork the client logic.
+
+### 1. Add the client (sign-in, sync, account panel)
+
+1. Copy `packages/sdk/desktop/arcade-client.js` into the game's `public/`
+   unchanged. It already carries the project URL and public anon key.
+2. Load it with the game's catalogue id:
+
+   ```html
+   <script src="./arcade-client.js" data-game-id="jewel-match"></script>
+   ```
+
+3. If the game's build step regenerates the play page, copy the file and inject
+   that tag from the build script (see Orb Frenzy's `scripts/prepare-site.mjs`)
+   and fail the build when the tag or file is missing.
+
+Sign-in then works three ways with no extra code:
+
+- **Embedded in the portal** — the portal posts `{ type: 'lja:session' }` to the
+  game's origin, so a player signed in at `littlejoyarcade.site` is signed in
+  inside the game.
+- **Opened in a new tab** — the client announces `lja:ready` to `window.opener`
+  and the portal answers with the same session message, so “Open in new tab”
+  stays signed in. The session is then kept in that origin's `localStorage`.
+- **Opened directly** — the game shows its own account pill and the session
+  persists for that origin after the first sign-in.
+
+Signing in or out inside a game posts `lja:auth` back to the portal, so the
+header and every other game agree on who is playing. Sessions are per origin:
+that is why the handoff exists; do not try to share `localStorage` across games.
+
+### 2. Declare this game's save keys
+
+Every `jd4rider.github.io` build shares one `localStorage` origin, so the client
+mirrors **only this game's keys**. Name them after the game id
+(`jewel-match-save-v2`) or declare them explicitly when they do not match:
+
+```html
+<script
+  src="./arcade-client.js"
+  data-game-id="sand-sort-studio"
+  data-save-keys="sand-sort-save-v1"
+></script>
+```
+
+`window.LJA_SAVE_KEYS = ['key-a', 'key-b']` works too. A game that stores its
+save somewhere else (IndexedDB, Unity `PlayerPrefs`) defines
+`window.LJA_SNAPSHOT()` / `window.LJA_APPLY_SNAPSHOT(keys)`; the Orb Frenzy shim
+is the reference (`public/arcade-unity.js`). Never publish an empty snapshot:
+the client already guards this, and scoping the keys is what stops one game's
+sync from overwriting another game's row.
+
+### 3. Save progression
+
+The drop-in client mirrors the declared keys into `public.game_progress`
+(`{ keys, savedAt }`) automatically — that covers games that already have a
+save module. For a typed API, use the SDK:
+
+```ts
+const arcade = createArcade({ gameId: 'jewel-match', schemaVersion: 1, cloud: createSupabaseCloud(supabase) })
+await arcade.initialize()
+const saved = arcade.progress.load<Save>()
+await arcade.progress.save({ ...saved, level: 4 })
+await arcade.progress.sync()
+```
+
+- Save on level complete, level failed, settings change, pause and quit.
+- Newest `savedAt` wins; ties go to the cloud. A device with no local keys
+  adopts the cloud copy instead of pushing over it.
+- Offline writes queue and flush on the next sync. A failed sync is silent and
+  never blocks gameplay.
+- Unlocks/achievements use `arcade.achievements.unlock('<game>.<slug>')` (or
+  `LJA_UnitySave.unlock` in Unity). They are cosmetic and never gate content.
+
+Favorites and recently played are portal features: favorites live in
+`public.game_favorites` and recently played in `public.game_activity`, merged
+with the device copy at sign-in. **No game code is needed for either.**
+
+### 4. Verify before shipping
+
+1. Guest play with the network blocked: the game plays and saves locally.
+2. Sign in on the portal, open the game, finish a level, then open the same
+   game in a second browser profile: the level is restored.
+3. Click “Open in new tab”: the game opens already signed in.
+4. Play two levels offline, reconnect, and confirm the cloud row catches up
+   without a duplicate or an older overwrite.
+5. Phone viewport: the account pill does not cover controls, and full screen
+   keeps the bottom of the game on screen.
+
+References: `SDK_INTEGRATION.md` (typed SDK), `UNITY_ACCOUNT_SAVE_BRIEF.md`
+(Unity WebGL end to end), `docs/SDK.md` (drop-in client) and `docs/SSO.md`
+(social providers).
 
 ## Keeping the catalogue current
 
