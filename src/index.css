@@ -232,15 +232,14 @@ body {
     left: 50%;
     top: 50%;
     z-index: 1;
-    width: 14cqmin;
-    height: 26cqmin;
-    margin-top: 8cqmin;
-    margin-left: -7cqmin;
-    border-radius: 50% 50% 48% 48% / 34% 34% 66% 66%;
-    background: radial-gradient(ellipse at 50% 0%, #fffdf2 0%, #ffe27a 18%, #ffb13d 46%, #ff6a1f 68%, rgba(255, 74, 0, 0) 84%);
-    box-shadow: 0 0 18px rgba(255, 176, 92, 0.55);
-    filter: blur(1px);
-    mix-blend-mode: screen;
+    width: 12cqmin;
+    height: 22cqmin;
+    margin-top: 7cqmin;
+    margin-left: -6cqmin;
+    /* A tapered flame silhouette rather than a soft blob. */
+    clip-path: polygon(50% 100%, 78% 56%, 85% 26%, 66% 4%, 34% 4%, 15% 26%, 22% 56%);
+    background: linear-gradient(180deg, #fffbe8 0%, #ffe27a 26%, #ffab3d 54%, #ff6a1f 80%, rgba(255, 74, 0, 0) 100%);
+    filter: blur(0.6px) drop-shadow(0 0 10px rgba(255, 150, 60, 0.8));
     opacity: 0;
     transform-origin: 50% 0;
     transition: opacity 220ms ease;
