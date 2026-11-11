@@ -23,9 +23,165 @@
       content="A cosy collection of handcrafted puzzle and logic games. Free to play in your browser."
     />
     <meta property="og:type" content="website" />
+    <style>
+      /* Painted before any JavaScript runs, so a slow or stale bundle shows a
+         loading note rather than a blank page. */
+      html,
+      body {
+        margin: 0;
+        background: #0b1026;
+        color: #f6f1e7;
+      }
+      #lja-boot {
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 0.8rem;
+        min-height: 100dvh;
+        padding: 1.5rem;
+        text-align: center;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      #lja-boot p {
+        margin: 0;
+        max-width: 22rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #f6f1e7b3;
+      }
+      .lja-boot-spinner {
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: 999px;
+        border: 3px solid #f6f1e733;
+        border-top-color: #ffc46b;
+        animation: lja-boot-spin 0.9s linear infinite;
+      }
+      #lja-boot.is-failed .lja-boot-spinner {
+        display: none;
+      }
+      #lja-boot-retry {
+        cursor: pointer;
+        border: 1px solid #ffc46b66;
+        border-radius: 999px;
+        background: #ffc46b1f;
+        color: #ffc46b;
+        padding: 0.55rem 1.1rem;
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      @keyframes lja-boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .lja-boot-spinner {
+          animation-duration: 3s;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="lja-boot" role="status" aria-live="polite">
+        <span class="lja-boot-spinner" aria-hidden="true"></span>
+        <p>Loading Little Joy Arcade…</p>
+        <p id="lja-boot-help" hidden>
+          This page could not finish loading. The arcade may have just been updated, or your connection dropped.
+        </p>
+        <button id="lja-boot-retry" type="button" hidden>Reload the arcade</button>
+      </div>
+    </div>
+    <noscript>
+      <div class="lja-boot-noscript">Little Joy Arcade needs JavaScript to play. Please enable it and reload.</div>
+    </noscript>
+    <script>
+      // GitHub Pages caches this document for ten minutes while each deploy
+      // replaces the hashed JavaScript it points at. Going back to a cached
+      // copy then loads a bundle that no longer exists and the app never
+      // mounts, so recover once by refetching this document under a fresh URL.
+      ;(function () {
+        var ATTEMPT_KEY = 'lja:boot-attempt'
+        var root = document.getElementById('root')
+        var boot = document.getElementById('lja-boot')
+        var help = document.getElementById('lja-boot-help')
+        var retry = document.getElementById('lja-boot-retry')
+        var reloading = false
+
+        function attempts() {
+          try {
+            return Number(sessionStorage.getItem(ATTEMPT_KEY)) || 0
+          } catch (error) {
+            return 1
+          }
+        }
+
+        function mounted() {
+          return Boolean(window.__ljaBooted) || !boot || !boot.isConnected
+        }
+
+        function showFailure() {
+          if (mounted() || !boot) return
+          boot.className = 'is-failed'
+          if (help) help.hidden = false
+          if (retry) retry.hidden = false
+        }
+
+        function retryOnce() {
+          if (reloading || mounted()) return
+          if (attempts() >= 1) {
+            showFailure()
+            return
+          }
+          try {
+            sessionStorage.setItem(ATTEMPT_KEY, '1')
+          } catch (error) {
+            showFailure()
+            return
+          }
+          reloading = true
+          var query = '?lja=reload&t=' + Date.now()
+          window.location.replace(window.location.pathname + query + window.location.hash)
+        }
+
+        window.addEventListener(
+          'error',
+          function (event) {
+            var node = event.target
+            if (node && (node.tagName === 'SCRIPT' || node.tagName === 'LINK')) retryOnce()
+          },
+          true,
+        )
+
+        if (retry) {
+          retry.addEventListener('click', function () {
+            window.location.reload()
+          })
+        }
+
+        // Slow network rather than a stale bundle: offer a reload, but never
+        // reload on a timer in case the assets are simply still on their way.
+        window.setTimeout(showFailure, 12000)
+
+        window.__ljaBoot = {
+          done: function () {
+            window.__ljaBooted = true
+            try {
+              sessionStorage.removeItem(ATTEMPT_KEY)
+            } catch (error) {
+              // Private mode: the attempt marker simply will not persist.
+            }
+            if (boot && boot.parentNode) boot.parentNode.removeChild(boot)
+            if (window.location.search.indexOf('lja=reload') !== -1) {
+              window.history.replaceState(null, '', window.location.pathname + window.location.hash)
+            }
+          },
+          failed: showFailure,
+        }
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

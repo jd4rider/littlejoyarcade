@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App'
+import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './lib/auth'
 import { GAMES, replaceCatalog } from './data/games'
 import type { Game } from './data/games'
@@ -10,6 +11,13 @@ import './index.css'
 
 const root = document.getElementById('root')
 if (!root) throw new Error('Missing #root element')
+
+declare global {
+  interface Window {
+    __ljaBooted?: boolean
+    __ljaBoot?: { done: () => void; failed: () => void }
+  }
+}
 
 /**
  * The database is the source of truth for the catalogue. The bundled catalogue
@@ -39,11 +47,17 @@ async function loadCatalog(): Promise<void> {
 void loadCatalog().finally(() => {
   createRoot(root).render(
     <StrictMode>
-      <HashRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </HashRouter>
+      <ErrorBoundary>
+        <HashRouter>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </HashRouter>
+      </ErrorBoundary>
     </StrictMode>,
   )
+  // Tells the inline shell in index.html that the app painted, so it can drop
+  // the loading note and stop watching for a stale bundle. Waiting a frame
+  // keeps the note up until React's first commit is actually on screen.
+  requestAnimationFrame(() => window.__ljaBoot?.done())
 })
