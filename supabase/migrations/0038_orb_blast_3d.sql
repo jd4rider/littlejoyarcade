@@ -7,14 +7,14 @@ with m as (
   "id": "orb-blast-3d",
   "name": "Orb Blast 3D",
   "tagline": "Aim. Match. Blast. Unleash the cascade!",
-  "description": "A portrait-first 3D bubble shooter rendered by the Unity WebGL player. The puzzle runs on a deterministic hex grid rather than on rigidbody physics: the same analytic solver that places a fired orb also draws the aim guide, so the dotted line and the shot that follows are one plan instead of two approximations. Shots bounce off the side rails, three or more connected orbs of a colour burst into particles, and anything left hanging from the ceiling detaches and cascades down the board. Five hand-authored levels in Crystal Gardens, each with a shot budget and three-star thresholds, played under a fixed 3D camera that frames the whole board on a phone. Nothing to install.",
+  "description": "A portrait-first 3D bubble shooter rendered by the Unity WebGL player. The puzzle runs on a deterministic hex grid rather than on rigidbody physics: the same analytic solver that places a fired orb also draws the aim guide, so the dotted line and the shot that follows are one plan instead of two approximations. Shots bounce off the side rails, three or more connected orbs of a colour burst into particles, and anything left hanging from the ceiling detaches and cascades down the board. Fifteen hand-authored levels in Crystal Gardens, each with a shot budget and three-star thresholds, played under a fixed 3D camera that frames the whole board on a phone. A procedurally built title screen opens on the live stage, and its level panel lists every stage you have unlocked. Nothing to install.",
   "categories": [
     "Puzzle",
     "Arcade",
     "Casual"
   ],
   "runtime": "Unity WebGL",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "updated": "2026-11-11",
   "status": "live",
   "featured": false,
@@ -30,11 +30,12 @@ with m as (
   },
   "highlights": [
     "Native Unity WebGL build: a real 3D board, lit spheres and a layered backdrop",
+    "A title screen and level panel built in code, so they never drift from the game",
     "One solver drives both the aim guide and the shot, so the preview never lies",
     "Bounce shots off the side rails - the guide draws every wall the orb will touch",
     "Matches burst into particles, then anything left hanging loses its grip and falls",
     "Keyboard, mouse and touch: drag to aim and release to fire, or steer with A/D and space",
-    "5 hand-authored levels with shot limits and three-star thresholds"
+    "15 hand-authored levels with shot limits and three-star thresholds"
   ],
   "howToPlay": [
     "Wait behind the Unity progress bar while the payload streams in",
@@ -44,7 +45,7 @@ with m as (
     "Match three or more orbs of one colour to burst them, then watch for anything left floating",
     "Clear the board before the shot limit runs out; S or Tab swaps the loaded orb and R restarts"
   ],
-  "levels": "5 hand-authored levels",
+  "levels": "15 hand-authored levels",
   "saveKey": ""
 }$manifest$::jsonb as j
 )
