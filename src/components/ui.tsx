@@ -1,14 +1,102 @@
 import { Link } from 'react-router-dom'
+import type { CSSProperties } from 'react'
 import type { Game } from '../data/games'
 
+type CoverMotion = 'rocket' | 'cat' | 'bubble' | 'zap' | 'beam' | 'wobble' | 'spin' | 'sparkle'
+
+// Each cover gets a small idle scene that comes alive on hover. The glyph is
+// the only per-game art we have, so it decides the motion and particle colour.
+const MOTIONS: Array<[string, CoverMotion]> = [
+  ['🚀', 'rocket'],
+  ['🐱', 'cat'],
+  ['🐈', 'cat'],
+  ['🫧', 'bubble'],
+  ['⚡', 'zap'],
+  ['💥', 'zap'],
+  ['🗼', 'beam'],
+  ['🔴', 'beam'],
+  ['🔷', 'beam'],
+  ['🔮', 'beam'],
+  ['🍉', 'wobble'],
+  ['🧶', 'wobble'],
+  ['🔧', 'wobble'],
+  ['🧩', 'wobble'],
+  ['🚗', 'wobble'],
+  ['🚌', 'wobble'],
+  ['🚧', 'wobble'],
+  ['🏃', 'wobble'],
+  ['🏰', 'wobble'],
+  ['🌀', 'spin'],
+  ['⚙️', 'spin'],
+  ['🧱', 'spin'],
+]
+
+function motionFor(emoji: string): CoverMotion {
+  return MOTIONS.find(([glyph]) => emoji.includes(glyph))?.[1] ?? 'sparkle'
+}
+
+/** Stable pseudo-random numbers, so a card animates the same way every visit. */
+function seededRandom(seed: string): () => number {
+  let hash = 2166136261
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index)
+    hash = Math.imul(hash, 16777619)
+  }
+  return () => {
+    hash = Math.imul(hash ^ (hash >>> 15), 2246822507)
+    hash = Math.imul(hash ^ (hash >>> 13), 3266489909)
+    hash ^= hash >>> 16
+    return (hash >>> 0) / 4294967296
+  }
+}
+
+function coverParticles(game: Game, motion: CoverMotion) {
+  const random = seededRandom(`${game.id}:${motion}`)
+  const rises = motion === 'cat' || motion === 'bubble' || motion === 'wobble'
+
+  return Array.from({ length: 9 }, (_, index) => {
+    const angle = (index / 9) * Math.PI * 2 + random() * 0.6
+    let dx = Math.cos(angle) * (16 + random() * 20)
+    let dy = Math.sin(angle) * (16 + random() * 20)
+
+    if (motion === 'rocket') {
+      // Exhaust: a narrow plume firing straight down.
+      dx = (random() - 0.5) * 22
+      dy = 30 + random() * 34
+    } else if (rises) {
+      dx = (random() - 0.5) * 46
+      dy = -(22 + random() * 30)
+    }
+
+    return {
+      key: index,
+      style: {
+        '--dx': `${dx.toFixed(1)}cqmin`,
+        '--dy': `${dy.toFixed(1)}cqmin`,
+        '--szm': (0.65 + random() * 1.05).toFixed(2),
+        animationDelay: `-${Math.round(random() * 1200)}ms`,
+      } as CSSProperties,
+    }
+  })
+}
+
 export function Cover({ game, className = '' }: { game: Game; className?: string }) {
+  const motion = motionFor(game.cover.emoji)
+
   return (
     <div
-      className={`grid-cover ${className}`}
+      className={`grid-cover cover-scene cover-scene--${motion} ${className}`}
+      data-motion={motion}
       style={{ background: `linear-gradient(140deg, ${game.cover.from}, ${game.cover.to})` }}
     >
-      <div className="flex h-full w-full items-center justify-center">
-        <span aria-hidden="true" className="text-5xl drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:text-6xl">
+      <span aria-hidden="true" className="cover-glow" />
+      <span aria-hidden="true" className="cover-particles">
+        {coverParticles(game, motion).map((particle) => (
+          <i key={particle.key} className="cp" style={particle.style} />
+        ))}
+      </span>
+      <div className="cover-stage">
+        <span aria-hidden="true" className="cover-emoji">
           {game.cover.emoji}
         </span>
       </div>

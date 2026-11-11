@@ -156,7 +156,7 @@ export default function Home() {
         <ul className="card divide-y divide-white/10">
           {latest.map((game) => (
             <li key={game.id}>
-              <Link to={`/game/${game.id}`} className="flex items-center gap-4 p-4 hover:bg-white/[0.03]">
+              <Link to={`/game/${game.id}`} className="group flex items-center gap-4 p-4 hover:bg-white/[0.03]">
                 <Cover game={game} className="h-14 w-14 shrink-0 rounded-xl" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-cream">{game.name}</p>
